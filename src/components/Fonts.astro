@@ -1,7 +1,8 @@
 ---
 // Self-hosted Fontsource files, subset by unicode-range so each page only downloads the
 // scripts it uses. Only the hero weights for the page language are preloaded.
-// Fallback faces are Arial, metric-adjusted to each font so the swap doesn't shift layout.
+// Fallback faces are Arial, metric-adjusted to each font so the swap doesn't shift layout
+// (Unbounded's size-adjust is tuned so the hero headline wraps the same before and after).
 import unboundedLatin500 from '@fontsource/unbounded/files/unbounded-latin-500-normal.woff2?url';
 import readexLatin400 from '@fontsource/readex-pro/files/readex-pro-latin-400-normal.woff2?url';
 import readexLatin500 from '@fontsource/readex-pro/files/readex-pro-latin-500-normal.woff2?url';
@@ -28,8 +29,10 @@ const css = [
   face('Readex Pro', 500, readexLatin500, LATIN),
   face('Readex Pro', 400, readexArabic400, ARABIC),
   face('Readex Pro', 500, readexArabic500, ARABIC),
-  `@font-face{font-family:'Unbounded Fallback';src:local('Arial');size-adjust:139.78%;ascent-override:71.18%;descent-override:17.53%;line-gap-override:0%}`,
-  `@font-face{font-family:'Readex Pro Fallback';src:local('Arial');size-adjust:109.42%;ascent-override:91.39%;descent-override:22.85%;line-gap-override:0%}`,
+  `@font-face{font-family:'Unbounded Fallback';src:local('Arial');size-adjust:134.1%;ascent-override:74.2%;descent-override:18.27%;line-gap-override:0%}`,
+  `@font-face{font-family:'Readex Pro Fallback';src:local('Arial');size-adjust:109.42%;ascent-override:91.39%;descent-override:22.85%;line-gap-override:0%;unicode-range:${LATIN}}`,
+  // Readex Pro's Arabic runs about 1.35x wider than Arial's, so Arabic gets its own fallback face.
+  `@font-face{font-family:'Readex Pro Fallback';src:local('Arial');size-adjust:135%;ascent-override:74.07%;descent-override:18.52%;line-gap-override:0%;unicode-range:${ARABIC}}`,
 ].join('');
 
 // Hero weights: English uses Unbounded 500 (H1) and Readex 400 (subline);
