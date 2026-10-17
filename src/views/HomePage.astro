@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description}>
+  <section class="wrap section-y">
+    <p class="eyebrow">{t.hero.eyebrow}</p>
+    <h1>{t.hero.h1}</h1>
+  </section>
+</Base>

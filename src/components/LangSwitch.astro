@@ -1,0 +1,42 @@
+---
+import { alternatePath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  altHref?: string;
+  class?: string;
+}
+const { lang, altHref, class: className } = Astro.props;
+const t = useTranslations(lang);
+const href = altHref ?? alternatePath(Astro.url.pathname, lang);
+---
+
+<a
+  href={href}
+  hreflang={t.langSwitch.labelLang}
+  lang={t.langSwitch.labelLang}
+  class:list={['lang-switch', className]}
+  data-track="lang_switch"
+>
+  {t.langSwitch.label}
+</a>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding-inline: 8px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .lang-switch:hover {
+    text-decoration-thickness: 2px;
+  }
+</style>
