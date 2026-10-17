@@ -116,15 +116,9 @@ const settings = {
               <div class:list={['result', { 'result-main': o.key === 'left' }]}>
                 <dt>{o.label}</dt>
                 <dd>
-                  {lang === 'ar' ? (
-                    <>
-                      <span class="ltr" data-out={o.key}>{fmt(o.value)}</span> <span>د.ك</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>KWD</span> <span class="ltr" data-out={o.key}>{fmt(o.value)}</span>
-                    </>
-                  )}
+                  {t.calc.currencyPrefix && <span>{t.calc.currencyPrefix} </span>}
+                  <span class="ltr" data-out={o.key}>{fmt(o.value)}</span>
+                  {t.calc.currencySuffix && <span> {t.calc.currencySuffix}</span>}
                 </dd>
               </div>
             ))

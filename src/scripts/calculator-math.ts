@@ -21,7 +21,7 @@ export function estimate({ price, sets, days, monthly, plan, cartridge }: Estima
   const setsPerMonth = sets * days;
   const revenue = price * setsPerMonth;
   const running = (monthly ? plan : 0) + cartridge * setsPerMonth;
-  const margin = price - cartridge;
-  const breakEven = margin > 0 ? Math.ceil(plan / margin) : null;
+  const earnedPerSet = price - cartridge;
+  const breakEven = earnedPerSet > 0 ? Math.ceil(plan / earnedPerSet) : null;
   return { revenue, running, left: revenue - running, breakEven };
 }
