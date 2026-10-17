@@ -1,0 +1,258 @@
+---
+import Icon from '../Icon.astro';
+import { config, whatsappLink } from '../../config';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const d = t.demo;
+
+const settings = {
+  lang,
+  endpoint: config.formEndpoint,
+  timeoutMs: config.formTimeoutMs,
+  whatsappNumber: config.whatsappNumber,
+  thankYouPath: localizedPath('/thank-you/', lang),
+  errors: d.errors,
+  sending: d.sending,
+  submit: d.submit,
+  fallbackStatus: d.fallbackStatus,
+  fallbackMessage: d.fallbackMessage,
+  genericMessage: t.whatsapp.floatMessage,
+  areaLabels: Object.fromEntries(t.governorates.map((g) => [g.value, g.label])),
+};
+
+const errorId = (f: string) => `demo-${f}-error`;
+---
+
+<section id="demo" class="on-carbon section-y" aria-labelledby="demo-title">
+  <div class="wrap demo-grid">
+    <div class="demo-intro reveal">
+      <h2 id="demo-title">{d.h2}</h2>
+      <p>{d.subline}</p>
+    </div>
+
+    <form class="demo-form reveal" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
+      <div class="field">
+        <label for="demo-name">{d.nameLabel}</label>
+        <input id="demo-name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={errorId('name')} />
+        <p id={errorId('name')} class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="demo-salon">{d.salonLabel}</label>
+        <input id="demo-salon" name="salon" type="text" autocomplete="organization" required maxlength="120" aria-describedby={errorId('salon')} />
+        <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="demo-area">{d.areaLabel}</label>
+        <div class="select-wrap">
+          <select id="demo-area" name="area" required autocomplete="address-level1" aria-describedby={errorId('area')}>
+            <option value="" selected disabled>{d.areaPlaceholder}</option>
+            {t.governorates.map((g) => <option value={g.value}>{g.label}</option>)}
+          </select>
+          <Icon name="chevron" size={20} class="select-icon" />
+        </div>
+        <p id={errorId('area')} class="field-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="demo-whatsapp">{d.whatsappLabel}</label>
+        <p id="demo-whatsapp-hint" class="field-hint">{d.whatsappHint}</p>
+        <div class="phone-group" dir="ltr">
+          <span class="phone-prefix" aria-hidden="true">+965</span>
+          <input
+            id="demo-whatsapp"
+            name="whatsapp"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            required
+            maxlength="16"
+            aria-describedby={`demo-whatsapp-hint ${errorId('whatsapp')}`}
+          />
+        </div>
+        <p id={errorId('whatsapp')} class="field-error" aria-live="polite"></p>
+      </div>
+
+      <!-- Honeypot: hidden from people and screen readers. Bots that fill it are dropped. -->
+      <div class="hp" aria-hidden="true">
+        <label for="demo-website">{d.honeypotLabel}</label>
+        <input id="demo-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="demo-actions">
+        <button type="submit" class="btn btn-primary" data-submit>{d.submit}</button>
+        <a
+          href={whatsappLink(t.whatsapp.floatMessage)}
+          class="btn btn-outline"
+          target="_blank"
+          rel="noopener"
+          data-demo-whatsapp
+          data-track="whatsapp_click"
+          data-track-location="demo_form"
+        >
+          <Icon name="whatsapp" size={20} />
+          <span>{d.whatsappAlt}</span>
+        </a>
+      </div>
+
+      <p class="form-status" role="status" aria-live="polite" data-status></p>
+
+      <div class="demo-notes">
+        <p>{d.replyTime}</p>
+        <p>{d.privacy}</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { initDemoForm } from '../../scripts/demo-form';
+  document.querySelectorAll<HTMLFormElement>('[data-demo-form]').forEach(initDemoForm);
+</script>
+
+<style>
+  .demo-grid {
+    display: grid;
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .demo-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .demo-intro p {
+    margin-block-start: 16px;
+    max-width: 44ch;
+  }
+  .demo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 560px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .field label {
+    font-weight: 500;
+  }
+  .field-hint {
+    margin-block-start: -4px;
+    color: var(--color-mist);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    min-height: 48px;
+    padding-inline: 16px;
+    border: 2px solid var(--color-white);
+    border-radius: var(--radius-input);
+    background: var(--color-white);
+    color: var(--color-carbon);
+    font: inherit;
+  }
+  .field input[aria-invalid='true'],
+  .field select[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+  .select-wrap {
+    position: relative;
+  }
+  .field select {
+    appearance: none;
+    padding-inline-end: 48px;
+    cursor: pointer;
+  }
+  .select-wrap :global(.select-icon) {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 16px;
+    translate: 0 -50%;
+    color: var(--color-carbon);
+    pointer-events: none;
+  }
+  .phone-group {
+    display: flex;
+    align-items: stretch;
+  }
+  .phone-prefix {
+    display: grid;
+    place-items: center;
+    padding-inline: 16px;
+    border-radius: var(--radius-input) 0 0 var(--radius-input);
+    background: var(--color-bone);
+    color: var(--color-carbon);
+    font-weight: 500;
+  }
+  .phone-group input {
+    border-radius: 0 var(--radius-input) var(--radius-input) 0;
+    text-align: left;
+  }
+
+  /* Error red only passes contrast on white, so messages sit in a small white chip. */
+  .field-error:empty {
+    display: none;
+  }
+  .field-error {
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: var(--color-white);
+    color: var(--color-error);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+
+  .hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    inset-inline-start: -10000px;
+  }
+
+  .demo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-block-start: 8px;
+  }
+  .demo-actions .btn {
+    width: 100%;
+  }
+  .on-carbon .btn-outline {
+    border-color: var(--color-bone);
+    color: var(--color-bone);
+  }
+  .on-carbon .btn-outline:hover {
+    background: var(--color-bone);
+    color: var(--color-carbon);
+  }
+  .form-status:empty {
+    display: none;
+  }
+  .form-status {
+    font-weight: 500;
+    color: var(--color-mist);
+  }
+  .demo-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

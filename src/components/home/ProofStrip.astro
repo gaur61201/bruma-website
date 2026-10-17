@@ -1,0 +1,62 @@
+---
+import Icon, { type IconName } from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+const icons: IconName[] = ['timer', 'shield', 'pin'];
+---
+
+<section class="proof" aria-label={t.proof.label}>
+  <ul class="wrap proof-list">
+    {
+      t.proof.items.map((item, i) => (
+        <li>
+          <Icon name={icons[i]} size={28} class="proof-icon" />
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .proof-list {
+    list-style: none;
+    margin-block: 0;
+    padding: 0;
+    display: grid;
+    border-block: 1px solid var(--color-line);
+  }
+  .proof-list li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 16px;
+    font-weight: 500;
+  }
+  .proof-list li + li {
+    border-top: 1px solid var(--color-line);
+  }
+  :global(.proof-icon) {
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px) {
+    .proof-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .proof-list li {
+      padding-block: 24px;
+      padding-inline: 24px;
+    }
+    .proof-list li:first-child {
+      padding-inline-start: 0;
+    }
+    .proof-list li + li {
+      border-top: 0;
+      border-inline-start: 1px solid var(--color-line);
+    }
+  }
+</style>

@@ -1,0 +1,75 @@
+---
+// "Salons using BRUMA". Hidden until config.flags.showSalonStories is on and real stories exist.
+import { Image } from 'astro:assets';
+import { config } from '../../config';
+import { salonStories } from '../../data/salon-stories';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const show = config.flags.showSalonStories && salonStories.length > 0;
+---
+
+{
+  show && (
+    <section class="section-y stories" aria-labelledby="stories-title">
+      <div class="wrap">
+        <h2 id="stories-title" class="reveal">{t.stories.h2}</h2>
+        <ul class="stories-grid">
+          {salonStories.map((s) => (
+            <li class="card story reveal">
+              {s.photo && <Image src={s.photo} alt={s.photoAlt?.[lang] ?? ''} width={480} height={360} fit="cover" class="story-photo" />}
+              <blockquote>
+                <p>{s.quote[lang]}</p>
+              </blockquote>
+              <p class="story-credit">
+                {s.person ? `${s.person}, ` : ''}
+                {s.salon}, {s.area[lang]}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .stories {
+    border-top: 1px solid var(--color-line);
+  }
+  .stories-grid {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .stories-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+  }
+  .story {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+  }
+  .story-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+  blockquote {
+    margin: 0;
+  }
+  .story-credit {
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

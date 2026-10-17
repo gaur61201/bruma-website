@@ -1,0 +1,87 @@
+---
+import { Image } from 'astro:assets';
+import { galleryTiles } from '../../data/gallery';
+import { fill, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="gallery" class="section-y" aria-labelledby="gallery-title">
+  <div class="wrap">
+    <h2 id="gallery-title" class="reveal">{t.gallery.h2}</h2>
+    <ul class="gallery-grid reveal">
+      {
+        galleryTiles.map((tile) => {
+          const credited = tile.image && tile.technician && tile.area;
+          return (
+            <li>
+              {tile.image ? (
+                <figure class="tile">
+                  <Image src={tile.image} alt={tile.alt?.[lang] ?? ''} width={400} height={400} fit="cover" class="tile-img" />
+                  {credited && (
+                    <figcaption>{fill(t.gallery.credit, { technician: tile.technician!, area: tile.area![lang] })}</figcaption>
+                  )}
+                </figure>
+              ) : (
+                <div class="tile placeholder-media">{t.gallery.tilePlaceholder}</div>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+    <p class="gallery-note reveal">{t.gallery.note}</p>
+  </div>
+</section>
+
+<style>
+  .gallery-grid {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (min-width: 1024px) {
+    .gallery-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+  }
+  .tile {
+    margin: 0;
+    aspect-ratio: 1;
+    width: 100%;
+  }
+  figure.tile {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+  }
+  .tile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  figure.tile figcaption {
+    position: absolute;
+    inset-inline: 8px;
+    bottom: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: var(--color-white);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .gallery-note {
+    margin-block-start: 24px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

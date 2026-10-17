@@ -1,0 +1,61 @@
+---
+import Icon, { type IconName } from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+---
+
+<section id="hygiene" class="section-y hygiene" aria-labelledby="hygiene-title">
+  <div class="wrap hygiene-grid">
+    <h2 id="hygiene-title" class="reveal">{t.hygiene.h2}</h2>
+    <ul class="hygiene-list reveal">
+      {
+        t.hygiene.points.map((point) => (
+          <li>
+            <Icon name={point.icon as IconName} size={28} />
+            <p>{point.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hygiene {
+    border-top: 1px solid var(--color-line);
+  }
+  .hygiene-grid {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .hygiene-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .hygiene-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .hygiene-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: 24px;
+    border-top: 1px solid var(--color-line);
+  }
+  .hygiene-list li:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .hygiene-list :global(svg) {
+    flex-shrink: 0;
+    margin-block-start: 2px;
+  }
+</style>

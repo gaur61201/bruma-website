@@ -1,0 +1,114 @@
+---
+import Icon from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+const plans = [
+  { ...t.ways.monthly, featured: true, id: 'plan-monthly' },
+  { ...t.ways.upfront, featured: false, id: 'plan-upfront' },
+];
+---
+
+<section id="ways-to-own" class="section-y ways" aria-labelledby="ways-title">
+  <div class="wrap">
+    <h2 id="ways-title" class="reveal">{t.ways.h2}</h2>
+    <div class="ways-grid">
+      {
+        plans.map((plan) => (
+          <article class:list={['card', 'plan', 'reveal', { 'plan-featured': plan.featured }]} aria-labelledby={plan.id}>
+            <h3 id={plan.id}>{plan.title}</h3>
+            <p class="plan-price">{plan.price}</p>
+            <ul class="plan-list">
+              {plan.bullets.map((b) => (
+                <li>
+                  <Icon name="check" size={20} />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            {plan.small && <p class="plan-small">{plan.small}</p>}
+          </article>
+        ))
+      }
+    </div>
+    <div class="ways-cta reveal">
+      <a href="#demo" class="btn btn-primary">{t.ways.cta}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ways {
+    border-top: 1px solid var(--color-line);
+  }
+  .ways-grid {
+    display: grid;
+    gap: 16px;
+    margin-block-start: 32px;
+  }
+  @media (min-width: 768px) {
+    .ways-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+  }
+  .plan {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px 24px;
+  }
+  @media (min-width: 1024px) {
+    .plan {
+      padding: 40px;
+    }
+  }
+  /* Monthly plan: 2px vapor outline (requested in the phase brief). */
+  .plan-featured {
+    border: 2px solid var(--color-vapor);
+  }
+  .plan-price {
+    font-weight: 500;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+    line-height: var(--heading-leading);
+    padding-block-end: 16px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .plan-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .plan-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .plan-list :global(svg) {
+    flex-shrink: 0;
+    margin-block-start: 3px;
+  }
+  .plan-small {
+    margin-block-start: auto;
+    padding-block-start: 8px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .ways-cta {
+    margin-block-start: 32px;
+    display: flex;
+    justify-content: center;
+  }
+  @media (max-width: 639px) {
+    .ways-cta .btn {
+      width: 100%;
+    }
+  }
+</style>

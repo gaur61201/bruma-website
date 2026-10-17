@@ -1,0 +1,57 @@
+---
+import Icon, { type IconName } from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+---
+
+<section class="section-y included" aria-labelledby="included-title">
+  <div class="wrap">
+    <h2 id="included-title" class="reveal">{t.included.h2}</h2>
+    <ul class="included-grid">
+      {
+        t.included.cards.map((card) => (
+          <li class="card included-card reveal">
+            <Icon name={card.icon as IconName} size={32} />
+            <h3>{card.title}</h3>
+            <p>{card.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .included-grid {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .included-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .included-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+  }
+  .included-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+  }
+  .included-card h3 {
+    margin-block-start: 8px;
+  }
+</style>

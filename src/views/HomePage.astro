@@ -1,5 +1,18 @@
 ---
+// The homepage, shared by / (English) and /ar/ (Arabic).
 import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import ProofStrip from '../components/home/ProofStrip.astro';
+import GalleryPreview from '../components/home/GalleryPreview.astro';
+import HowItWorks from '../components/home/HowItWorks.astro';
+import EarningsCalculator from '../components/home/EarningsCalculator.astro';
+import Included from '../components/home/Included.astro';
+import Hygiene from '../components/home/Hygiene.astro';
+import WaysToOwn from '../components/home/WaysToOwn.astro';
+import SalonStories from '../components/home/SalonStories.astro';
+import Faq from '../components/home/Faq.astro';
+import DemoForm from '../components/home/DemoForm.astro';
+import { faqSchema } from '../components/home/faq-items';
 import { useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -9,9 +22,16 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description}>
-  <section class="wrap section-y">
-    <p class="eyebrow">{t.hero.eyebrow}</p>
-    <h1>{t.hero.h1}</h1>
-  </section>
+<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[faqSchema(lang)]}>
+  <Hero lang={lang} />
+  <ProofStrip lang={lang} />
+  <GalleryPreview lang={lang} />
+  <HowItWorks lang={lang} />
+  <EarningsCalculator lang={lang} />
+  <Included lang={lang} />
+  <Hygiene lang={lang} />
+  <WaysToOwn lang={lang} />
+  <SalonStories lang={lang} />
+  <Faq lang={lang} />
+  <DemoForm lang={lang} />
 </Base>

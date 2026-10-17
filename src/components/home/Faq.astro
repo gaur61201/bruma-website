@@ -1,0 +1,84 @@
+---
+import Icon from '../Icon.astro';
+import { faqItems } from './faq-items';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const items = faqItems(lang);
+---
+
+<section class="section-y faq" aria-labelledby="faq-title">
+  <div class="wrap faq-grid">
+    <h2 id="faq-title" class="reveal">{t.faq.h2}</h2>
+    <div class="faq-list reveal">
+      {
+        items.map((item) => (
+          <details name="faq">
+            <summary>
+              <span>{item.q}</span>
+              <Icon name="plus" size={24} class="faq-icon" />
+            </summary>
+            <p>{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    border-top: 1px solid var(--color-line);
+  }
+  .faq-grid {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .faq-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  details {
+    border-top: 1px solid var(--color-line);
+  }
+  details:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 64px;
+    padding-block: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover span {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  :global(.faq-icon) {
+    flex-shrink: 0;
+    transition: transform 200ms ease;
+  }
+  details[open] :global(.faq-icon) {
+    transform: rotate(45deg);
+  }
+  details p {
+    padding-block-end: 24px;
+    max-width: 60ch;
+  }
+</style>
