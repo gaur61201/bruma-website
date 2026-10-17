@@ -1,0 +1,30 @@
+# Private briefs and working notes: never commit (public repo)
+CLAUDE.md
+PHASE-*.md
+TODO.md
+
+# Build output
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Environment
+.env
+.env.*
+
+# QA scratch
+lighthouse/
+.lighthouseci/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
