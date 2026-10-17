@@ -1,0 +1,54 @@
+---
+// GitHub Pages serves one 404.html for every missing URL, so this page carries both languages.
+import Base from '../layouts/Base.astro';
+import { useTranslations } from '../i18n';
+
+const en = useTranslations('en');
+const ar = useTranslations('ar');
+---
+
+<Base lang="en" title={en.meta.notFound.title} description={en.meta.notFound.description} noindex alternates={false} altHref="/ar/">
+  <section class="section-y">
+    <div class="wrap not-found">
+      <div class="nf-block">
+        <h1>{en.notFound.line}</h1>
+        <a href="/" class="text-link nf-link">{en.notFound.home}</a>
+      </div>
+      <div class="nf-block" lang="ar" dir="rtl">
+        <p class="nf-line">{ar.notFound.line}</p>
+        <a href="/ar/" class="text-link nf-link">{ar.notFound.home}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    min-height: 50vh;
+    display: grid;
+    gap: 48px;
+    align-content: center;
+  }
+  @media (min-width: 768px) {
+    .not-found {
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+  }
+  .nf-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .nf-line {
+    font-weight: 500;
+    font-size: calc(var(--fs-h1) * var(--script-scale));
+    line-height: var(--heading-leading);
+  }
+  .nf-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

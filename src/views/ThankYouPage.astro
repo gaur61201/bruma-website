@@ -1,0 +1,97 @@
+---
+// Thank-you page after the demo form (noindex), shared by /thank-you/ and /ar/thank-you/.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { whatsappLink } from '../config';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const ty = t.thankYou;
+---
+
+<Base lang={lang} title={t.meta.thankYou.title} description={t.meta.thankYou.description} noindex>
+  <section class="section-y">
+    <div class="wrap thanks">
+      <h1 data-thanks-title data-template={ty.h1WithName}>{ty.h1}</h1>
+      <p class="thanks-body">{ty.body}</p>
+
+      <div class="thanks-talk">
+        <h2 class="thanks-talk-title">{ty.talkNow}</h2>
+        <a
+          href={whatsappLink(ty.whatsappMessage)}
+          class="btn btn-primary"
+          target="_blank"
+          rel="noopener"
+          data-track="whatsapp_click"
+          data-track-location="thank_you"
+        >
+          <Icon name="whatsapp" size={20} />
+          <span>{ty.whatsappButton}</span>
+        </a>
+      </div>
+
+      <a href={localizedPath('/', lang)} class="text-link back-link">
+        <Icon name="arrow" size={20} class="flip-rtl back-arrow" />
+        <span>{ty.backHome}</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { NAME_KEY } from '../scripts/demo-form';
+  import { storage } from '../scripts/lead';
+
+  // Personalise the heading with the name from the form; keep the generic heading otherwise.
+  const title = document.querySelector<HTMLElement>('[data-thanks-title]');
+  const name = storage.get(NAME_KEY).trim().slice(0, 60);
+  if (title && name && title.dataset.template) {
+    title.textContent = title.dataset.template.replace('{name}', name);
+  }
+</script>
+
+<style>
+  .thanks {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .thanks > * {
+    max-width: 720px;
+  }
+  .thanks-body {
+    max-width: 48ch;
+  }
+  .thanks-talk {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-block-start: 16px;
+    padding-block-start: 24px;
+    border-top: 1px solid var(--color-line);
+    width: 100%;
+  }
+  .thanks-talk-title {
+    font-family: var(--font-body);
+    font-size: calc(var(--fs-body) * var(--script-scale));
+    font-weight: 500;
+    line-height: var(--body-leading);
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+  /* "Back" points the other way from "forward". */
+  :global(.back-arrow) {
+    rotate: 180deg;
+  }
+</style>
