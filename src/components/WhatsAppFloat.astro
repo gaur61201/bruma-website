@@ -64,6 +64,18 @@ const t = useTranslations(Astro.props.lang);
     visibility: hidden;
     transform: translateY(8px);
   }
+  /* Pops in from 0.6 after 1s. "backwards" fill, so afterwards the hide-over-the-form styles still apply. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .wa-float {
+      animation: wa-pop 450ms var(--ease-power3) 1s backwards;
+    }
+  }
+  @keyframes wa-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
   @media (min-width: 768px) {
     .wa-float {
       bottom: calc(24px + env(safe-area-inset-bottom));
