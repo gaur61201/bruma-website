@@ -1,6 +1,7 @@
 import { track } from './analytics';
 import { storage } from './lead';
 import { estimate } from './calculator-math';
+import { showNumber } from './number-display';
 import { ar as arForms, arCount } from '../i18n/plural';
 
 interface Settings {
@@ -10,6 +11,9 @@ interface Settings {
   breakEven: string;
   breakEvenOne: string;
   underCost: string;
+  labels: { revenue: string; running: string; left: string };
+  currencyPrefix: string;
+  currencySuffix: string;
 }
 
 const USED_KEY = 'bruma_calc_used';
@@ -43,12 +47,17 @@ export function initCalculator(form: HTMLFormElement) {
     return s.breakEven.replace('{n}', s.lang === 'ar' ? arCount(n, arForms.sets) : String(n));
   };
 
-  const render = () => {
+  // Screen readers get one summary of the final numbers after the user pauses, not every tween frame.
+  const announcer = form.querySelector<HTMLElement>('[data-calc-announce]');
+  const money = (n: number) => [s.currencyPrefix, fmt(n), s.currencySuffix].filter(Boolean).join(' ');
+  let announceTimer = 0;
+
+  const render = (announce = false) => {
     const monthly = (form.querySelector<HTMLInputElement>('input[name="mode"]:checked')?.value ?? 'monthly') === 'monthly';
     const e = estimate({ ...values, monthly, plan: s.plan, cartridge: s.cartridge });
-    out('revenue').textContent = fmt(e.revenue);
-    out('running').textContent = fmt(e.running);
-    out('left').textContent = fmt(e.left);
+    showNumber(out('revenue'), e.revenue, fmt);
+    showNumber(out('running'), e.running, fmt);
+    showNumber(out('left'), e.left, fmt);
     const be = out('breakEven');
     if (e.breakEven === null) {
       be.textContent = s.underCost;
@@ -56,6 +65,18 @@ export function initCalculator(form: HTMLFormElement) {
     } else {
       be.textContent = breakEvenText(e.breakEven);
       be.hidden = !monthly;
+    }
+    if (announce && announcer) {
+      window.clearTimeout(announceTimer);
+      announceTimer = window.setTimeout(() => {
+        const parts = [
+          `${s.labels.revenue}: ${money(e.revenue)}.`,
+          `${s.labels.running}: ${money(e.running)}.`,
+          `${s.labels.left}: ${money(e.left)}.`,
+        ];
+        if (!be.hidden) parts.push(be.textContent ?? '');
+        announcer.textContent = parts.join(' ');
+      }, 600);
     }
   };
 
@@ -75,7 +96,7 @@ export function initCalculator(form: HTMLFormElement) {
     range(f).addEventListener('input', () => {
       values[f] = Number(range(f).value);
       number(f).value = String(values[f]);
-      render();
+      render(true);
       markUsed();
     });
 
@@ -87,7 +108,7 @@ export function initCalculator(form: HTMLFormElement) {
       if (raw === '' || !Number.isFinite(v) || v < min || v > max) return;
       values[f] = v;
       range(f).value = String(v);
-      render();
+      render(true);
       markUsed();
     });
     number(f).addEventListener('change', () => {
@@ -95,13 +116,13 @@ export function initCalculator(form: HTMLFormElement) {
       values[f] = number(f).value === '' || !Number.isFinite(v) ? values[f] : snap(f, v);
       number(f).value = String(values[f]);
       range(f).value = String(values[f]);
-      render();
+      render(true);
     });
   }
 
   form.querySelectorAll<HTMLInputElement>('input[name="mode"]').forEach((radio) =>
     radio.addEventListener('change', () => {
-      render();
+      render(true);
       markUsed();
     }),
   );

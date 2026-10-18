@@ -45,23 +45,27 @@ const settings = {
   breakEven: t.calc.breakEven,
   breakEvenOne: t.calc.breakEvenOne,
   underCost: t.calc.underCost,
+  labels: { revenue: t.calc.revenue, running: t.calc.running, left: t.calc.left },
+  currencyPrefix: t.calc.currencyPrefix,
+  currencySuffix: t.calc.currencySuffix,
 };
 ---
 
 <section id="earnings" class="on-carbon section-y" aria-labelledby="earnings-title">
   <div class="wrap">
-    <div class="calc-head reveal">
-      <h2 id="earnings-title">{t.calc.h2}</h2>
-      <p class="calc-intro calc-js-only">{t.calc.intro}</p>
+    <div class="calc-head">
+      <h2 id="earnings-title" data-wipe data-motion>{t.calc.h2}</h2>
+      <p class="calc-intro calc-js-only" data-motion>{t.calc.intro}</p>
     </div>
 
     <p class="calc-static">{t.calc.staticExample}</p>
 
-    <form class="calc calc-js-only reveal" data-calc data-settings={JSON.stringify(settings)} novalidate>
+    <form class="calc calc-js-only" data-calc data-settings={JSON.stringify(settings)} novalidate>
       <div class="calc-inputs">
-        <fieldset class="mode">
+        <fieldset class="mode" data-motion>
           <legend class="calc-label">{t.calc.modeLegend}</legend>
           <div class="mode-options">
+            <span class="mode-thumb" aria-hidden="true"></span>
             <label class="mode-option">
               <input type="radio" name="mode" value="monthly" checked />
               <span>{t.calc.monthly}</span>
@@ -75,7 +79,7 @@ const settings = {
 
         {
           inputs.map((input) => (
-            <div class="calc-field">
+            <div class="calc-field" data-motion>
               <label class="calc-label" for={`calc-${input.id}`} id={`calc-${input.id}-label`}>
                 {input.label}
               </label>
@@ -108,12 +112,13 @@ const settings = {
         }
       </div>
 
-      <div class="calc-results" aria-live="polite" aria-atomic="true">
+      <!-- Visible results tween; screen readers get the summary in [data-calc-announce] instead. -->
+      <div class="calc-results" data-calc-results>
         <p class="sr-only">{t.calc.resultsLabel}</p>
         <dl>
           {
             outputs.map((o) => (
-              <div class:list={['result', { 'result-main': o.key === 'left' }]}>
+              <div class:list={['result', { 'result-main': o.key === 'left' }]} data-motion>
                 <dt>{o.label}</dt>
                 <dd>
                   {t.calc.currencyPrefix && <span>{t.calc.currencyPrefix} </span>}
@@ -124,10 +129,11 @@ const settings = {
             ))
           }
         </dl>
-        <p class="break-even" data-out="breakEven">
+        <p class="break-even" data-out="breakEven" data-motion>
           {initial.breakEven === null ? t.calc.underCost : breakEvenText(initial.breakEven)}
         </p>
       </div>
+      <p class="sr-only" aria-live="polite" data-calc-announce></p>
     </form>
 
     <p class="calc-note">{t.calc.note}</p>
@@ -193,8 +199,36 @@ const settings = {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
+  .mode-options {
+    position: relative;
+  }
+  /* The bone thumb slides between the two options. */
+  .mode-thumb {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    width: calc(50% - 4px);
+    border-radius: var(--radius-pill);
+    background: var(--color-bone);
+  }
+  .mode-options:has(input[value='upfront']:checked) .mode-thumb {
+    translate: calc(100% + 8px) 0;
+  }
+  .mode-options:has(input[value='upfront']:checked) .mode-thumb:dir(rtl) {
+    translate: calc(-100% - 8px) 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mode-thumb {
+      transition: translate 350ms var(--ease-power3);
+    }
+    .mode-option {
+      transition: color 250ms ease;
+    }
+  }
   .mode-option {
     position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,9 +239,6 @@ const settings = {
     font-weight: 500;
     text-align: center;
     cursor: pointer;
-    transition:
-      background-color 200ms ease,
-      color 200ms ease;
   }
   .mode-option input {
     position: absolute;
@@ -217,9 +248,8 @@ const settings = {
     cursor: pointer;
   }
   .mode-option:has(input:checked) {
-    background: var(--color-bone);
     color: var(--color-carbon);
-    border-color: var(--color-bone);
+    border-color: transparent;
   }
   .mode-option:has(input:focus-visible) {
     outline: 3px solid var(--color-mist);
