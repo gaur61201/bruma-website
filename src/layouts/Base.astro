@@ -113,11 +113,18 @@ const jsonLd = noindex ? schema : [organization, ...schema];
     <script>
       import { initClickTracking } from '../scripts/analytics';
       import { captureLeadParams } from '../scripts/lead';
-      import { initReveal } from '../scripts/reveal';
 
       captureLeadParams();
       initClickTracking();
-      initReveal();
+
+      // Motion (GSAP) loads after the page has finished loading, so it never competes with the
+      // first paint. Until then, anything waiting to be revealed stays hidden for at most 2s (CSS failsafe).
+      const startMotion = () => {
+        if (!document.querySelector('[data-motion]')) return;
+        import('../scripts/motion').then((m) => m.initMotion()).catch(() => {});
+      };
+      if (document.readyState === 'complete') startMotion();
+      else window.addEventListener('load', startMotion, { once: true });
     </script>
   </body>
 </html>

@@ -86,7 +86,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     scroll-behavior: smooth;
-    scroll-padding-top: 80px;
+    scroll-padding-top: 76px;
     background: var(--color-bone);
   }
 
@@ -238,17 +238,11 @@
     opacity: 0.7;
   }
 
-  /* Vapor fill, always with carbon text. Hover adds a carbon outline instead of a new colour. */
+  /* Vapor fill, always with carbon text. The hover darkening is in the Motion section below. */
   .btn-primary {
     background: var(--color-vapor);
     border-color: var(--color-vapor);
     color: var(--color-carbon);
-  }
-  .btn-primary:hover {
-    border-color: var(--color-carbon);
-  }
-  .on-carbon .btn-primary:hover {
-    border-color: var(--color-bone);
   }
 
   .btn-outline {
@@ -266,16 +260,10 @@
     font-size: calc(var(--fs-small) * var(--script-scale));
   }
 
+  /* Deep-teal standalone links; the underline slides in on hover (Motion section). */
   .text-link {
     color: var(--color-deep-teal);
     font-weight: 500;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
-    transition: text-decoration-thickness 150ms ease;
-  }
-  .text-link:hover {
-    text-decoration-thickness: 2px;
   }
 
   .eyebrow {
@@ -304,17 +292,329 @@
   }
 }
 
-/* Fade-and-rise on scroll. Only applied once JS is running, and never under reduced motion. */
+/* ==========================================================================
+ * Motion (CLAUDE.md › Motion). Scroll choreography lives in src/scripts/motion.ts (GSAP).
+ * Everything here is gated so content is always visible without JS or with reduced motion.
+ * ========================================================================== */
+
+:root {
+  /* CSS equivalents of GSAP's power3.out and expo.out. */
+  --ease-power3: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * Hidden-before-reveal. Elements marked data-motion stay hidden only when JS is running and motion
+ * is allowed. motion.ts claims them (data-motion="on") as it sets them up; if GSAP never arrives,
+ * the failsafe shows everything after 2s.
+ */
 @media (prefers-reduced-motion: no-preference) {
-  .js .reveal {
+  .js [data-motion=''] {
     opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity 250ms var(--ease-out),
-      transform 250ms var(--ease-out);
+    animation: motion-failsafe 0s linear 2s forwards;
   }
-  .js .reveal.is-visible {
+}
+@keyframes motion-failsafe {
+  to {
     opacity: 1;
-    transform: none;
+  }
+}
+
+/* --- Print-head wipe: shared bar ------------------------------------------------------------ */
+.wipe-bar {
+  position: absolute;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-vapor);
+  opacity: 0;
+  pointer-events: none;
+}
+.on-carbon .wipe-bar {
+  background: var(--color-mist);
+}
+
+/* Section H2s (GSAP + SplitText lines). */
+[data-wipe] {
+  position: relative;
+}
+.wipe-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Headline line reveals use SplitText masks; pad them so ascenders and descenders aren't clipped. */
+.split-line-mask {
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+}
+
+/*
+ * Hero H1 print-head wipe, in pure CSS so the LCP element never waits for GSAP.
+ * Each line band (1lh tall) is revealed by its own registered custom property, 0.7s apart by 0.12s;
+ * a vapor bar per line rides the reveal edge (transform only).
+ */
+@property --wipe-1 {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --wipe-2 {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --wipe-3 {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --wipe-4 {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+.print-wipe {
+  position: relative;
+  container-type: inline-size;
+}
+.print-wipe-text {
+  display: block;
+}
+.print-wipe-bars {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.print-wipe .wipe-bar {
+  top: calc(var(--i) * 1lh + 0.1lh);
+  height: 0.8lh;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .print-wipe {
+    animation:
+      wipe-1 0.7s var(--ease-power3) 0.1s both,
+      wipe-2 0.7s var(--ease-power3) 0.22s both,
+      wipe-3 0.7s var(--ease-power3) 0.34s both,
+      wipe-4 0.7s var(--ease-power3) 0.46s both;
+  }
+  .js .print-wipe-text {
+    --x1: calc(-0.15em + var(--wipe-1) * (100% + 0.3em));
+    --x2: calc(-0.15em + var(--wipe-2) * (100% + 0.3em));
+    --x3: calc(-0.15em + var(--wipe-3) * (100% + 0.3em));
+    --x4: calc(-0.15em + var(--wipe-4) * (100% + 0.3em));
+    clip-path: polygon(
+      -0.15em -0.5lh,
+      var(--x1) -0.5lh,
+      var(--x1) 1lh,
+      var(--x2) 1lh,
+      var(--x2) 2lh,
+      var(--x3) 2lh,
+      var(--x3) 3lh,
+      var(--x4) 3lh,
+      var(--x4) max(3lh, 100% + 0.5lh),
+      -0.15em max(3lh, 100% + 0.5lh)
+    );
+  }
+  .js .print-wipe-text:dir(rtl) {
+    --x1: calc(100% + 0.15em - var(--wipe-1) * (100% + 0.3em));
+    --x2: calc(100% + 0.15em - var(--wipe-2) * (100% + 0.3em));
+    --x3: calc(100% + 0.15em - var(--wipe-3) * (100% + 0.3em));
+    --x4: calc(100% + 0.15em - var(--wipe-4) * (100% + 0.3em));
+    clip-path: polygon(
+      calc(100% + 0.15em) -0.5lh,
+      var(--x1) -0.5lh,
+      var(--x1) 1lh,
+      var(--x2) 1lh,
+      var(--x2) 2lh,
+      var(--x3) 2lh,
+      var(--x3) 3lh,
+      var(--x4) 3lh,
+      var(--x4) max(3lh, 100% + 0.5lh),
+      calc(100% + 0.15em) max(3lh, 100% + 0.5lh)
+    );
+  }
+  .js .print-wipe .wipe-bar {
+    animation: wipe-bar 0.7s var(--ease-power3) both;
+    animation-delay: calc(0.1s + var(--i) * 0.12s);
+  }
+  .js .print-wipe .wipe-bar:dir(rtl) {
+    animation-name: wipe-bar-rtl;
+  }
+}
+@keyframes wipe-1 {
+  from {
+    --wipe-1: 0;
+  }
+}
+@keyframes wipe-2 {
+  from {
+    --wipe-2: 0;
+  }
+}
+@keyframes wipe-3 {
+  from {
+    --wipe-3: 0;
+  }
+}
+@keyframes wipe-4 {
+  from {
+    --wipe-4: 0;
+  }
+}
+@keyframes wipe-bar {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100cqw);
+  }
+}
+@keyframes wipe-bar-rtl {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100cqw);
+  }
+}
+
+/* --- Micro-interactions --------------------------------------------------------------------- */
+
+/* Primary buttons: the fill darkens (a 10% carbon layer keeps carbon text above 4.5:1). */
+.btn-primary {
+  position: relative;
+  isolation: isolate;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--color-carbon);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.btn-primary:hover::before {
+  opacity: 0.1;
+}
+/* The arrow nudges 4px in the reading direction. */
+.btn-arrow {
+  flex-shrink: 0;
+  transition: translate 250ms var(--ease-power3);
+}
+
+/* Text links: the underline slides in from the inline-start side. */
+.text-link,
+.slide-underline {
+  position: relative;
+  text-decoration: none;
+}
+.text-link::after,
+.slide-underline::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(50% - 0.85em);
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms var(--ease-power3);
+  pointer-events: none;
+}
+.text-link:dir(rtl)::after,
+.slide-underline:dir(rtl)::after {
+  transform-origin: right center;
+}
+.text-link:hover::after,
+.text-link:focus-visible::after,
+.slide-underline:hover::after,
+.slide-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Cards that lift on hover (desktop): up 4px, border turns carbon. No shadows. */
+.lift {
+  transition:
+    translate 250ms var(--ease-power3),
+    border-color 250ms ease;
+}
+@media (hover: hover) and (min-width: 1024px) {
+  .lift:hover {
+    border-color: var(--color-carbon);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn:hover .btn-arrow,
+  .arrow-link:hover .btn-arrow {
+    translate: 4px 0;
+  }
+  .btn:hover .btn-arrow:dir(rtl),
+  .arrow-link:hover .btn-arrow:dir(rtl) {
+    translate: -4px 0;
+  }
+  @media (hover: hover) and (min-width: 1024px) {
+    .lift:hover {
+      translate: 0 -4px;
+    }
+  }
+}
+
+/* Hero load sequence (CSS, so nothing above the fold waits for GSAP). Done by 1.2s. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero-fade {
+    animation: hero-fade 0.5s var(--ease-power3) both;
+  }
+  .js .hero-rise {
+    animation: hero-rise 0.6s var(--ease-power3) both;
+    animation-delay: calc(0.3s + var(--i) * 0.08s);
+  }
+  .js .hero-media-reveal {
+    animation: hero-media 0.9s var(--ease-expo) 0.2s both;
+  }
+  .js .hero-media-reveal > * {
+    animation: hero-media-settle 0.9s var(--ease-expo) 0.2s both;
+  }
+}
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes hero-media {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes hero-media-settle {
+  from {
+    transform: scale(1.06);
   }
 }
