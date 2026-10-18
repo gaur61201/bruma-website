@@ -10,11 +10,11 @@ const t = useTranslations(Astro.props.lang);
 
 <section id="hygiene" class="section-y hygiene" aria-labelledby="hygiene-title">
   <div class="wrap hygiene-grid">
-    <h2 id="hygiene-title" class="reveal">{t.hygiene.h2}</h2>
-    <ul class="hygiene-list reveal">
+    <h2 id="hygiene-title" data-motion>{t.hygiene.h2}</h2>
+    <ul class="hygiene-list">
       {
         t.hygiene.points.map((point) => (
-          <li>
+          <li data-motion>
             <Icon name={point.icon as IconName} size={28} />
             <p>{point.text}</p>
           </li>

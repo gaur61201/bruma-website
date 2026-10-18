@@ -17,10 +17,10 @@ const show = config.flags.showSalonStories && salonStories.length > 0;
   show && (
     <section class="section-y stories" aria-labelledby="stories-title">
       <div class="wrap">
-        <h2 id="stories-title" class="reveal">{t.stories.h2}</h2>
+        <h2 id="stories-title" data-motion>{t.stories.h2}</h2>
         <ul class="stories-grid">
           {salonStories.map((s) => (
-            <li class="card story reveal">
+            <li class="card story" data-motion>
               {s.photo && <Image src={s.photo} alt={s.photoAlt?.[lang] ?? ''} width={480} height={360} fit="cover" class="story-photo" />}
               <blockquote>
                 <p>{s.quote[lang]}</p>
