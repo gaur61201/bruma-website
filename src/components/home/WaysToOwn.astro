@@ -14,11 +14,16 @@ const plans = [
 
 <section id="ways-to-own" class="section-y ways" aria-labelledby="ways-title">
   <div class="wrap">
-    <h2 id="ways-title" class="reveal">{t.ways.h2}</h2>
+    <h2 id="ways-title" data-motion>{t.ways.h2}</h2>
     <div class="ways-grid">
       {
         plans.map((plan) => (
-          <article class:list={['card', 'plan', 'reveal', { 'plan-featured': plan.featured }]} aria-labelledby={plan.id}>
+          <article
+            class:list={['card', 'plan', { 'plan-featured': plan.featured }]}
+            aria-labelledby={plan.id}
+            data-motion
+            data-trace={plan.featured ? '' : undefined}
+          >
             <h3 id={plan.id}>{plan.title}</h3>
             <p class="plan-price">{plan.price}</p>
             <ul class="plan-list">
@@ -34,8 +39,11 @@ const plans = [
         ))
       }
     </div>
-    <div class="ways-cta reveal">
-      <a href="#demo" class="btn btn-primary">{t.ways.cta}</a>
+    <div class="ways-cta" data-motion>
+      <a href="#demo" class="btn btn-primary">
+        <span>{t.ways.cta}</span>
+        <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+      </a>
     </div>
   </div>
 </section>
@@ -57,6 +65,7 @@ const plans = [
     }
   }
   .plan {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -67,9 +76,23 @@ const plans = [
       padding: 40px;
     }
   }
-  /* Monthly plan: 2px vapor outline (requested in the phase brief). */
+  /* Monthly plan: 2px vapor outline (requested in the phase brief). motion.ts traces it in once. */
   .plan-featured {
     border: 2px solid var(--color-vapor);
+  }
+  .plan-featured:global(.trace-pending) {
+    border-color: var(--color-line);
+  }
+  .plan :global(.plan-trace) {
+    position: absolute;
+    top: -2px;
+    inset-inline-start: -2px;
+    overflow: visible;
+    pointer-events: none;
+    color: var(--color-vapor);
+  }
+  .plan :global(.plan-trace:dir(rtl)) {
+    transform: scaleX(-1);
   }
   .plan-price {
     font-weight: 500;
