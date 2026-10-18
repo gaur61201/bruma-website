@@ -17,8 +17,15 @@ const t = useTranslations(lang);
       <!-- Print-head wipe: CSS only (global.css), so the LCP text never waits for GSAP. -->
       <h1 id="hero-title" class="print-wipe">
         <span class="print-wipe-text">{t.hero.h1}</span>
-        <span class="print-wipe-bars" aria-hidden="true">
-          {[0, 1, 2, 3].map((i) => <span class="wipe-bar" style={`--i:${i}`} />)}
+        <span class="print-wipe-layer" aria-hidden="true">
+          {
+            [0, 1, 2, 3].map((i) => (
+              <>
+                <span class="print-wipe-cover" style={`--i:${i}`} />
+                <span class="wipe-bar" style={`--i:${i}`} />
+              </>
+            ))
+          }
         </span>
       </h1>
       <p class="hero-subline hero-rise" style="--i:0">{t.hero.subline}</p>

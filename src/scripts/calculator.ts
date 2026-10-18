@@ -22,7 +22,8 @@ type Field = (typeof FIELDS)[number];
 
 const fmt = (n: number) => {
   const r = Math.round(n);
-  return `${r < 0 ? '−' : ''}${Math.abs(r).toLocaleString('en-US')}`;
+  // Thousands separators by hand: the first toLocaleString() call loads locale data (a long task on phones).
+  return `${r < 0 ? '−' : ''}${String(Math.abs(r)).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 };
 
 export function initCalculator(form: HTMLFormElement) {

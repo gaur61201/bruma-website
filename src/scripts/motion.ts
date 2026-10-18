@@ -25,13 +25,21 @@ export function initMotion() {
 
   const rtl = document.documentElement.dir === 'rtl';
   const dir = rtl ? -1 : 1;
-  // If GSAP arrives after the failsafe has already shown everything, leave what's on screen alone.
-  const late = performance.now() > FAILSAFE_MS;
+  /**
+   * Should this still animate? Not if the failsafe has already shown it on screen, or if it was
+   * focused before its section was set up (data-motion="seen").
+   */
+  // Whether the section being set up is already on screen; read once per setup step, before any
+  // writes, so checks below never force a layout.
+  let sectionOnScreen = false;
+  const fresh = (el: Element) =>
+    el.getAttribute('data-motion') !== 'seen' && !(performance.now() > FAILSAFE_MS && sectionOnScreen);
 
   /** Take elements over from the CSS hidden state. False means: leave them visible, don't animate. */
   const claim = (els: Element[], trigger: Element) => {
+    const ok = fresh(trigger) && els.every((el) => el.getAttribute('data-motion') !== 'seen');
     els.forEach((el) => el.setAttribute('data-motion', 'on'));
-    return !(late && trigger.getBoundingClientRect().top < window.innerHeight);
+    return ok;
   };
   const once = (trigger: Element, start = START): ScrollTrigger.Vars => ({ trigger, start, once: true });
 
@@ -46,31 +54,32 @@ export function initMotion() {
       autoSplit: true,
       onSplit(self) {
         const lines = self.lines as HTMLElement[];
+        // Measure every line first (reads), then build the bars and tweens (writes): no layout thrash.
+        // The head travels across the text itself, not the whole (often much wider) heading box.
+        const range = document.createRange();
+        const sizes = lines.map((line) => {
+          range.selectNodeContents(line);
+          const box = line.offsetWidth;
+          return { top: line.offsetTop, height: line.offsetHeight, box, text: Math.min(box, Math.ceil(range.getBoundingClientRect().width) + 4) };
+        });
         const layer = document.createElement('span');
         layer.className = 'wipe-layer';
         layer.setAttribute('aria-hidden', 'true');
-        const bars = lines.map((line) => {
+        const bars = sizes.map((size) => {
           const bar = document.createElement('span');
           bar.className = 'wipe-bar';
-          bar.style.top = `${line.offsetTop + line.offsetHeight * 0.1}px`;
-          bar.style.height = `${line.offsetHeight * 0.8}px`;
+          bar.style.top = `${size.top + size.height * 0.1}px`;
+          bar.style.height = `${size.height * 0.8}px`;
           layer.append(bar);
           return bar;
         });
         h.append(layer);
 
-        // The head travels across the text itself, not the whole (often much wider) heading box.
-        const textWidth = (line: HTMLElement) => {
-          const range = document.createRange();
-          range.selectNodeContents(line);
-          return Math.min(line.offsetWidth, Math.ceil(range.getBoundingClientRect().width) + 4);
-        };
         const inset = (gap: number) => (rtl ? `inset(-30% 0px -30% ${gap}px)` : `inset(-30% ${gap}px -30% 0px)`);
         const tl = gsap.timeline({ scrollTrigger: once(h), defaults: { duration: 0.7, ease: EASE } });
         lines.forEach((line, i) => {
           const at = i * 0.12;
-          const box = line.offsetWidth;
-          const text = textWidth(line);
+          const { box, text } = sizes[i];
           tl.fromTo(line, { clipPath: inset(box) }, { clipPath: inset(box - text) }, at)
             .set(bars[i], { opacity: 1 }, at)
             .fromTo(bars[i], { x: 0 }, { x: text * dir, immediateRender: false }, at)
@@ -192,7 +201,6 @@ export function initMotion() {
   };
 
   const gallery = () => {
-    wipe($('#gallery-title'));
     const grid = $('.gallery-grid');
     const tiles = $$('.gallery-grid > li');
     if (grid && claim(tiles, grid)) {
@@ -209,10 +217,7 @@ export function initMotion() {
     fadeUp($('.gallery-note'));
   };
 
-  const howHeading = () => {
-    wipe($('#how-title'));
-    fadeUp($('.set-time'));
-  };
+  const howNote = () => fadeUp($('.set-time'));
 
   /** How it works: the line draws, each circle fills as the line reaches it, then its card slides in. */
   const steps = (mode: 'scrub' | 'once') => {
@@ -274,7 +279,6 @@ export function initMotion() {
   };
 
   const calculator = () => {
-    wipe($('#earnings-title'));
     fadeUp($('.calc-intro'));
     const inputs = $('.calc-inputs');
     slideIn(inputs ? $$(':scope > *', inputs) : [], inputs);
@@ -296,12 +300,10 @@ export function initMotion() {
   };
 
   const included = () => {
-    rise($('#included-title'));
     const shapes = (card: HTMLElement) => $$<SVGElement>('[data-draw] path, [data-draw] rect, [data-draw] circle', card);
     const cards = $$('.included-card');
     cards.forEach((card) => {
-      if (!late || card.getBoundingClientRect().top >= window.innerHeight)
-        gsap.set(shapes(card), { strokeDasharray: 1, strokeDashoffset: 1 });
+      if (fresh(card)) gsap.set(shapes(card), { strokeDasharray: 1, strokeDashoffset: 1 });
     });
     // Each card's outline icon draws itself as the card lands.
     batchIn(cards, { x: -SLIDE * dir }, 0.08, (card, tl, at) =>
@@ -310,16 +312,13 @@ export function initMotion() {
   };
 
   const hygiene = () => {
-    rise($('#hygiene-title'));
     batchIn($$('.hygiene-list > li'), { x: -SLIDE * dir }, 0.1);
   };
 
   const ways = () => {
-    rise($('#ways-title'));
     const cards = $$('.plan');
     cards.forEach((c) => {
-      if (c.hasAttribute('data-trace') && (!late || c.getBoundingClientRect().top >= window.innerHeight))
-        c.classList.add('trace-pending');
+      if (c.hasAttribute('data-trace') && fresh(c)) c.classList.add('trace-pending');
     });
     batchIn(cards, { y: 32 }, 0.12, (card, tl, at) => {
       if (card.classList.contains('trace-pending')) tl.add(() => traceOutline(card), at + 0.25);
@@ -329,7 +328,6 @@ export function initMotion() {
 
   /** FAQ: native <details>, with the opening and closing height animated. */
   const faq = () => {
-    rise($('#faq-title'));
     batchIn($$('.faq-list > details'), { x: -SLIDE * dir }, 0.06);
 
     const list = $('.faq-list');
@@ -380,14 +378,12 @@ export function initMotion() {
   };
 
   const demo = () => {
-    wipe($('#demo-title'));
     fadeUp($('.demo-intro p'));
     const form = $('.demo-form');
     slideIn(form ? $$(':scope > [data-motion]', form) : [], form, 0.06);
   };
 
   const stories = () => {
-    rise($('#stories-title'));
     batchIn($$('.story'), { x: -SLIDE * dir }, 0.1);
   };
 
@@ -396,6 +392,9 @@ export function initMotion() {
    * focusable. If focus lands on one before its scroll trigger fires, finish its reveal at once.
    */
   const revealOnFocus = (e: FocusEvent) => {
+    // Not set up yet: just show it, and remember not to animate it later.
+    const pending = (e.target as Element | null)?.closest<HTMLElement>('[data-motion=""]');
+    if (pending) pending.setAttribute('data-motion', 'seen');
     const el = (e.target as Element | null)?.closest<HTMLElement>('[data-motion="on"]');
     if (!el || getComputedStyle(el).opacity === '1') return;
     gsap.getTweensOf(el).forEach((tween) => {
@@ -408,27 +407,92 @@ export function initMotion() {
   };
 
   // --- Run ---------------------------------------------------------------------------------------
+
+  type Setup = () => void | (() => void);
+  // Yield to the main thread between setup steps (scheduler.yield where supported).
+  const nextTask = (fn: () => void) => {
+    const s = (window as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+    if (s?.yield) s.yield().then(fn);
+    else window.setTimeout(fn, 0);
+  };
+  /**
+   * Sections are set up lazily, about one viewport before they scroll into view, one per task, so the
+   * splitting and measuring never piles up into one long task. Work is recorded in the matchMedia
+   * context so it's reverted if the media query stops matching.
+   */
+  const lazily = (ctx: gsap.Context, jobs: Array<[Element | null, ...Setup[]]>) => {
+    const byEl = new Map<Element, Setup[]>();
+    const queue: Array<[Element, Setup]> = [];
+    const undo: Array<() => void> = [];
+    let scheduled = false;
+    const run = () => {
+      scheduled = false;
+      const next = queue.shift();
+      if (next) {
+        const [section, job] = next;
+        sectionOnScreen = section.getBoundingClientRect().top < window.innerHeight;
+        ctx.add(() => {
+          const u = job();
+          if (u) undo.push(u);
+        });
+      }
+      if (queue.length) schedule();
+    };
+    const schedule = () => {
+      if (scheduled) return;
+      scheduled = true;
+      nextTask(run);
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          byEl.get(e.target)!.forEach((step) => queue.push([e.target, step]));
+        });
+        schedule();
+      },
+      { rootMargin: '100% 0px' },
+    );
+    jobs.forEach(([el, ...steps]) => {
+      if (!el) return;
+      byEl.set(el, steps);
+      io.observe(el);
+    });
+    return () => {
+      io.disconnect();
+      undo.forEach((u) => u());
+    };
+  };
+
   const mm = gsap.matchMedia();
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
+  mm.add('(prefers-reduced-motion: no-preference)', (ctx) => {
     document.addEventListener('focusin', revealOnFocus);
     setNumberAnimator((el, from, to, format) => tweenNumber(el, from, to, format));
-    proof();
-    gallery();
-    howHeading();
-    calculator();
-    included();
-    hygiene();
-    ways();
-    const undoFaq = faq();
-    demo();
-    stories();
+    // Each section: its heading in one task, the rest in the next.
+    const undo = lazily(ctx, [
+      [$('.proof'), proof],
+      [$('#gallery'), () => wipe($('#gallery-title')), gallery],
+      [$('#how-it-works'), () => wipe($('#how-title')), howNote],
+      [$('#earnings'), () => wipe($('#earnings-title')), calculator],
+      [$('.included'), () => rise($('#included-title')), included],
+      [$('#hygiene'), () => rise($('#hygiene-title')), hygiene],
+      [$('#ways-to-own'), () => rise($('#ways-title')), ways],
+      [$('.faq'), () => rise($('#faq-title')), faq],
+      [$('#demo'), () => wipe($('#demo-title')), demo],
+      [$('.stories'), () => rise($('#stories-title')), stories],
+    ]);
     return () => {
       document.removeEventListener('focusin', revealOnFocus);
       setNumberAnimator(null);
-      undoFaq?.();
+      undo();
     };
   });
-  mm.add('(prefers-reduced-motion: no-preference) and (min-width: 1024px)', () => steps('scrub'));
-  mm.add('(prefers-reduced-motion: no-preference) and (max-width: 1023px)', () => steps('once'));
+  mm.add('(prefers-reduced-motion: no-preference) and (min-width: 1024px)', (ctx) =>
+    lazily(ctx, [[$('[data-steps]'), () => steps('scrub')]]),
+  );
+  mm.add('(prefers-reduced-motion: no-preference) and (max-width: 1023px)', (ctx) =>
+    lazily(ctx, [[$('[data-steps]'), () => steps('once')]]),
+  );
   // Reduced motion: nothing is registered, so every element simply appears.
 }

@@ -119,9 +119,31 @@ const jsonLd = noindex ? schema : [organization, ...schema];
 
       // Motion (GSAP) loads after the page has finished loading, so it never competes with the
       // first paint. Until then, anything waiting to be revealed stays hidden for at most 2s (CSS failsafe).
-      const startMotion = () => {
+      // The library is evaluated in three separate tasks (core, ScrollTrigger, SplitText) so no single
+      // task blocks the main thread for long.
+      const nextTask = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+      const startMotion = async () => {
         if (!document.querySelector('[data-motion]')) return;
-        import('../scripts/motion').then((m) => m.initMotion()).catch(() => {});
+        try {
+          await import('gsap');
+          await nextTask();
+          await import('gsap/ScrollTrigger');
+          await nextTask();
+          // SplitText builds an Intl.Segmenter as it loads, which pulls in the browser's text-segmentation
+          // data (a 200ms+ task on a mid-range phone). It's only used to split characters, which this
+          // site never does (Arabic must never be split by character), so hide it while SplitText loads.
+          const segmenter = Object.getOwnPropertyDescriptor(Intl, 'Segmenter');
+          if (segmenter) Reflect.deleteProperty(Intl, 'Segmenter');
+          try {
+            await import('gsap/SplitText');
+          } finally {
+            if (segmenter) Object.defineProperty(Intl, 'Segmenter', segmenter);
+          }
+          await nextTask();
+          (await import('../scripts/motion')).initMotion();
+        } catch {
+          // Without motion the CSS failsafe shows everything.
+        }
       };
       if (document.readyState === 'complete') startMotion();
       else window.addEventListener('load', startMotion, { once: true });

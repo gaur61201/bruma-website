@@ -353,29 +353,10 @@
 
 /*
  * Hero H1 print-head wipe, in pure CSS so the LCP element never waits for GSAP.
- * Each line band (1lh tall) is revealed by its own registered custom property, 0.7s apart by 0.12s;
- * a vapor bar per line rides the reveal edge (transform only).
+ * The text itself is painted at first paint (so it counts for LCP immediately); per line, a bone
+ * cover slides away towards the inline-end while a vapor bar rides its edge. Transforms only.
+ * Covers and bars for lines that don't exist sit below the heading and are clipped away.
  */
-@property --wipe-1 {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-@property --wipe-2 {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-@property --wipe-3 {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
-@property --wipe-4 {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 1;
-}
 .print-wipe {
   position: relative;
   container-type: inline-size;
@@ -383,60 +364,34 @@
 .print-wipe-text {
   display: block;
 }
-.print-wipe-bars {
+.print-wipe-layer {
   position: absolute;
-  inset: 0;
+  inset: -0.15em 0 0 0;
   overflow: hidden;
   pointer-events: none;
 }
+.print-wipe-cover {
+  display: none;
+  position: absolute;
+  inset-inline: 0;
+  top: calc(0.15em + var(--i) * 1lh - 0.1lh);
+  height: 1.2lh;
+  background: var(--color-bone);
+  transform-origin: right center;
+}
+.print-wipe-cover:dir(rtl) {
+  transform-origin: left center;
+}
 .print-wipe .wipe-bar {
-  top: calc(var(--i) * 1lh + 0.1lh);
+  top: calc(0.15em + var(--i) * 1lh + 0.1lh);
   height: 0.8lh;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .js .print-wipe {
-    animation:
-      wipe-1 0.7s var(--ease-power3) 0.1s both,
-      wipe-2 0.7s var(--ease-power3) 0.22s both,
-      wipe-3 0.7s var(--ease-power3) 0.34s both,
-      wipe-4 0.7s var(--ease-power3) 0.46s both;
-  }
-  .js .print-wipe-text {
-    --x1: calc(-0.15em + var(--wipe-1) * (100% + 0.3em));
-    --x2: calc(-0.15em + var(--wipe-2) * (100% + 0.3em));
-    --x3: calc(-0.15em + var(--wipe-3) * (100% + 0.3em));
-    --x4: calc(-0.15em + var(--wipe-4) * (100% + 0.3em));
-    clip-path: polygon(
-      -0.15em -0.5lh,
-      var(--x1) -0.5lh,
-      var(--x1) 1lh,
-      var(--x2) 1lh,
-      var(--x2) 2lh,
-      var(--x3) 2lh,
-      var(--x3) 3lh,
-      var(--x4) 3lh,
-      var(--x4) max(3lh, 100% + 0.5lh),
-      -0.15em max(3lh, 100% + 0.5lh)
-    );
-  }
-  .js .print-wipe-text:dir(rtl) {
-    --x1: calc(100% + 0.15em - var(--wipe-1) * (100% + 0.3em));
-    --x2: calc(100% + 0.15em - var(--wipe-2) * (100% + 0.3em));
-    --x3: calc(100% + 0.15em - var(--wipe-3) * (100% + 0.3em));
-    --x4: calc(100% + 0.15em - var(--wipe-4) * (100% + 0.3em));
-    clip-path: polygon(
-      calc(100% + 0.15em) -0.5lh,
-      var(--x1) -0.5lh,
-      var(--x1) 1lh,
-      var(--x2) 1lh,
-      var(--x2) 2lh,
-      var(--x3) 2lh,
-      var(--x3) 3lh,
-      var(--x4) 3lh,
-      var(--x4) max(3lh, 100% + 0.5lh),
-      calc(100% + 0.15em) max(3lh, 100% + 0.5lh)
-    );
+  .js .print-wipe-cover {
+    display: block;
+    animation: wipe-cover 0.7s var(--ease-power3) both;
+    animation-delay: calc(0.1s + var(--i) * 0.12s);
   }
   .js .print-wipe .wipe-bar {
     animation: wipe-bar 0.7s var(--ease-power3) both;
@@ -446,24 +401,12 @@
     animation-name: wipe-bar-rtl;
   }
 }
-@keyframes wipe-1 {
+@keyframes wipe-cover {
   from {
-    --wipe-1: 0;
+    transform: scaleX(1);
   }
-}
-@keyframes wipe-2 {
-  from {
-    --wipe-2: 0;
-  }
-}
-@keyframes wipe-3 {
-  from {
-    --wipe-3: 0;
-  }
-}
-@keyframes wipe-4 {
-  from {
-    --wipe-4: 0;
+  to {
+    transform: scaleX(0);
   }
 }
 @keyframes wipe-bar {
