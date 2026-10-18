@@ -7,17 +7,35 @@ interface Props {
 }
 const t = useTranslations(Astro.props.lang);
 const icons: IconName[] = ['timer', 'shield', 'pin'];
+
+// Split out the first number in each item so it can count up from 0 when the strip comes into view.
+const parts = (text: string) => {
+  const m = text.match(/\d+/);
+  if (!m || m.index === undefined) return { before: text, count: null, after: '' };
+  return { before: text.slice(0, m.index), count: m[0], after: text.slice(m.index + m[0].length) };
+};
 ---
 
 <section class="proof" aria-label={t.proof.label}>
   <ul class="wrap proof-list">
     {
-      t.proof.items.map((item, i) => (
-        <li>
-          <Icon name={icons[i]} size={28} class="proof-icon" />
-          <span>{item}</span>
-        </li>
-      ))
+      t.proof.items.map((item, i) => {
+        const p = parts(item);
+        return (
+          <li data-motion>
+            <Icon name={icons[i]} size={28} class="proof-icon" />
+            <span>
+              {p.before}
+              {p.count && (
+                <span class="count ltr" data-count={p.count} style={`min-width:${p.count.length}ch`}>
+                  {p.count}
+                </span>
+              )}
+              {p.after}
+            </span>
+          </li>
+        );
+      })
     }
   </ul>
 </section>
@@ -42,6 +60,12 @@ const icons: IconName[] = ['timer', 'shield', 'pin'];
   }
   :global(.proof-icon) {
     flex-shrink: 0;
+  }
+  /* Fixed width with tabular digits, so counting up never moves the words around it. */
+  .count {
+    display: inline-block;
+    text-align: end;
+    font-variant-numeric: tabular-nums;
   }
   @media (min-width: 768px) {
     .proof-list {
