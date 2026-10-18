@@ -13,22 +13,31 @@ const t = useTranslations(lang);
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow">{t.hero.eyebrow}</p>
-      <h1 id="hero-title">{t.hero.h1}</h1>
-      <p class="hero-subline">{t.hero.subline}</p>
-      <div class="hero-price">
+      <p class="eyebrow hero-fade">{t.hero.eyebrow}</p>
+      <!-- Print-head wipe: CSS only (global.css), so the LCP text never waits for GSAP. -->
+      <h1 id="hero-title" class="print-wipe">
+        <span class="print-wipe-text">{t.hero.h1}</span>
+        <span class="print-wipe-bars" aria-hidden="true">
+          {[0, 1, 2, 3].map((i) => <span class="wipe-bar" style={`--i:${i}`} />)}
+        </span>
+      </h1>
+      <p class="hero-subline hero-rise" style="--i:0">{t.hero.subline}</p>
+      <div class="hero-price hero-rise" style="--i:1">
         <p class="price">{t.hero.price}</p>
         <p class="price-note">{t.hero.priceNote}</p>
       </div>
       <div class="hero-actions">
-        <a href="#demo" class="btn btn-primary">{t.hero.primaryCta}</a>
-        <a href="#earnings" class="text-link arrow-link">
+        <a href="#demo" class="btn btn-primary hero-rise" style="--i:2">
+          <span>{t.hero.primaryCta}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+        <a href="#earnings" class="text-link arrow-link hero-rise" style="--i:3">
           <span>{t.hero.secondaryCta}</span>
-          <Icon name="arrow" size={20} class="flip-rtl" />
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
         </a>
       </div>
     </div>
-    <div class="hero-media">
+    <div class="hero-media hero-media-reveal">
       <HeroVideo lang={lang} />
     </div>
   </div>
