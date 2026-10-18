@@ -154,22 +154,8 @@ export function initMotion() {
     $$('[data-count]', list).forEach((el, i) => tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.1));
   };
 
-  const gallery = () => {
-    const grid = $('.gallery-grid');
-    const tiles = $$('.gallery-grid > li');
-    if (grid && claim(tiles, grid)) {
-      // A wave from the inline-start top corner (the first tile is top-left, or top-right in Arabic).
-      gsap.from(tiles, {
-        scale: 0.96,
-        opacity: 0,
-        duration: 0.7,
-        ease: EASE,
-        stagger: { each: 0.08, grid: 'auto', from: 'start' },
-        scrollTrigger: once(grid),
-      });
-    }
-    fadeUp($('.gallery-note'));
-  };
+  // The gallery rows are a CSS marquee (GalleryPreview.astro); only the note fades up here.
+  const gallery = () => fadeUp($('.gallery-note'));
 
   const howNote = () => fadeUp($('.set-time'));
 

@@ -1,89 +1,190 @@
 ---
+// "Designs your clients will ask for": two auto-scrolling rows of design tiles.
+// - Top row moves right to left, bottom row left to right, in both languages.
+// - A CSS keyframe loop on a track that holds the set three times (the two copies are
+//   aria-hidden; they hold nothing focusable), so the loop restarts without a jump on screens up
+//   to ~2 sets wide.
+// - Rows move only while the section is on screen; hover, keyboard focus or the pause button stop them.
+// - Without JS or under prefers-reduced-motion, rows are plain horizontal scroll strips with snap.
 import { Image } from 'astro:assets';
-import { galleryTiles } from '../../data/gallery';
-import { fill, useTranslations, type Lang } from '../../i18n';
+import Icon from '../Icon.astro';
+import { galleryTiles, type GalleryTile } from '../../data/gallery';
+import { dirOf, fill, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const dir = dirOf(lang);
+
+const half = Math.ceil(galleryTiles.length / 2);
+const rows: { tiles: GalleryTile[]; direction: 'to-left' | 'to-right' }[] = [
+  { tiles: galleryTiles.slice(0, half), direction: 'to-left' },
+  { tiles: galleryTiles.slice(half), direction: 'to-right' },
+];
+const COPIES = 3;
 ---
 
-<section id="gallery" class="section-y" aria-labelledby="gallery-title">
+<section id="gallery" class="section-y gallery" aria-labelledby="gallery-title">
   <div class="wrap">
     <h2 id="gallery-title" data-motion>{t.gallery.h2}</h2>
-    <ul class="gallery-grid">
-      {
-        galleryTiles.map((tile) => {
-          const credited = tile.image && tile.technician && tile.area;
-          return (
-            <li data-motion>
-              {tile.image ? (
-                <figure class="tile">
-                  <Image src={tile.image} alt={tile.alt?.[lang] ?? ''} width={400} height={400} fit="cover" class="tile-img" />
-                  {credited && (
-                    <figcaption>{fill(t.gallery.credit, { technician: tile.technician!, area: tile.area![lang] })}</figcaption>
-                  )}
-                </figure>
-              ) : (
-                <div class="tile placeholder-media">{t.gallery.tilePlaceholder}</div>
-              )}
-            </li>
-          );
-        })
-      }
-    </ul>
+  </div>
+
+  <div class="marquee" data-marquee>
+    {
+      rows.map((row, r) => (
+        <div class="marquee-row" data-direction={row.direction} tabindex="0" role="region" aria-label={t.gallery.rowLabels[r]}>
+          <div class="marquee-track">
+            {Array.from({ length: COPIES }, (_, copy) => (
+              <ul class="marquee-set" aria-hidden={copy > 0 ? 'true' : undefined}>
+                {row.tiles.map((tile) => {
+                  const credited = tile.image && tile.technician && tile.area;
+                  return (
+                    <li class="tile card" dir={dir}>
+                      {tile.image ? (
+                        <figure class="tile-figure">
+                          <Image
+                            src={tile.image}
+                            alt={tile.alt?.[lang] ?? ''}
+                            width={280}
+                            height={280}
+                            densities={[1, 2]}
+                            fit="cover"
+                            loading="lazy"
+                            class="tile-img"
+                          />
+                          {credited && (
+                            <figcaption class="tile-caption">
+                              {fill(t.gallery.credit, { technician: tile.technician!, area: tile.area![lang] })}
+                            </figcaption>
+                          )}
+                        </figure>
+                      ) : (
+                        <span class="tile-placeholder">{t.gallery.tilePlaceholder}</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="wrap gallery-foot">
     <p class="gallery-note" data-motion>{t.gallery.note}</p>
+    <button type="button" class="marquee-toggle" data-marquee-toggle data-label-pause={t.gallery.pause} data-label-play={t.gallery.play} aria-label={t.gallery.pause}>
+      <span data-icon-pause><Icon name="pause" size={20} /></span>
+      <span data-icon-play hidden><Icon name="play" size={20} /></span>
+    </button>
   </div>
 </section>
 
+<script>
+  // Rows move only while the section is on screen; the button pauses and resumes both rows.
+  const marquee = document.querySelector<HTMLElement>('[data-marquee]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+  if (marquee) {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => marquee.toggleAttribute('data-inview', entry.isIntersecting)).observe(marquee);
+    } else {
+      marquee.setAttribute('data-inview', '');
+    }
+  }
+  if (marquee && toggle) {
+    toggle.addEventListener('click', () => {
+      const paused = !marquee.hasAttribute('data-user-paused');
+      marquee.toggleAttribute('data-user-paused', paused);
+      toggle.setAttribute('aria-label', (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+      toggle.querySelector('[data-icon-pause]')?.toggleAttribute('hidden', paused);
+      toggle.querySelector('[data-icon-play]')?.toggleAttribute('hidden', !paused);
+    });
+  }
+</script>
+
 <style>
-  .gallery-grid {
-    list-style: none;
-    margin: 32px 0 0;
-    padding: 0;
+  .gallery {
+    overflow-x: clip;
+  }
+  .marquee {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+    margin-block-start: 32px;
   }
   @media (min-width: 1024px) {
-    .gallery-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+    .marquee {
       margin-block-start: 48px;
     }
   }
-  .tile {
-    margin: 0;
-    aspect-ratio: 1;
-    width: 100%;
+
+  /* Without JS or under reduced motion: a horizontal scroll strip with snap. */
+  .marquee-row {
+    /* Rows are grid items: without this they'd grow to the full track width. */
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    padding-inline: var(--gutter);
+    scrollbar-width: none;
   }
-  figure.tile {
+  .marquee-row::-webkit-scrollbar {
+    display: none;
+  }
+  .marquee-row:focus-visible {
+    outline-offset: -3px;
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+  }
+  .marquee-set {
+    display: flex;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    padding-inline-end: 16px;
+    list-style: none;
+    flex-shrink: 0;
+  }
+  .marquee-set[aria-hidden='true'] {
+    display: none;
+  }
+
+  .tile {
     position: relative;
+    flex-shrink: 0;
+    width: 60vw;
+    aspect-ratio: 1;
     overflow: hidden;
-    border-radius: var(--radius-card);
-    background: var(--color-white);
+    scroll-snap-align: start;
+  }
+  @media (min-width: 768px) {
+    .tile {
+      width: 280px;
+    }
+  }
+  .tile-placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 16px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    text-align: center;
+  }
+  .tile-figure {
+    margin: 0;
+    height: 100%;
   }
   .tile-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  /* Desktop hover on real photos: the image scales inside its frame and the caption rises 8px. */
-  @media (hover: hover) and (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-    .tile-img,
-    figure.tile figcaption {
-      transition: transform 400ms var(--ease-power3);
-    }
-    figure.tile:hover .tile-img {
-      transform: scale(1.03);
-    }
-    figure.tile:hover figcaption {
-      transform: translateY(-8px);
-    }
-  }
-  figure.tile figcaption {
+  .tile-caption {
     position: absolute;
     inset-inline: 8px;
     bottom: 8px;
@@ -91,10 +192,94 @@ const t = useTranslations(lang);
     border-radius: 8px;
     background: var(--color-white);
     font-size: calc(var(--fs-small) * var(--script-scale));
+    text-align: start;
+  }
+
+  /*
+   * The marquee (JS on, motion allowed). The tracks run left-to-right whatever the page direction,
+   * so the top row always moves right to left and the bottom row left to right, also in Arabic.
+   * One loop moves exactly one set (a third of the track), about 40s.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .marquee-row {
+      overflow: clip;
+      padding-inline: 0;
+      scroll-snap-type: none;
+      direction: ltr;
+    }
+    :global(.js) .marquee-set[aria-hidden='true'] {
+      display: flex;
+    }
+    :global(.js) .marquee-track {
+      animation: marquee-to-left 40s linear infinite;
+      animation-play-state: paused;
+    }
+    :global(.js) [data-direction='to-right'] .marquee-track {
+      animation-name: marquee-to-right;
+    }
+    :global(.js) [data-inview] .marquee-track {
+      animation-play-state: running;
+    }
+    /* Hover, keyboard focus or the pause button stop the motion (WCAG 2.2.2). */
+    :global(.js) .marquee-row:hover .marquee-track,
+    :global(.js) .marquee-row:focus-within .marquee-track,
+    :global(.js) [data-user-paused] .marquee-track {
+      animation-play-state: paused;
+    }
+    .tile-caption {
+      transition: translate 300ms var(--ease-power3);
+    }
+    .tile:hover .tile-caption {
+      translate: 0 -8px;
+    }
+  }
+  @keyframes marquee-to-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% / 3));
+    }
+  }
+  @keyframes marquee-to-right {
+    from {
+      transform: translateX(calc(-100% / 3));
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .gallery-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block-start: 24px;
   }
   .gallery-note {
-    margin-block-start: 24px;
     color: var(--color-stone);
     font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  /* Small pause/play button for both rows; only shown when the rows actually move. */
+  .marquee-toggle {
+    display: none;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-white);
+    color: var(--color-carbon);
+    cursor: pointer;
+    place-items: center;
+  }
+  .marquee-toggle:hover {
+    border-color: var(--color-carbon);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .marquee-toggle {
+      display: grid;
+    }
   }
 </style>

@@ -84,6 +84,9 @@ export const en = {
     tilePlaceholder: 'Photo: printed nail design',
     credit: 'Design by {technician}, {area}',
     note: "Choose from the printer's built-in design library.",
+    rowLabels: ['Printed designs, row 1', 'Printed designs, row 2'],
+    pause: 'Pause the moving designs',
+    play: 'Play the moving designs',
   },
 
   how: {
