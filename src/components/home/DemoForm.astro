@@ -30,25 +30,25 @@ const errorId = (f: string) => `demo-${f}-error`;
 
 <section id="demo" class="on-carbon section-y" aria-labelledby="demo-title">
   <div class="wrap demo-grid">
-    <div class="demo-intro reveal">
-      <h2 id="demo-title">{d.h2}</h2>
-      <p>{d.subline}</p>
+    <div class="demo-intro">
+      <h2 id="demo-title" data-wipe data-motion>{d.h2}</h2>
+      <p data-motion>{d.subline}</p>
     </div>
 
-    <form class="demo-form reveal" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
-      <div class="field">
+    <form class="demo-form" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
+      <div class="field" data-motion>
         <label for="demo-name">{d.nameLabel}</label>
         <input id="demo-name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={errorId('name')} />
         <p id={errorId('name')} class="field-error" aria-live="polite"></p>
       </div>
 
-      <div class="field">
+      <div class="field" data-motion>
         <label for="demo-salon">{d.salonLabel}</label>
         <input id="demo-salon" name="salon" type="text" autocomplete="organization" required maxlength="120" aria-describedby={errorId('salon')} />
         <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
       </div>
 
-      <div class="field">
+      <div class="field" data-motion>
         <label for="demo-area">{d.areaLabel}</label>
         <div class="select-wrap">
           <select id="demo-area" name="area" required autocomplete="address-level1" aria-describedby={errorId('area')}>
@@ -60,7 +60,7 @@ const errorId = (f: string) => `demo-${f}-error`;
         <p id={errorId('area')} class="field-error" aria-live="polite"></p>
       </div>
 
-      <div class="field">
+      <div class="field" data-motion>
         <label for="demo-whatsapp">{d.whatsappLabel}</label>
         <p id="demo-whatsapp-hint" class="field-hint">{d.whatsappHint}</p>
         <div class="phone-group" dir="ltr">
@@ -85,8 +85,12 @@ const errorId = (f: string) => `demo-${f}-error`;
         <input id="demo-website" name="website" type="text" tabindex="-1" autocomplete="off" />
       </div>
 
-      <div class="demo-actions">
-        <button type="submit" class="btn btn-primary" data-submit>{d.submit}</button>
+      <div class="demo-actions" data-motion>
+        <button type="submit" class="btn btn-primary" data-submit>
+          <span data-submit-label>{d.submit}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
         <a
           href={whatsappLink(t.whatsapp.floatMessage)}
           class="btn btn-outline"
@@ -103,7 +107,7 @@ const errorId = (f: string) => `demo-${f}-error`;
 
       <p class="form-status" role="status" aria-live="polite" data-status></p>
 
-      <div class="demo-notes">
+      <div class="demo-notes" data-motion>
         <p>{d.replyTime}</p>
         <p>{d.privacy}</p>
       </div>
@@ -203,6 +207,44 @@ const errorId = (f: string) => `demo-${f}-error`;
   /* Error red only passes contrast on white, so messages sit in a small white chip. */
   .field-error:empty {
     display: none;
+  }
+  /* Errors fade in and drop 4px. No shaking. */
+  @media (prefers-reduced-motion: no-preference) {
+    .field-error:not(:empty) {
+      animation: error-in 250ms var(--ease-power3) both;
+    }
+  }
+  @keyframes error-in {
+    from {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  /* Sending: a small spinner replaces the arrow (it only turns while a request is in flight). */
+  .spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+  }
+  [data-sending] .spinner {
+    display: inline-block;
+  }
+  [data-sending] :global(.btn-arrow) {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-sending] .spinner {
+      animation: spin 0.8s linear infinite;
+    }
+  }
+  @keyframes spin {
+    to {
+      rotate: 1turn;
+    }
   }
   .field-error {
     align-self: flex-start;

@@ -45,6 +45,7 @@ export function initDemoForm(form: HTMLFormElement) {
   const control = (f: Field) => form.elements.namedItem(f) as HTMLInputElement | HTMLSelectElement;
   const errorEl = (f: Field) => form.querySelector<HTMLElement>(`#demo-${f}-error`)!;
   const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const submitLabel = submitBtn.querySelector<HTMLElement>('[data-submit-label]') ?? submitBtn;
   const status = form.querySelector<HTMLElement>('[data-status]')!;
   const waLink = form.querySelector<HTMLAnchorElement>('[data-demo-whatsapp]');
   const honeypot = form.elements.namedItem('website') as HTMLInputElement;
@@ -108,7 +109,8 @@ export function initDemoForm(form: HTMLFormElement) {
     sending = on;
     submitBtn.disabled = on;
     submitBtn.setAttribute('aria-busy', String(on));
-    submitBtn.textContent = on ? s.sending : s.submit;
+    submitBtn.toggleAttribute('data-sending', on);
+    submitLabel.textContent = on ? s.sending : s.submit;
   };
 
   const openWhatsApp = () => {
