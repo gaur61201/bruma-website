@@ -42,9 +42,13 @@ interface Props {
   name: IconName;
   size?: number;
   class?: string;
+  /** Normalise every stroke to pathLength 1 so motion.ts can draw the icon in (stroke-dashoffset). */
+  draw?: boolean;
 }
-const { name, size = 24, class: className } = Astro.props;
+const { name, size = 24, class: className, draw = false } = Astro.props;
 const isBrand = name === 'whatsapp';
+const shapes = isBrand ? '' : icons[name as keyof typeof icons];
+const markup = draw ? shapes.replace(/<(path|rect|circle)/g, '<$1 pathLength="1"') : shapes;
 ---
 
 {
@@ -65,7 +69,8 @@ const isBrand = name === 'whatsapp';
       stroke-linejoin="round"
       aria-hidden="true"
       focusable="false"
-      set:html={icons[name as keyof typeof icons]}
+      data-draw={draw ? '' : undefined}
+      set:html={markup}
     />
   )
 }

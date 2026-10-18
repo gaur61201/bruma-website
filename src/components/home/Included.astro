@@ -10,12 +10,12 @@ const t = useTranslations(Astro.props.lang);
 
 <section class="section-y included" aria-labelledby="included-title">
   <div class="wrap">
-    <h2 id="included-title" class="reveal">{t.included.h2}</h2>
+    <h2 id="included-title" data-motion>{t.included.h2}</h2>
     <ul class="included-grid">
       {
         t.included.cards.map((card) => (
-          <li class="card included-card reveal">
-            <Icon name={card.icon as IconName} size={32} />
+          <li class="card included-card lift" data-motion>
+            <Icon name={card.icon as IconName} size={32} draw />
             <h3>{card.title}</h3>
             <p>{card.text}</p>
           </li>
