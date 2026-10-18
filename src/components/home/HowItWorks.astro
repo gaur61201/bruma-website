@@ -7,26 +7,38 @@ interface Props {
 }
 const t = useTranslations(Astro.props.lang);
 const icons: IconName[] = ['bottle', 'touchscreen', 'printer', 'lamp'];
+const last = t.how.steps.length - 1;
 ---
 
 <section id="how-it-works" class="section-y how" aria-labelledby="how-title">
   <div class="wrap">
-    <h2 id="how-title" class="reveal">{t.how.h2}</h2>
-    <ol class="steps">
+    <h2 id="how-title" data-wipe data-motion>{t.how.h2}</h2>
+    <!--
+      Each step has a numbered marker; a thin carbon line links each marker to the next
+      (a horizontal track on desktop, a vertical timeline below 1024px). motion.ts draws the line,
+      fills each circle with carbon as the line reaches it, then slides that step's card in.
+    -->
+    <ol class="steps" data-steps>
       {
         t.how.steps.map((step, i) => (
-          <li class="step reveal">
-            <div class="step-head">
-              <span class="step-num ltr" aria-hidden="true">{i + 1}</span>
-              <Icon name={icons[i]} size={32} />
+          <li class="step" data-step>
+            <div class="step-marker" aria-hidden="true">
+              <span class="step-num ltr">
+                {i + 1}
+                <span class="step-num-fill">{i + 1}</span>
+              </span>
+              {i < last && <span class="step-link" />}
             </div>
-            <h3>{step.title}</h3>
-            <p>{step.text}</p>
+            <div class="step-card card" data-motion>
+              <Icon name={icons[i]} size={32} />
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </div>
           </li>
         ))
       }
     </ol>
-    <p class="set-time reveal">{t.how.setTime}</p>
+    <p class="set-time" data-motion>{t.how.setTime}</p>
   </div>
 </section>
 
@@ -41,43 +53,82 @@ const icons: IconName[] = ['bottle', 'touchscreen', 'printer', 'lamp'];
     display: grid;
     gap: 16px;
   }
-  @media (min-width: 640px) {
-    .steps {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (min-width: 1024px) {
-    .steps {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      margin-block-start: 48px;
-    }
-  }
+  /* Below desktop: a vertical timeline, markers in a column at the inline-start side. */
   .step {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 24px;
-    background: var(--color-white);
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-card);
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
   }
-  .step-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-block-end: 16px;
+  .step-marker {
+    position: relative;
   }
   .step-num {
+    position: relative;
+    z-index: 1;
     display: grid;
     place-items: center;
     width: 40px;
     height: 40px;
     border-radius: 50%;
     border: 1px solid var(--color-carbon);
+    background: var(--color-bone);
     font-weight: 500;
     font-size: calc(var(--fs-small) * var(--script-scale));
   }
+  /* The carbon fill. Shown filled by default (no JS, reduced motion); motion.ts grows it in. */
+  .step-num-fill {
+    position: absolute;
+    inset: -1px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-carbon);
+    color: var(--color-bone);
+    clip-path: circle(75% at 50% 50%);
+  }
+  .step-link {
+    position: absolute;
+    top: 20px;
+    inset-inline-start: 19px;
+    width: 2px;
+    height: calc(100% + 16px);
+    background: var(--color-carbon);
+    transform-origin: center top;
+  }
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+  }
+  .step-card :global(svg) {
+    margin-block-end: 8px;
+  }
+
+  /* Desktop: four columns, markers in a row above the cards, joined by a horizontal line. */
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+    .step {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 24px;
+    }
+    .step-link {
+      top: 19px;
+      inset-inline-start: 20px;
+      width: calc(100% + 24px);
+      height: 2px;
+      transform-origin: left center;
+    }
+    .step-link:dir(rtl) {
+      transform-origin: right center;
+    }
+  }
+
   .set-time {
     margin-block-start: 24px;
     font-weight: 500;
