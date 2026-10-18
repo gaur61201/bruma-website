@@ -27,6 +27,10 @@ const demoHref = section('demo');
 ---
 
 <header class="site-header" data-header>
+  <!-- The bar is drawn by these layers so compacting uses transforms only: the header box itself
+       stays 72px tall, so nothing below it moves. -->
+  <span class="header-bg" aria-hidden="true"></span>
+  <span class="header-rule" aria-hidden="true"></span>
   <div class="wrap header-inner">
     <a href={home} class="logo-link">
       <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} loading="eager" class="logo" />
@@ -37,7 +41,9 @@ const demoHref = section('demo');
         {
           links.map((l) => (
             <li>
-              <a href={l.href}>{l.label}</a>
+              <a href={l.href} class="slide-underline">
+                {l.label}
+              </a>
             </li>
           ))
         }
@@ -66,8 +72,8 @@ const demoHref = section('demo');
   <nav aria-label={t.nav.label} class="wrap menu-nav">
     <ul>
       {
-        links.map((l) => (
-          <li>
+        links.map((l, i) => (
+          <li style={`--i:${i}`}>
             <a href={l.href} data-menu-link>
               {l.label}
             </a>
@@ -75,12 +81,16 @@ const demoHref = section('demo');
         ))
       }
     </ul>
-    <a href={demoHref} class="btn btn-primary menu-cta" data-menu-link>{t.nav.bookDemo}</a>
+    <a href={demoHref} class="btn btn-primary menu-cta" data-menu-link style={`--i:${links.length}`}>
+      <span>{t.nav.bookDemo}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
   </nav>
 </dialog>
 
 <script>
-  // Sticky header: transparent at the top, bone with a line border once the page scrolls.
+  // Sticky header: transparent at the top; once the page scrolls it compacts (72 → 60px) and the bone
+  // background fades in. The styles live in CSS; this only flips the state.
   const header = document.querySelector<HTMLElement>('[data-header]');
   const sentinel = document.querySelector('[data-scroll-sentinel]');
   if (header && sentinel && 'IntersectionObserver' in window) {
@@ -126,30 +136,60 @@ const demoHref = section('demo');
 </script>
 
 <style>
+  /* 72px box; when compact the visible bar is 60px (bg scaled, rule and content moved up). */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 40;
-    background: transparent;
-    border-bottom: 1px solid transparent;
-    transition:
-      background-color 200ms ease,
-      border-color 200ms ease;
+    height: 72px;
+    pointer-events: none;
   }
-  .site-header[data-scrolled] {
+  .header-bg {
+    position: absolute;
+    inset: 0;
     background: var(--color-bone);
-    border-bottom-color: var(--color-line);
+    opacity: 0;
+    transform-origin: center top;
+  }
+  .header-rule {
+    position: absolute;
+    inset-inline: 0;
+    top: 71px;
+    height: 1px;
+    background: var(--color-line);
+    opacity: 0;
   }
   .header-inner {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 64px;
+    height: 72px;
+    pointer-events: auto;
   }
-  @media (min-width: 1024px) {
-    .header-inner {
-      min-height: 80px;
+  .site-header[data-scrolled] .header-bg {
+    opacity: 1;
+    transform: scaleY(0.8333);
+  }
+  .site-header[data-scrolled] .header-rule {
+    opacity: 1;
+    transform: translateY(-12px);
+  }
+  .site-header[data-scrolled] .header-inner {
+    transform: translateY(-6px);
+  }
+  .site-header[data-scrolled] .header-inner .logo {
+    transform: scale(0.9);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-bg,
+    .header-rule,
+    .header-inner,
+    .header-inner .logo {
+      transition:
+        opacity 300ms var(--ease-power3),
+        transform 300ms var(--ease-power3);
     }
   }
 
@@ -162,8 +202,12 @@ const demoHref = section('demo');
   .logo {
     height: 36px;
     width: auto;
+    transform-origin: left center;
     /* The logo file has a transparent margin; pull it back so the letters align with the gutter. */
     margin-inline-start: -7px;
+  }
+  .logo:dir(rtl) {
+    transform-origin: right center;
   }
   @media (min-width: 1024px) {
     .logo {
@@ -191,10 +235,6 @@ const demoHref = section('demo');
     font-size: calc(var(--fs-small) * var(--script-scale));
     text-decoration: none;
     text-underline-offset: 6px;
-  }
-  .desktop-nav a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
   }
 
   .header-actions {
@@ -253,25 +293,45 @@ const demoHref = section('demo');
     display: flex;
     flex-direction: column;
   }
+  /* Transparent, so the page stays visible while the bone panel slides over it. */
   .mobile-menu::backdrop {
-    background: var(--color-bone);
+    background: transparent;
   }
+  /* The panel slides in from the inline-end edge, then the links stagger in 0.05s apart. */
   @media (prefers-reduced-motion: no-preference) {
     .mobile-menu[open] {
-      animation: menu-in 200ms var(--ease-out);
+      animation: menu-in 400ms var(--ease-power3);
+    }
+    .mobile-menu[open]:dir(rtl) {
+      animation-name: menu-in-rtl;
+    }
+    .mobile-menu[open] .menu-nav li,
+    .mobile-menu[open] .menu-cta {
+      animation: menu-item 450ms var(--ease-power3) both;
+      animation-delay: calc(0.18s + var(--i) * 0.05s);
     }
   }
   @keyframes menu-in {
     from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes menu-in-rtl {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes menu-item {
+    from {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translateY(16px);
     }
   }
   .menu-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 64px;
+    min-height: 72px;
   }
   .menu-nav {
     display: flex;
