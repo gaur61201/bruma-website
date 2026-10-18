@@ -13,16 +13,18 @@ const items = faqItems(lang);
 
 <section class="section-y faq" aria-labelledby="faq-title">
   <div class="wrap faq-grid">
-    <h2 id="faq-title" class="reveal">{t.faq.h2}</h2>
-    <div class="faq-list reveal">
+    <h2 id="faq-title" data-motion>{t.faq.h2}</h2>
+    <div class="faq-list">
       {
         items.map((item) => (
-          <details name="faq">
+          <details name="faq" data-motion>
             <summary>
               <span>{item.q}</span>
-              <Icon name="plus" size={24} class="faq-icon" />
+              <Icon name="chevron" size={24} class="faq-icon" />
             </summary>
-            <p>{item.a}</p>
+            <div class="faq-answer">
+              <p>{item.a}</p>
+            </div>
           </details>
         ))
       }
@@ -72,10 +74,18 @@ const items = faqItems(lang);
   }
   :global(.faq-icon) {
     flex-shrink: 0;
-    transition: transform 200ms ease;
   }
-  details[open] :global(.faq-icon) {
-    transform: rotate(45deg);
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.faq-icon) {
+      transition: rotate 300ms var(--ease-power3);
+    }
+  }
+  /* The chevron turns 180° while open (and turns back as soon as closing starts). */
+  details[open]:not(.is-closing) :global(.faq-icon) {
+    rotate: 180deg;
+  }
+  .faq-answer {
+    overflow: hidden;
   }
   details p {
     padding-block-end: 24px;
