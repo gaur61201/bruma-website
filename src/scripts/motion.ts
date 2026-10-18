@@ -4,7 +4,7 @@
 // - CSS only hides [data-motion] elements while JS runs and motion is allowed, and shows them
 //   after 2s if this file never arrives. Each element is "claimed" (data-motion="on") as it's set up.
 // - Under prefers-reduced-motion nothing here runs, so elements simply appear.
-// - The hero is animated in CSS (global.css) so the LCP text never waits for this file.
+// - The hero is animated in CSS (global.css + an inline line splitter) so the LCP text never waits for this file.
 // Horizontal movement is multiplied by `dir`, so "from the inline-start side" flips in Arabic.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -45,52 +45,6 @@ export function initMotion() {
 
   // --- Building blocks -------------------------------------------------------------------------
 
-  /** Print-head wipe: per line, a thin bar sweeps from inline-start to inline-end and reveals the text. */
-  const wipe = (h: HTMLElement | null) => {
-    if (!h || !claim([h], h)) return;
-    SplitText.create(h, {
-      type: 'lines', // lines only: Arabic letters must stay joined
-      linesClass: 'wipe-line',
-      autoSplit: true,
-      onSplit(self) {
-        const lines = self.lines as HTMLElement[];
-        // Measure every line first (reads), then build the bars and tweens (writes): no layout thrash.
-        // The head travels across the text itself, not the whole (often much wider) heading box.
-        const range = document.createRange();
-        const sizes = lines.map((line) => {
-          range.selectNodeContents(line);
-          const box = line.offsetWidth;
-          return { top: line.offsetTop, height: line.offsetHeight, box, text: Math.min(box, Math.ceil(range.getBoundingClientRect().width) + 4) };
-        });
-        const layer = document.createElement('span');
-        layer.className = 'wipe-layer';
-        layer.setAttribute('aria-hidden', 'true');
-        const bars = sizes.map((size) => {
-          const bar = document.createElement('span');
-          bar.className = 'wipe-bar';
-          bar.style.top = `${size.top + size.height * 0.1}px`;
-          bar.style.height = `${size.height * 0.8}px`;
-          layer.append(bar);
-          return bar;
-        });
-        h.append(layer);
-
-        const inset = (gap: number) => (rtl ? `inset(-30% 0px -30% ${gap}px)` : `inset(-30% ${gap}px -30% 0px)`);
-        const tl = gsap.timeline({ scrollTrigger: once(h), defaults: { duration: 0.7, ease: EASE } });
-        lines.forEach((line, i) => {
-          const at = i * 0.12;
-          const { box, text } = sizes[i];
-          tl.fromTo(line, { clipPath: inset(box) }, { clipPath: inset(box - text) }, at)
-            .set(bars[i], { opacity: 1 }, at)
-            .fromTo(bars[i], { x: 0 }, { x: text * dir, immediateRender: false }, at)
-            .to(bars[i], { opacity: 0, duration: 0.15, ease: 'none' }, at + 0.6);
-        });
-        tl.set(lines, { clipPath: 'none' });
-        return tl;
-      },
-    });
-  };
-
   /** Line-by-line headline reveal: masked lines rise from yPercent 100. */
   const rise = (h: HTMLElement | null) => {
     if (!h || !claim([h], h)) return;
@@ -100,7 +54,7 @@ export function initMotion() {
       linesClass: 'split-line',
       autoSplit: true,
       onSplit: (self) =>
-        gsap.from(self.lines, { yPercent: 100, duration: 0.8, ease: 'expo.out', stagger: 0.08, scrollTrigger: once(h) }),
+        gsap.from(self.lines, { yPercent: 100, duration: 0.7, ease: 'expo.out', stagger: 0.08, scrollTrigger: once(h) }),
     });
   };
 
@@ -472,14 +426,14 @@ export function initMotion() {
     // Each section: its heading in one task, the rest in the next.
     const undo = lazily(ctx, [
       [$('.proof'), proof],
-      [$('#gallery'), () => wipe($('#gallery-title')), gallery],
-      [$('#how-it-works'), () => wipe($('#how-title')), howNote],
-      [$('#earnings'), () => wipe($('#earnings-title')), calculator],
+      [$('#gallery'), () => rise($('#gallery-title')), gallery],
+      [$('#how-it-works'), () => rise($('#how-title')), howNote],
+      [$('#earnings'), () => rise($('#earnings-title')), calculator],
       [$('.included'), () => rise($('#included-title')), included],
       [$('#hygiene'), () => rise($('#hygiene-title')), hygiene],
       [$('#ways-to-own'), () => rise($('#ways-title')), ways],
       [$('.faq'), () => rise($('#faq-title')), faq],
-      [$('#demo'), () => wipe($('#demo-title')), demo],
+      [$('#demo'), () => rise($('#demo-title')), demo],
       [$('.stories'), () => rise($('#stories-title')), stories],
     ]);
     return () => {

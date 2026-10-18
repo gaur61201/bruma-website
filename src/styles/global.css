@@ -320,31 +320,6 @@
   }
 }
 
-/* --- Print-head wipe: shared bar ------------------------------------------------------------ */
-.wipe-bar {
-  position: absolute;
-  inset-inline-start: 0;
-  width: 3px;
-  border-radius: 2px;
-  background: var(--color-vapor);
-  opacity: 0;
-  pointer-events: none;
-}
-.on-carbon .wipe-bar {
-  background: var(--color-mist);
-}
-
-/* Section H2s (GSAP + SplitText lines). */
-[data-wipe] {
-  position: relative;
-}
-.wipe-layer {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
 /* Headline line reveals use SplitText masks; pad them so ascenders and descenders aren't clipped. */
 .split-line-mask {
   padding-block: 0.15em;
@@ -352,87 +327,28 @@
 }
 
 /*
- * Hero H1 print-head wipe, in pure CSS so the LCP element never waits for GSAP.
- * The text itself is painted at first paint (so it counts for LCP immediately); per line, a bone
- * cover slides away towards the inline-end while a vapor bar rides its edge. Transforms only.
- * Covers and bars for lines that don't exist sit below the heading and are clipped away.
+ * Hero H1: the same line-by-line reveal, CSS-first so the LCP text never waits for GSAP. The inline
+ * script in Hero.astro wraps each laid-out line in .hero-line; each line slides up from its mask.
  */
-.print-wipe {
-  position: relative;
-  container-type: inline-size;
-}
-.print-wipe-text {
+.hero-line {
   display: block;
+  overflow: clip;
+  padding-block: 0.15em;
+  margin-block: -0.15em;
 }
-.print-wipe-layer {
-  position: absolute;
-  inset: -0.15em 0 0 0;
-  overflow: hidden;
-  pointer-events: none;
+.hero-line-inner {
+  display: block;
+  white-space: nowrap;
 }
-.print-wipe-cover {
-  display: none;
-  position: absolute;
-  inset-inline: 0;
-  top: calc(0.15em + var(--i) * 1lh - 0.1lh);
-  height: 1.2lh;
-  background: var(--color-bone);
-  transform-origin: right center;
-}
-.print-wipe-cover:dir(rtl) {
-  transform-origin: left center;
-}
-.print-wipe .wipe-bar {
-  top: calc(0.15em + var(--i) * 1lh + 0.1lh);
-  height: 0.8lh;
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .js .print-wipe-cover {
-    display: block;
-    animation: wipe-cover 0.7s var(--ease-power3) both;
-    animation-delay: calc(0.1s + var(--i) * 0.12s);
-  }
-  .js .print-wipe .wipe-bar {
-    animation: wipe-bar 0.7s var(--ease-power3) both;
-    animation-delay: calc(0.1s + var(--i) * 0.12s);
-  }
-  .js .print-wipe .wipe-bar:dir(rtl) {
-    animation-name: wipe-bar-rtl;
+  .js .hero-line-inner {
+    animation: hero-line 0.7s var(--ease-expo) both;
+    animation-delay: calc(var(--i) * 0.08s);
   }
 }
-@keyframes wipe-cover {
+@keyframes hero-line {
   from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
-}
-@keyframes wipe-bar {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(100cqw);
-  }
-}
-@keyframes wipe-bar-rtl {
-  0% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-100cqw);
+    transform: translateY(100%);
   }
 }
 
