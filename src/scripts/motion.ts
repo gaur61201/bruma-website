@@ -282,16 +282,22 @@ export function initMotion() {
     }, 0.15);
   };
 
+  /** What's included: the intro fades up, the bento cards stagger in, and their figures count up once. */
   const included = () => {
-    const shapes = (card: HTMLElement) => $$<SVGElement>('[data-draw] path, [data-draw] rect, [data-draw] circle', card);
-    const cards = $$('.included .icon-card');
-    cards.forEach((card) => {
-      if (fresh(card)) gsap.set(shapes(card), { strokeDasharray: 1, strokeDashoffset: 1 });
+    $$('.included-head > [data-motion]:not(h2)').forEach((el, i) => fadeUp(el, i * 0.08));
+    const cards = $$('.included .bento-card');
+    // Read every figure's final width before anything is written (one layout pass); while counting, each
+    // box holds that width so the words beside it never move.
+    const nums = cards.map((card) => $$('[data-count]', card));
+    const widths = nums.map((list) => list.map((el) => el.getBoundingClientRect().width));
+    batchIn(cards, { x: -SLIDE * dir }, 0.08, (card, tl, at) => {
+      const i = cards.indexOf(card);
+      nums[i].forEach((el, j) => {
+        el.style.minWidth = `${widths[i][j]}px`;
+        // `at` is when the card has landed; the count starts with the card's own entrance.
+        tl.add(countUp(el, Number(el.dataset.count)), at - 0.45);
+      });
     });
-    // Each card's outline icon draws itself as the card lands.
-    batchIn(cards, { x: -SLIDE * dir }, 0.08, (card, tl, at) =>
-      tl.to(shapes(card), { strokeDashoffset: 0, duration: 0.6, ease: EASE }, at),
-    );
   };
 
   const hygiene = () => {

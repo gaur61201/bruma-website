@@ -130,7 +130,28 @@ export const en = {
   },
 
   included: {
-    h2: "What’s included",
+    // The homepage bento section. `cards` below is still used by the printer page's support cards.
+    eyebrow: "What’s included",
+    h2: 'Everything handled, from day one',
+    intro: 'You get the printer, the training and the backup. Our team in Kuwait handles the rest.',
+    ticks: ['Delivered and set up', 'Team trained on site', 'Covered if anything goes wrong'],
+    cta: 'Book a free demo',
+    whatsapp: 'Ask on WhatsApp',
+    whatsappMessage: "Hi BRUMA, I’d like to know more about what’s included with the nail printer.",
+    warranty: {
+      unit: (n: number): string => (n === 1 ? 'month' : 'months'),
+      title: 'Warranty',
+      text: 'Parts and labour covered. Repairs handled in Kuwait.',
+    },
+    loaner: {
+      unit: (n: number): string => (n === 1 ? 'hour' : 'hours'),
+      title: 'Loaner printer',
+      text: 'Repair taking longer? We lend you one, so you never lose bookings.',
+    },
+    delivery: { title: 'Delivery and installation', text: 'We bring it, set it up and print your first test nail with you.' },
+    technicians: { title: 'Technicians trained', text: 'Prep, printing, cleaning and simple fixes, in your salon.' },
+    library: { title: 'Design library', text: 'Ready-made designs built in.', link: 'See sample designs' },
+    refills: { title: 'Ink refills', text: 'Delivered to your salon.', pill: 'First cartridge in the box' },
     cards: [
       { icon: 'truck', title: 'Delivery and installation', text: 'We set it up in your salon.' },
       { icon: 'training', title: 'Training', text: `On-site training for ${c.techniciansTrained} technicians.` },

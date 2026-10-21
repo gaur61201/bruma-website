@@ -131,7 +131,28 @@ export const ar: Dict = {
   },
 
   included: {
-    h2: 'ما الذي يشمله',
+    // The homepage bento section. `cards` below is still used by the printer page's support cards.
+    eyebrow: 'ماذا يشمل',
+    h2: 'كل شيء جاهز من اليوم الأول',
+    intro: 'تحصلون على الطابعة والتدريب والدعم عند الحاجة، وفريقنا في الكويت يتولى الباقي.',
+    ticks: ['التوصيل والتركيب', 'تدريب الفريق داخل الصالون', 'تغطية إذا حدث أي عطل'],
+    cta: 'حجز عرض مجاني',
+    whatsapp: 'السؤال عبر واتساب',
+    whatsappMessage: 'مرحباً BRUMA، أود معرفة المزيد عمّا تشمله طابعة الأظافر.',
+    warranty: {
+      unit: (n: number) => (n % 100 >= 3 && n % 100 <= 10 ? forms.months.few : forms.months.many),
+      title: 'الضمان',
+      text: 'يشمل القطع والعمل، والإصلاح يتم داخل الكويت.',
+    },
+    loaner: {
+      unit: (n: number) => (n % 100 >= 3 && n % 100 <= 10 ? forms.hours.few : forms.hours.many),
+      title: 'طابعة بديلة',
+      text: 'إذا طال الإصلاح، نعيركم طابعة حتى لا تخسروا أي حجز.',
+    },
+    delivery: { title: 'التوصيل والتركيب', text: 'نحضر الطابعة ونركّبها ونطبع معكم أول ظفر تجريبي.' },
+    technicians: { title: 'تدريب الفنيين', text: 'التحضير والطباعة والتنظيف والإصلاحات البسيطة، داخل صالونك.' },
+    library: { title: 'مكتبة التصاميم', text: 'تصاميم جاهزة مدمجة في الطابعة.', link: 'عرض التصاميم النموذجية' },
+    refills: { title: 'عبوات الحبر', text: 'توصيل إلى صالونك.', pill: 'العبوة الأولى داخل الصندوق' },
     cards: [
       { icon: 'truck', title: 'التوصيل والتركيب', text: 'نتولى تركيب الطابعة في صالونك.' },
       { icon: 'training', title: 'التدريب', text: `تدريب في الصالون لعدد ${c.techniciansTrained} من فريق العمل.` },
