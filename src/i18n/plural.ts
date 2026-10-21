@@ -1,6 +1,8 @@
-// Counted nouns. Numbers always use Western digits, in both languages.
+// Counted nouns. Numbers always use Western digits, in both languages, and are joined to their noun or
+// currency with a non-breaking space (\u00a0) so a line never breaks between "10" and "seconds".
+const NBSP = '\u00a0';
 
-export const enCount = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+export const enCount = (n: number, one: string, many: string) => `${n}${NBSP}${n === 1 ? one : many}`;
 
 export interface ArForms {
   /** n = 1, e.g. "ثانية واحدة" */
@@ -17,8 +19,8 @@ export const arCount = (n: number, f: ArForms) => {
   if (n === 1) return f.one;
   if (n === 2) return f.two;
   const mod = n % 100;
-  if (mod >= 3 && mod <= 10) return `${n} ${f.few}`;
-  return `${n} ${f.many}`;
+  if (mod >= 3 && mod <= 10) return `${n}${NBSP}${f.few}`;
+  return `${n}${NBSP}${f.many}`;
 };
 
 export const ar = {
@@ -34,5 +36,5 @@ export const ar = {
 /** KWD amounts: "KWD 100" in English, "100 د.ك" in Arabic. */
 export const kwd = (n: number, lang: 'en' | 'ar') => {
   const num = n.toLocaleString('en-US', { maximumFractionDigits: 2 });
-  return lang === 'ar' ? `${num} د.ك` : `KWD ${num}`;
+  return lang === 'ar' ? `${num}${NBSP}د.ك` : `KWD${NBSP}${num}`;
 };

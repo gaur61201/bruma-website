@@ -39,13 +39,13 @@ const errorId = (f: string) => `demo-${f}-error`;
 <form class="demo-form" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
   <div class="field" data-motion={motion}>
     <label for="demo-name">{d.nameLabel}</label>
-    <input id="demo-name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={errorId('name')} />
+    <input id="demo-name" name="name" type="text" autocomplete="name" spellcheck="false" required maxlength="80" aria-describedby={errorId('name')} />
     <p id={errorId('name')} class="field-error" aria-live="polite"></p>
   </div>
 
   <div class="field" data-motion={motion}>
     <label for="demo-salon">{d.salonLabel}</label>
-    <input id="demo-salon" name="salon" type="text" autocomplete="organization" required maxlength="120" aria-describedby={errorId('salon')} />
+    <input id="demo-salon" name="salon" type="text" autocomplete="organization" spellcheck="false" required maxlength="120" aria-describedby={errorId('salon')} />
     <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
   </div>
 

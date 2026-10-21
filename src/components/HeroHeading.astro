@@ -20,7 +20,8 @@ const { id, text } = Astro.props;
     if (!document.documentElement.classList.contains('js')) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const text = h.textContent.trim();
-    const words = text.split(/\s+/);
+    // Ordinary spaces only: a non-breaking space ("10&nbsp;seconds") keeps its words on one line.
+    const words = text.split(/[ \t\n\r]+/);
     h.textContent = '';
     const spans = words.map((word, i) => {
       const s = document.createElement('span');

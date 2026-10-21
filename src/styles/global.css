@@ -121,6 +121,12 @@
       scroll-behavior: auto;
     }
   }
+  /* No rubber-band bounce with a mouse or trackpad; touch keeps pull-to-refresh. */
+  @media (pointer: fine) {
+    html {
+      overscroll-behavior: none;
+    }
+  }
 
   body {
     background: var(--color-bone) var(--grain);
@@ -132,6 +138,19 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
+    /* A long word or address wraps instead of pushing the page wider. */
+    overflow-wrap: break-word;
+  }
+
+  /* Taps act at once (no double-tap-zoom delay); press feedback replaces the grey tap flash. */
+  a,
+  button,
+  summary,
+  label,
+  select,
+  input {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
@@ -145,6 +164,9 @@
   }
   h3 {
     letter-spacing: -0.01em;
+  }
+  h4 {
+    text-wrap: balance;
   }
 
   /* Unbounded has no Arabic: Arabic headings use Readex Pro. */
@@ -207,10 +229,15 @@
     direction: ltr;
     unicode-bidi: isolate;
   }
+  /* Phone numbers stay on one line. */
+  .phone {
+    white-space: nowrap;
+  }
 }
 
+/* Content width, clear of the notch in landscape (the viewport uses viewport-fit=cover). */
 @utility wrap {
-  width: min(100% - 2 * var(--gutter), var(--container-content));
+  width: min(100% - 2 * max(var(--gutter), env(safe-area-inset-left), env(safe-area-inset-right)), var(--container-content));
   margin-inline: auto;
 }
 
@@ -287,7 +314,6 @@
     transition:
       border-color 200ms ease,
       background-color 200ms ease,
-      box-shadow 200ms ease,
       scale 160ms var(--ease-out);
   }
   .btn:disabled,
@@ -606,15 +632,27 @@
   }
 }
 
-/* Cards that lift on hover (desktop): up 4px while the shadow deepens. */
+/*
+ * Cards that lift on hover (desktop): up 4px while the shadow deepens. The deeper shadow sits on a
+ * pseudo-element that fades in, so only transform and opacity animate.
+ */
 .lift {
-  transition:
-    translate 250ms var(--ease-out),
-    box-shadow 250ms var(--ease-out);
+  position: relative;
+  transition: translate 250ms var(--ease-out);
+}
+.lift::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: var(--shadow-card-hover);
+  opacity: 0;
+  transition: opacity 250ms var(--ease-out);
+  pointer-events: none;
 }
 @media (hover: hover) and (min-width: 1024px) {
-  .lift:hover {
-    box-shadow: var(--shadow-card-hover);
+  .lift:hover::after {
+    opacity: 1;
   }
 }
 

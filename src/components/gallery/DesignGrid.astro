@@ -168,7 +168,6 @@ const tiles = await Promise.all(
     font-size: calc(var(--fs-small) * var(--script-scale));
     cursor: pointer;
     transition:
-      box-shadow 200ms ease,
       background-color 200ms ease,
       color 200ms ease,
       scale 160ms var(--ease-out);
@@ -207,7 +206,6 @@ const tiles = await Promise.all(
     width: 100%;
     aspect-ratio: 1;
     padding: 0;
-    overflow: hidden;
     border: 1px solid transparent;
     border-radius: 20px;
     background: var(--color-white);
@@ -219,10 +217,12 @@ const tiles = await Promise.all(
   :global(.no-js) .design-open {
     cursor: default;
   }
+  /* The button doesn't clip (its hover shadow sits outside it), so the picture rounds its own corners. */
   .design-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: inherit;
   }
   .design-placeholder {
     height: 100%;
@@ -262,6 +262,7 @@ const tiles = await Promise.all(
     border: 0;
     background: var(--color-bone);
     color: var(--color-carbon);
+    overscroll-behavior: contain;
   }
   .lightbox::backdrop {
     background: var(--color-bone);

@@ -37,11 +37,20 @@ function initFilters(tiles: HTMLElement[]) {
     });
   };
 
+  // The chosen style lives in the URL (?style=gulf), so a filtered gallery can be shared or reloaded.
+  const remember = (filter: string) => {
+    const url = new URL(location.href);
+    if (filter === 'all') url.searchParams.delete('style');
+    else url.searchParams.set('style', filter);
+    history.replaceState(history.state, '', url);
+  };
+
   const select = async (button: HTMLButtonElement) => {
     if (button.getAttribute('aria-pressed') === 'true') return;
     buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
     if (status) status.textContent = button.dataset.count ?? '';
     const filter = button.dataset.filter ?? 'all';
+    remember(filter);
 
     if (reducedMotion()) {
       apply(filter);
@@ -73,6 +82,14 @@ function initFilters(tiles: HTMLElement[]) {
   };
 
   buttons.forEach((button) => button.addEventListener('click', () => select(button)));
+
+  // Opened with ?style=: show that style straight away (no animation on load).
+  const initial = buttons.find((b) => b.dataset.filter === new URL(location.href).searchParams.get('style'));
+  if (initial && initial.getAttribute('aria-pressed') !== 'true') {
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === initial)));
+    if (status) status.textContent = initial.dataset.count ?? '';
+    apply(initial.dataset.filter ?? 'all');
+  }
   // Warm up Flip once the page has settled, so the first filter change starts at once.
   if (!reducedMotion()) {
     const warm = () => loadFlip().catch(() => {});

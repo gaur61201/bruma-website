@@ -101,6 +101,8 @@ export const ar: Dict = {
       { title: 'التثبيت', text: 'الإنهاء بالطبقة العلوية ثم التجفيف بالمصباح.' },
     ],
     setTime: `تستغرق المجموعة الكاملة نحو ${arCount(c.minutesPerFullSet, forms.minutes)}.`,
+    pause: 'إيقاف حركة الخطوات مؤقتاً',
+    play: 'تشغيل حركة الخطوات',
     printerLink: 'تفاصيل الطابعة',
   },
 
@@ -402,7 +404,7 @@ export const ar: Dict = {
   bookPage: {
     meta: {
       title: 'حجز عرض مجاني لطابعة الأظافر في الكويت | BRUMA',
-      description: `نحضر طابعة الأظافر من BRUMA إلى صالونك لعرض مجاني يستغرق نحو ${arCount(c.demoMinutes, forms.minutes)}، دون أي التزام. نزور محافظات الكويت الست كلها.`,
+      description: `نحضر طابعة الأظافر من BRUMA إلى صالونك لعرض مجاني يستغرق نحو ${arCount(c.demoMinutes, forms.minutes)}، دون أي التزام. نزور محافظات الكويت الـ6 كلها.`,
     },
     h1: 'حجز عرض مجاني في صالونك',
     subline: `نحضر الطابعة إليكم. نحو ${arCount(c.demoMinutes, forms.minutes)}، دون أي التزام.`,
@@ -416,7 +418,7 @@ export const ar: Dict = {
     },
     where: {
       h2: 'أين نقدّم العرض',
-      text: 'نزور الصالونات والعيادات في محافظات الكويت الست كلها.',
+      text: 'نزور الصالونات والعيادات في محافظات الكويت الـ6 كلها.',
     },
     contact: {
       h2: 'التواصل',

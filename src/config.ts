@@ -79,11 +79,11 @@ export const printerSpecs: PrinterSpec[] = [
   },
   { label: 'curing', value: { en: 'Built-in UV/LED lamp', ar: 'مصباح UV/LED مدمج' }, confirmed: false }, // TODO confirm on the demo unit
   { label: 'screen', value: { en: '15.6-inch touchscreen', ar: 'شاشة لمس مقاس 15.6 بوصة' }, confirmed: false }, // TODO confirm on the demo unit
-  { label: 'size', value: { en: 'About 25 × 37 × 42 cm', ar: 'نحو 25 × 37 × 42 سم' }, confirmed: false }, // TODO confirm on the demo unit
-  { label: 'weight', value: { en: 'About 11 kg', ar: 'نحو 11 كغ' }, confirmed: false }, // TODO confirm on the demo unit
+  { label: 'size', value: { en: 'About 25\u00a0×\u00a037\u00a0×\u00a042\u00a0cm', ar: 'نحو 25\u00a0×\u00a037\u00a0×\u00a042\u00a0سم' }, confirmed: false }, // TODO confirm on the demo unit
+  { label: 'weight', value: { en: 'About 11\u00a0kg', ar: 'نحو 11\u00a0كغ' }, confirmed: false }, // TODO confirm on the demo unit
   {
     label: 'power',
-    value: { en: "100–240 V, works on Kuwait's standard supply", ar: '100–240 فولت، تعمل على الكهرباء المعتادة في الكويت' },
+    value: { en: "100–240\u00a0V, works on Kuwait’s standard supply", ar: '100–240\u00a0فولت، تعمل على الكهرباء المعتادة في الكويت' },
     confirmed: false, // TODO confirm on the demo unit
   },
   { label: 'ink', value: { en: 'One tri-colour cartridge', ar: 'عبوة حبر واحدة ثلاثية الألوان' }, confirmed: false }, // TODO confirm on the demo unit

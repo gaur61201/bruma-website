@@ -117,6 +117,7 @@ const settings = {
                   step={input.step}
                   value={input.value}
                   inputmode={input.decimal ? 'decimal' : 'numeric'}
+                  autocomplete="off"
                   data-number={input.id}
                 />
               </div>
@@ -367,7 +368,10 @@ const settings = {
     font-weight: 500;
   }
   /* Revenue and running cost in white; what's left for the salon in profit green. */
+  /* Amounts never break between the currency and the number; figures are tabular where the face has them. */
   .result dd {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
     margin: 8px 0 0;
     color: var(--color-white);
     font-family: var(--font-heading);

@@ -4,9 +4,8 @@
 // - A CSS keyframe loop on a track that holds the set three times (the two copies are
 //   aria-hidden; they hold nothing focusable), so the loop restarts without a jump on screens up
 //   to ~2 sets wide.
-// - Rows move only while the section is on screen. To stop them (WCAG 2.2.2): tap or click a row
-//   (toggles it), hover it, focus it from the keyboard, or use the pause button, which stays hidden
-//   until reached with the keyboard.
+// - Rows move only while the section is on screen. To stop them (WCAG 2.2.2): the pause button
+//   beside "See all designs", hovering a row, or focusing it from the keyboard.
 // - Without JS or under prefers-reduced-motion, rows are plain horizontal scroll strips with snap.
 import { Image } from 'astro:assets';
 import Icon from '../Icon.astro';
@@ -101,8 +100,7 @@ const isolate = (s: string) => `⁨${s}⁩`;
 </section>
 
 <script>
-  // Rows move only while the section is on screen. Tapping or clicking a row pauses or resumes it;
-  // the keyboard-only button pauses and resumes both rows.
+  // Rows move only while the section is on screen. The pause button pauses and resumes both rows.
   const marquee = document.querySelector<HTMLElement>('[data-marquee]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
   if (marquee) {
@@ -112,7 +110,6 @@ const isolate = (s: string) => `⁨${s}⁩`;
       marquee.setAttribute('data-inview', '');
     }
   }
-  marquee?.querySelectorAll('.marquee-row').forEach((row) => row.addEventListener('click', () => row.toggleAttribute('data-tap-paused')));
   if (marquee && toggle) {
     toggle.addEventListener('click', () => {
       const paused = !marquee.hasAttribute('data-user-paused');
@@ -243,8 +240,7 @@ const isolate = (s: string) => `⁨${s}⁩`;
     :global(.js) [data-inview] .marquee-track {
       animation-play-state: running;
     }
-    /* A tap/click on a row, keyboard focus or the pause button stop the motion (WCAG 2.2.2). */
-    :global(.js) .marquee-row[data-tap-paused] .marquee-track,
+    /* Keyboard focus or the pause button stop the motion (WCAG 2.2.2). */
     :global(.js) .marquee-row:focus-visible .marquee-track,
     :global(.js) [data-user-paused] .marquee-track {
       animation-play-state: paused;
@@ -296,30 +292,19 @@ const isolate = (s: string) => `⁨${s}⁩`;
     color: var(--color-stone);
     font-size: calc(var(--fs-small) * var(--script-scale));
   }
-  /* Pause/play for both rows: keyboard and screen readers only (hidden until focused), and only
-     when the rows actually move. */
+  /* Pause/play for both rows, shown only when the rows actually move. */
   .marquee-toggle {
     display: none;
     flex-shrink: 0;
     width: 44px;
     height: 44px;
-    border: 1px solid var(--color-line);
+    border: 1px solid transparent;
     border-radius: 50%;
     background: var(--color-white);
+    box-shadow: var(--shadow-sm);
     color: var(--color-carbon);
     cursor: pointer;
     place-items: center;
-  }
-  .marquee-toggle:not(:focus) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    border: 0;
-    white-space: nowrap;
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(.js) .marquee-toggle {

@@ -8,14 +8,15 @@ interface Props {
 }
 const { title, items } = Astro.props;
 ---
+<!-- Each question has an id (#faq-1, #faq-2, …): opening one puts it in the URL, and a link to it opens it. -->
 
 <section class="section-y faq" aria-labelledby="faq-title">
   <div class="wrap faq-grid">
     <h2 id="faq-title" data-motion>{title}</h2>
     <div class="faq-list">
       {
-        items.map((item) => (
-          <details name="faq" data-motion>
+        items.map((item, i) => (
+          <details name="faq" id={`faq-${i + 1}`} data-motion>
             <summary>
               <span>{item.q}</span>
               <Icon name="chevron" size={24} class="faq-icon" />
@@ -29,6 +30,24 @@ const { title, items } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  const list = document.querySelector<HTMLElement>('.faq-list');
+  if (list) {
+    const open = () => {
+      const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+      if (target instanceof HTMLDetailsElement && list.contains(target)) target.open = true;
+    };
+    open();
+    window.addEventListener('hashchange', open);
+    list.querySelectorAll('details').forEach((d) =>
+      d.addEventListener('toggle', () => {
+        if (d.open) history.replaceState(history.state, '', `#${d.id}`);
+        else if (location.hash === `#${d.id}`) history.replaceState(history.state, '', location.pathname + location.search);
+      }),
+    );
+  }
+</script>
 
 <style>
   .faq-grid {

@@ -39,11 +39,20 @@ const last = t.how.steps.length - 1;
         ))
       }
     </ol>
-    <p class="set-time" data-motion>{t.how.setTime}</p>
-    <a href={localizedPath('/printer/', lang)} class="text-link arrow-link printer-link">
-      <span>{t.how.printerLink}</span>
-      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
-    </a>
+    <div class="how-foot">
+      <div>
+        <p class="set-time" data-motion>{t.how.setTime}</p>
+        <a href={localizedPath('/printer/', lang)} class="text-link arrow-link printer-link">
+          <span>{t.how.printerLink}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+      </div>
+      <!-- Pauses the icon hop (WCAG 2.2.2). motion.ts shows it once the hop is set up. -->
+      <button type="button" class="hop-toggle press" data-hop-toggle data-label-pause={t.how.pause} data-label-play={t.how.play} aria-label={t.how.pause} hidden>
+        <span data-icon-pause><Icon name="pause" size={20} /></span>
+        <span data-icon-play hidden><Icon name="play" size={20} /></span>
+      </button>
+    </div>
   </div>
 </section>
 
@@ -154,9 +163,31 @@ const last = t.how.steps.length - 1;
     }
   }
 
+  .how-foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
   .set-time {
     margin-block-start: 24px;
     font-weight: 500;
+  }
+  .hop-toggle {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-carbon);
+    cursor: pointer;
+  }
+  .hop-toggle[hidden] {
+    display: none;
   }
   .printer-link {
     margin-block-start: 8px;

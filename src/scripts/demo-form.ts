@@ -55,6 +55,21 @@ export function initDemoForm(form: HTMLFormElement) {
 
   const value = (f: Field) => control(f).value.trim();
 
+  // Leaving with details typed but not sent asks first. The listener is attached only while there are
+  // unsent details (attaching it always would cost the page its back/forward cache).
+  const warn = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = '';
+  };
+  let warning = false;
+  const setWarning = (on: boolean) => {
+    if (on === warning) return;
+    warning = on;
+    if (on) window.addEventListener('beforeunload', warn);
+    else window.removeEventListener('beforeunload', warn);
+  };
+  form.addEventListener('input', () => setWarning(value('name') !== '' || value('salon') !== '' || value('whatsapp') !== ''));
+
   const check = (f: Field): string => {
     const v = value(f);
     if (f === 'name') return v ? '' : s.errors.nameRequired;
@@ -136,6 +151,8 @@ export function initDemoForm(form: HTMLFormElement) {
       return;
     }
 
+    // Sending now: leaving for the thank-you page or WhatsApp is expected.
+    setWarning(false);
     setSending(true);
     status.textContent = '';
     const d = details();

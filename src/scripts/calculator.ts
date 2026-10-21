@@ -130,5 +130,32 @@ export function initCalculator(form: HTMLFormElement) {
   );
   form.addEventListener('submit', (e) => e.preventDefault());
 
+  // The numbers live in the URL once changed (?price=6&sets=3&days=26&pay=upfront), so an estimate can
+  // be shared or reopened. Other parameters (src, rep) are kept.
+  const upfront = () => form.querySelector<HTMLInputElement>('input[name="mode"][value="upfront"]')!;
+  let urlTimer = 0;
+  const remember = () => {
+    window.clearTimeout(urlTimer);
+    urlTimer = window.setTimeout(() => {
+      const url = new URL(location.href);
+      for (const f of FIELDS) url.searchParams.set(f, String(values[f]));
+      if (upfront().checked) url.searchParams.set('pay', 'upfront');
+      else url.searchParams.delete('pay');
+      history.replaceState(history.state, '', url);
+    }, 300);
+  };
+  form.addEventListener('input', remember);
+  form.addEventListener('change', remember);
+
+  const params = new URL(location.href).searchParams;
+  for (const f of FIELDS) {
+    const v = Number(params.get(f));
+    if (params.has(f) && Number.isFinite(v)) {
+      values[f] = snap(f, v);
+      range(f).value = number(f).value = String(values[f]);
+    }
+  }
+  if (params.get('pay') === 'upfront') upfront().checked = true;
+
   render();
 }

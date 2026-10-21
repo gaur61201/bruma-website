@@ -94,6 +94,7 @@ const jsonLd = noindex ? schema : [organization, ...schema];
 
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
 
+    {config.analyticsId && <link rel="preconnect" href={new URL(config.analyticsScriptSrc).origin} />}
     {
       /* Analytics slot: a cookieless script, off while analyticsId is empty. */
       config.analyticsId && (
@@ -168,7 +169,8 @@ const jsonLd = noindex ? schema : [organization, ...schema];
     inset-inline-start: 8px;
     z-index: 100;
   }
-  main:focus {
+  /* The skip link's target: no ring for programmatic focus, the usual ring for keyboard focus. */
+  main:focus:not(:focus-visible) {
     outline: none;
   }
 </style>

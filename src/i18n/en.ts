@@ -19,11 +19,11 @@ export const en = {
     },
     thankYou: {
       title: 'Thank you | BRUMA',
-      description: "Thanks for booking a free BRUMA demo. We'll message you on WhatsApp to arrange it.",
+      description: "Thanks for booking a free BRUMA demo. We’ll message you on WhatsApp to arrange it.",
     },
     notFound: {
       title: 'Page not found | BRUMA',
-      description: "This page doesn't exist.",
+      description: "This page doesn’t exist.",
     },
     ogImageAlt: 'The BRUMA wordmark on a bone background',
     ogLocale: 'en_US',
@@ -52,7 +52,7 @@ export const en = {
 
   whatsapp: {
     floatLabel: 'Chat with BRUMA on WhatsApp',
-    floatMessage: "Hi BRUMA, I'd like to know more about the nail printer.",
+    floatMessage: "Hi BRUMA, I’d like to know more about the nail printer.",
   },
 
   hero: {
@@ -83,7 +83,7 @@ export const en = {
     h2: 'Designs your clients will ask for',
     tilePlaceholder: 'Photo: printed nail design',
     credit: 'Design by {technician}, {area}',
-    note: "Choose from the printer's built-in design library.",
+    note: "Choose from the printer’s built-in design library.",
     rowLabels: ['Printed designs, row 1', 'Printed designs, row 2'],
     pause: 'Pause the moving designs',
     play: 'Play the moving designs',
@@ -100,6 +100,8 @@ export const en = {
     ],
     setTime: `A full set takes about ${enCount(c.minutesPerFullSet, 'minute', 'minutes')}.`,
     printerLink: 'See the printer in detail',
+    pause: 'Pause the step animation',
+    play: 'Play the step animation',
   },
 
   calc: {
@@ -127,7 +129,7 @@ export const en = {
   },
 
   included: {
-    h2: "What's included",
+    h2: "What’s included",
     cards: [
       { icon: 'truck', title: 'Delivery and installation', text: 'We set it up in your salon.' },
       { icon: 'training', title: 'Training', text: `On-site training for ${c.techniciansTrained} technicians.` },
@@ -159,7 +161,7 @@ export const en = {
     upfront: {
       title: 'Pay upfront',
       price: 'Price at your demo',
-      bullets: ['Yours from day one', "Your salon's name and logo on the machine", 'Training, warranty and loaner included'],
+      bullets: ['Yours from day one', "Your salon’s name and logo on the machine", 'Training, warranty and loaner included'],
       small: '',
     },
     cta: 'Book a free demo',
@@ -186,7 +188,7 @@ export const en = {
       h2: 'Why salons add it',
       cards: [
         { icon: 'sparkle', title: 'A new service on every set', text: 'Offer detailed nail art without hiring a specialist.' },
-        { icon: 'check', title: 'The same result every time', text: "The design doesn't depend on who's on shift." },
+        { icon: 'check', title: 'The same result every time', text: "The design doesn’t depend on who’s on shift." },
         { icon: 'timer', title: 'Faster than painting by hand', text: `Each nail prints in about ${seconds}.` },
       ],
     },
@@ -200,7 +202,7 @@ export const en = {
         },
         {
           title: 'Choose',
-          text: "Your client picks a design on the touchscreen, from the printer's built-in design library. It's easy to browse together at the nail desk.",
+          text: "Your client picks a design on the touchscreen, from the printer’s built-in design library. It’s easy to browse together at the nail desk.",
           photo: 'Photo: choosing a design on the touchscreen',
         },
         {
@@ -219,14 +221,14 @@ export const en = {
     // TODO confirm on the demo unit
     printedOn: {
       h2: 'Printed on the nail, not stuck on',
-      text: "The design is printed directly onto the prepared nail, then sealed under top coat and cured. It's not a sticker, a wrap or a press-on.",
+      text: "The design is printed directly onto the prepared nail, then sealed under top coat and cured. It’s not a sticker, a wrap or a press-on.",
       photo: 'Photo: finished nail, close-up',
     },
     specs: {
       h2: 'Specifications',
       caption: 'BRUMA nail printer specifications',
       note: 'Fits on a standard nail desk. Check your space at the demo.',
-      boxTitle: "What's in the box",
+      boxTitle: "What’s in the box",
       labels: {
         printTime: 'Print time',
         curing: 'Curing',
@@ -308,7 +310,7 @@ export const en = {
       rows: {
         payment: { label: 'Payment', monthly: `From ${plan} a month`, upfront: 'One payment. Price at your demo' },
         ownership: { label: 'Ownership', monthly: 'Yours after the final payment', upfront: 'Yours from day one' },
-        branding: { label: 'Branding', monthly: 'BRUMA name on the machine', upfront: "Your salon's name and logo" },
+        branding: { label: 'Branding', monthly: 'BRUMA name on the machine', upfront: "Your salon’s name and logo" },
         included: { label: 'Training, warranty, loaner', monthly: 'Included', upfront: 'Included' },
       },
       /** Shown only while flags.showUpfrontSaving is on; the upfront cell is the saving badge. */
@@ -344,14 +346,14 @@ export const en = {
         },
         {
           q: 'What happens if payments stop?',
-          a: "We collect the printer, and payments made count as rental. You can still buy it later by paying the remaining amount, but you can't restart the monthly plan.",
+          a: "We collect the printer, and payments made count as rental. You can still buy it later by paying the remaining amount, but you can’t restart the monthly plan.",
         },
         { q: 'Are there extra charges on the plan?', a: 'The plan total is fixed when you sign.' },
       ],
     },
   },
 
-  // Hygiene between clients (the salon's job) and the printer's automatic print-head cleaning
+  // Hygiene between clients (the salon’s job) and the printer’s automatic print-head cleaning
   // (maintenance) stay strictly separate. Never describe the automatic cleaning as hygiene.
   hygienePage: {
     meta: {
@@ -380,9 +382,9 @@ export const en = {
     printHead: {
       h2: 'The printer looks after its print head',
       text: 'It cleans its print head automatically, so the ink stays fresh and prints stay sharp.',
-      separate: "This is maintenance for print quality. It doesn't replace cleaning between clients.",
+      separate: "This is maintenance for print quality. It doesn’t replace cleaning between clients.",
       /** Shown while printerPowerGuidance is empty in config. */
-      power: "We'll show you how to power it day to day when we install it.",
+      power: "We’ll show you how to power it day to day when we install it.",
     },
     // TODO professional review
     gel: {
@@ -391,7 +393,7 @@ export const en = {
       points: [
         'Keep uncured gel off the skin. If it touches the skin, wipe it off before curing.',
         'Cure every layer fully.',
-        "Don't use gel products on a client who has reacted to gel nails before.",
+        "Don’t use gel products on a client who has reacted to gel nails before.",
         'If a client gets irritation, stop and advise them to see a doctor.',
       ],
     },
@@ -412,7 +414,7 @@ export const en = {
   bookPage: {
     meta: {
       title: 'Book a free nail printer demo in Kuwait | BRUMA',
-      description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation. We visit all six governorates of Kuwait.`,
+      description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation. We visit all 6 governorates of Kuwait.`,
     },
     h1: 'Book a free demo in your salon',
     subline: `We bring the printer to you. About ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation.`,
@@ -426,7 +428,7 @@ export const en = {
     },
     where: {
       h2: 'Where we go',
-      text: "We visit salons and clinics in all six of Kuwait's governorates.",
+      text: "We visit salons and clinics in all 6 of Kuwait’s governorates.",
     },
     contact: {
       h2: 'Contact',
@@ -439,7 +441,7 @@ export const en = {
         { q: 'Is the demo free?', a: 'Yes. The demo is free.' },
         { q: 'Do I have to buy?', a: 'No. You decide after the demo, with no obligation.' },
         // TODO confirm
-        { q: 'Can you come outside working hours?', a: "Ask us on WhatsApp and we'll try to find a time that suits your salon." },
+        { q: 'Can you come outside working hours?', a: "Ask us on WhatsApp and we’ll try to find a time that suits your salon." },
       ],
     },
   },
@@ -460,7 +462,7 @@ export const en = {
   warrantyPage: {
     meta: {
       title: 'BRUMA nail printer warranty terms',
-      description: `What the ${c.warrantyMonths}-month warranty on the BRUMA nail printer covers, what it doesn't, the loaner printer during repairs and how to make a claim in Kuwait.`,
+      description: `What the ${c.warrantyMonths}-month warranty on the BRUMA nail printer covers, what it doesn’t, the loaner printer during repairs and how to make a claim in Kuwait.`,
     },
     h1: 'Warranty terms',
     subline: 'The warranty on your BRUMA nail printer, in plain language.',
@@ -469,11 +471,11 @@ export const en = {
       text: `${enCount(c.warrantyMonths, 'month', 'months')} from the day we install your printer.`,
     },
     covered: {
-      h2: "What's covered",
-      text: "Faults in the printer's parts and workmanship. Repairs under warranty include parts and labour.",
+      h2: "What’s covered",
+      text: "Faults in the printer’s parts and workmanship. Repairs under warranty include parts and labour.",
     },
     notCovered: {
-      h2: "What's not covered",
+      h2: "What’s not covered",
       items: [
         'Damage from drops, liquids or power surges',
         'Repairs or opening by anyone other than BRUMA',
@@ -487,9 +489,9 @@ export const en = {
     },
     claim: {
       h2: 'How to make a claim',
-      steps: ['WhatsApp us with the problem and a photo or short video.', "Then we'll diagnose it remotely or visit your salon."],
+      steps: ['WhatsApp us with the problem and a photo or short video.', "Then we’ll diagnose it remotely or visit your salon."],
       button: 'Make a claim on WhatsApp',
-      message: "Hi BRUMA, I'd like to make a warranty claim.",
+      message: "Hi BRUMA, I’d like to make a warranty claim.",
     },
     // TODO lawyer review: what happens to monthly-plan printers after the warranty period.
     monthly: {
@@ -549,20 +551,20 @@ export const en = {
       },
       {
         q: 'How long does a printed design last?',
-        a: "Like any manicure, it depends on prep and top coat. We're running wear tests in Kuwait salons and show you day 1, 7 and 14 photos at your demo.",
+        a: "Like any manicure, it depends on prep and top coat. We’re running wear tests in Kuwait salons and show you day 1, 7 and 14 photos at your demo.",
         /** Used instead of `a` when flags.showWearTestResults is true. Fill in with the real results. */
         aWithResults: '',
       },
       {
         q: 'What if the machine breaks?',
-        a: `It's covered by a ${c.warrantyMonths}-month warranty. If a repair takes longer than ${loanerHours}, we lend you a printer so you keep working.`,
+        a: `It’s covered by a ${c.warrantyMonths}-month warranty. If a repair takes longer than ${loanerHours}, we lend you a printer so you keep working.`,
       },
       {
         q: 'Is it hygienic and safe for clients?',
         a: 'Clean the parts that touch the client between every client, following our cleaning guide. Safety data sheets for the ink and gels are available. For clients with sensitive skin, do a patch test first.',
       },
       {
-        q: "Can I put my salon's logo on the machine?",
+        q: "Can I put my salon’s logo on the machine?",
         a: 'Yes, if you pay upfront. Monthly-plan machines carry the BRUMA name.',
       },
     ],
@@ -590,13 +592,13 @@ export const en = {
     privacy: 'We only use your details to arrange your demo.',
     errors: {
       nameRequired: 'Please enter your name.',
-      salonRequired: "Please enter your salon's name.",
+      salonRequired: "Please enter your salon’s name.",
       areaRequired: 'Please choose your area.',
       whatsappRequired: 'Please enter your WhatsApp number.',
       whatsappInvalid: 'Please enter the 8 digits after +965.',
     },
-    fallbackStatus: "We're opening WhatsApp with your details so you can send them to us.",
-    fallbackMessage: "Hi BRUMA, I'd like to book a free demo. Name: {name}. Salon: {salon}. Area: {area}.",
+    fallbackStatus: "We’re opening WhatsApp with your details so you can send them to us.",
+    fallbackMessage: "Hi BRUMA, I’d like to book a free demo. Name: {name}. Salon: {salon}. Area: {area}.",
   },
 
   /** Option values are stable English keys; labels are translated. */
@@ -625,15 +627,15 @@ export const en = {
   thankYou: {
     h1WithName: 'Thanks, {name}.',
     h1: 'Thank you.',
-    body: `We'll message you on WhatsApp within ${replyHours} to arrange your demo.`,
+    body: `We’ll message you on WhatsApp within ${replyHours} to arrange your demo.`,
     talkNow: 'Prefer to talk now?',
     whatsappButton: 'Message us on WhatsApp',
-    whatsappMessage: "Hi BRUMA, I've just booked a free demo on your website.",
+    whatsappMessage: "Hi BRUMA, I’ve just booked a free demo on your website.",
     backHome: 'Back to the homepage',
   },
 
   notFound: {
-    line: "This page doesn't exist.",
+    line: "This page doesn’t exist.",
     home: 'Go to the homepage',
   },
 };

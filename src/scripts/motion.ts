@@ -150,12 +150,16 @@ export function initMotion() {
   const proof = () => {
     const list = $('.proof-list');
     const items = $$('.proof-list > li');
-    if (!list || !claim(items, list)) return;
+    if (!list) return;
+    // Read every final number's width before anything is written, so there's one layout pass.
+    const counts = $$('[data-count]', list);
+    const widths = counts.map((el) => el.getBoundingClientRect().width);
+    if (!claim(items, list)) return;
     const tl = gsap.timeline({ scrollTrigger: once(list, 'top 90%') });
     tl.from(items, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08 });
-    $$('[data-count]', list).forEach((el, i) => {
-      // Hold the box at the final number's width (read before anything changes), right-aligned.
-      el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+    counts.forEach((el, i) => {
+      // Hold the box at the final number's width while it counts, so the words around it never move.
+      el.style.minWidth = `${widths[i]}px`;
       tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.08);
     });
   };
@@ -208,9 +212,32 @@ export function initMotion() {
     const lastLanding = icons.length * 2 * HOP;
     hop.repeatDelay(PAUSE - (hop.duration() - lastLanding));
 
+    // The hop pauses with its button (WCAG 2.2.2), while a pointer rests on the steps, and while
+    // keyboard focus is inside the section.
+    const section = list.closest('section') ?? list;
+    const toggle = $<HTMLButtonElement>('[data-hop-toggle]', section);
+    let userPaused = false;
+    let hovered = false;
+    let focused = false;
     let started = false;
     let onScreen = false;
-    const sync = () => (started && onScreen ? hop.play() : hop.pause());
+    const sync = () => (started && onScreen && !userPaused && !hovered && !focused ? hop.play() : hop.pause());
+    if (toggle) {
+      toggle.hidden = false;
+      toggle.addEventListener('click', () => {
+        userPaused = !userPaused;
+        toggle.setAttribute('aria-label', (userPaused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+        $('[data-icon-pause]', toggle)?.toggleAttribute('hidden', userPaused);
+        $('[data-icon-play]', toggle)?.toggleAttribute('hidden', !userPaused);
+        sync();
+      });
+    }
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      list.addEventListener('pointerenter', () => ((hovered = true), sync()));
+      list.addEventListener('pointerleave', () => ((hovered = false), sync()));
+    }
+    section.addEventListener('focusin', (e) => ((focused = (e.target as HTMLElement).matches(':focus-visible') && e.target !== toggle), sync()));
+    section.addEventListener('focusout', () => ((focused = false), sync()));
     const visibility = ScrollTrigger.create({
       trigger: list,
       start: 'top bottom',

@@ -38,7 +38,7 @@ const t = useTranslations(Astro.props.lang);
   .wa-float {
     position: fixed;
     bottom: calc(16px + env(safe-area-inset-bottom));
-    inset-inline-end: 16px;
+    inset-inline-end: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
     z-index: 30;
     display: grid;
     place-items: center;
@@ -89,7 +89,7 @@ const t = useTranslations(Astro.props.lang);
   @media (min-width: 768px) {
     .wa-float {
       bottom: calc(24px + env(safe-area-inset-bottom));
-      inset-inline-end: 24px;
+      inset-inline-end: max(24px, env(safe-area-inset-left), env(safe-area-inset-right));
     }
   }
 </style>

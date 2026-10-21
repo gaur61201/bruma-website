@@ -34,7 +34,7 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
   <span class="header-rule" aria-hidden="true"></span>
   <div class="wrap header-inner">
     <a href={home} class="logo-link">
-      <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} loading="eager" class="logo" />
+      <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} loading="eager" fetchpriority="high" class="logo" />
     </a>
 
     <nav aria-label={t.nav.label} class="desktop-nav">
@@ -199,6 +199,17 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     align-items: center;
     min-height: 44px;
     flex-shrink: 0;
+    transition: opacity 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .logo-link:hover {
+      opacity: 0.75;
+    }
+    .menu-nav ul a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 6px;
+    }
   }
   .logo {
     height: 36px;
@@ -292,8 +303,9 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     margin: 0;
     padding: 0;
     border: 0;
-    background: var(--color-bone);
+    background: var(--color-bone) var(--grain);
     color: var(--color-carbon);
+    overscroll-behavior: contain;
   }
   .mobile-menu[open] {
     display: flex;
