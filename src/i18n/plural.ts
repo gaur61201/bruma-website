@@ -27,6 +27,7 @@ export const ar = {
   hours: { one: 'ساعة واحدة', two: 'ساعتين', few: 'ساعات', many: 'ساعة' },
   months: { one: 'شهر واحد', two: 'شهرين', few: 'أشهر', many: 'شهراً' },
   sets: { one: 'مجموعة واحدة', two: 'مجموعتين', few: 'مجموعات', many: 'مجموعة' },
+  designs: { one: 'تصميم واحد', two: 'تصميمان', few: 'تصاميم', many: 'تصميماً' },
 } satisfies Record<string, ArForms>;
 
 /** KWD amounts: "KWD 100" in English, "100 د.ك" in Arabic. */

@@ -221,10 +221,6 @@ export const en = {
       h2: 'Printed on the nail, not stuck on',
       text: "The design is printed directly onto the prepared nail, then sealed under top coat and cured. It's not a sticker, a wrap or a press-on.",
       photo: 'Photo: finished nail, close-up',
-      wearAsk: 'Ask to see our wear-test photos at your demo.',
-      /** The wear-test strip, shown only when flags.showWearTestResults is true. */
-      wearDays: ['Day 1', 'Day 7', 'Day 14'],
-      wearPhoto: 'Photo: wear test, {day}',
     },
     specs: {
       h2: 'Specifications',
@@ -264,6 +260,43 @@ export const en = {
       space: { q: 'How much space does it need?', a: `${printerSpec('size').en} on a nail desk, plus a standard socket.` },
       installs: { q: 'Who installs it?', a: 'We deliver it, set it up in your salon and train your team on site.' },
     },
+  },
+
+  galleryPage: {
+    meta: {
+      title: 'Nail art designs for salons in Kuwait | BRUMA gallery',
+      description:
+        'Browse nail designs the BRUMA printer puts on the nail in seconds: Gulf, bridal, minimal and seasonal styles. Book a free demo in your salon in Kuwait.',
+    },
+    h1: 'Browse the designs',
+    subline: 'Designs your clients will ask for, printed in seconds.',
+    gridTitle: 'Designs',
+    filterLabel: 'Filter designs by style',
+    categories: { all: 'All', gulf: 'Gulf', bridal: 'Bridal', minimal: 'Minimal', seasonal: 'Seasonal' },
+    placeholders: {
+      gulf: 'Photo: Gulf nail design',
+      bridal: 'Photo: bridal nail design',
+      minimal: 'Photo: minimal nail design',
+      seasonal: 'Photo: seasonal nail design',
+    },
+    count: (n: number) => enCount(n, 'design', 'designs'),
+    lightbox: {
+      label: 'Design viewer',
+      close: 'Close',
+      prev: 'Previous design',
+      next: 'Next design',
+      /** {n} and {total} are filled in the browser. */
+      count: '{n} of {total}',
+    },
+    wearTitle: 'Wear test',
+    instagram: 'Follow our latest designs',
+  },
+
+  /** Wear-test results (printer and gallery pages). The strip shows only when flags.showWearTestResults is true. */
+  wearTest: {
+    ask: 'Ask to see our wear-test photos at your demo.',
+    days: ['Day 1', 'Day 7', 'Day 14'],
+    photo: 'Photo: wear test, {day}',
   },
 
   /** Shown only when flags.showUpfrontSaving is true. */

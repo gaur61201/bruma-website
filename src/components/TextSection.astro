@@ -1,0 +1,73 @@
+---
+// A content section for the inner pages: heading in one column, content in the other on desktop,
+// stacked on mobile. Optional paragraphs and a divided list are rendered from props; anything else
+// goes in the slot after them. Motion comes from the generic data-reveal hooks in motion.ts.
+interface Props {
+  /** id for the h2 (the section is labelled by it). */
+  id: string;
+  title: string;
+  paragraphs?: string[];
+  list?: string[];
+  /** Optional id on the section itself, for in-page links. */
+  anchor?: string;
+}
+const { id, title, paragraphs = [], list = [], anchor } = Astro.props;
+---
+
+<section id={anchor} class="section-y text-section" aria-labelledby={id} data-reveal-section>
+  <div class="wrap text-section-grid">
+    <h2 id={id} data-motion data-reveal="heading">{title}</h2>
+    <div class="text-section-body">
+      {paragraphs.map((text) => <p data-motion data-reveal="fade">{text}</p>)}
+      {
+        list.length > 0 && (
+          <ul class="divided-list">
+            {list.map((item) => (
+              <li data-motion data-reveal="item">
+                {item}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-section {
+    border-top: 1px solid var(--color-line);
+  }
+  .text-section-grid {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .text-section-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .text-section-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 40rem;
+  }
+  .divided-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  .divided-list li {
+    padding-block: 16px;
+    border-top: 1px solid var(--color-line);
+  }
+  .divided-list li:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+</style>

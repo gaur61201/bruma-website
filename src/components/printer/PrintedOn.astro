@@ -1,15 +1,15 @@
 ---
-// "Printed on the nail, not stuck on". The wear-test strip (day 1 / 7 / 14) shows only when
-// flags.showWearTestResults is on; until then, an invitation to see the photos at the demo.
+// "Printed on the nail, not stuck on", with the shared wear-test strip (or the invitation to see the
+// wear-test photos at the demo, until results are confirmed).
 import PhotoPlaceholder from '../PhotoPlaceholder.astro';
-import { config } from '../../config';
-import { fill, useTranslations, type Lang } from '../../i18n';
+import WearTest from '../WearTest.astro';
+import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const p = useTranslations(Astro.props.lang).printer.printedOn;
-const showWear = config.flags.showWearTestResults;
+const { lang } = Astro.props;
+const p = useTranslations(lang).printer.printedOn;
 ---
 
 <section class="section-y printed" aria-labelledby="printed-title" data-reveal-section>
@@ -17,22 +17,7 @@ const showWear = config.flags.showWearTestResults;
     <div class="printed-copy">
       <h2 id="printed-title" data-motion data-reveal="heading">{p.h2}</h2>
       <p data-motion data-reveal="fade">{p.text}</p>
-      {
-        showWear ? (
-          <ul class="wear-strip">
-            {p.wearDays.map((day) => (
-              <li>
-                <PhotoPlaceholder caption={fill(p.wearPhoto, { day })} ratio="1 / 1" />
-                <span class="wear-day">{day}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="wear-ask" data-motion data-reveal="fade">
-            {p.wearAsk}
-          </p>
-        )
-      }
+      <WearTest lang={lang} />
     </div>
     <PhotoPlaceholder caption={p.photo} ratio="1 / 1" />
   </div>
@@ -58,23 +43,5 @@ const showWear = config.flags.showWearTestResults;
     flex-direction: column;
     gap: 16px;
     max-width: 34rem;
-  }
-  .wear-ask {
-    color: var(--color-stone);
-    font-size: calc(var(--fs-small) * var(--script-scale));
-  }
-  .wear-strip {
-    list-style: none;
-    margin: 8px 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  .wear-day {
-    display: block;
-    margin-block-start: 8px;
-    font-weight: 500;
-    font-size: calc(var(--fs-small) * var(--script-scale));
   }
 </style>

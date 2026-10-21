@@ -429,6 +429,7 @@
 }
 .text-link:hover::after,
 .text-link:focus-visible::after,
+.slide-underline[aria-current='page']::after,
 .slide-underline:hover::after,
 .slide-underline:focus-visible::after {
   transform: scaleX(1);

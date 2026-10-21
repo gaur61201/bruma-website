@@ -11,7 +11,7 @@
 import { Image } from 'astro:assets';
 import Icon from '../Icon.astro';
 import ArrowLink from '../ArrowLink.astro';
-import { galleryTiles, type GalleryTile } from '../../data/gallery';
+import { homeTiles, type GalleryTile } from '../../data/gallery';
 import { dirOf, fill, localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -21,10 +21,10 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const dir = dirOf(lang);
 
-const half = Math.ceil(galleryTiles.length / 2);
+const half = Math.ceil(homeTiles.length / 2);
 const rows: { tiles: GalleryTile[]; direction: 'to-left' | 'to-right' }[] = [
-  { tiles: galleryTiles.slice(0, half), direction: 'to-left' },
-  { tiles: galleryTiles.slice(half), direction: 'to-right' },
+  { tiles: homeTiles.slice(0, half), direction: 'to-left' },
+  { tiles: homeTiles.slice(half), direction: 'to-right' },
 ];
 const COPIES = 3;
 ---
