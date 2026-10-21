@@ -1,6 +1,7 @@
 ---
 // Specifications (#specs): a two-column table built from printerSpecs in src/config.ts, then
-// "What's in the box" from boxContents.
+// "What's in the box" from boxContents. The printer page's one extra carbon band: a spec sheet,
+// labels in mist, values in bone.
 import { boxContents, visiblePrinterSpecs } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
@@ -12,11 +13,11 @@ const sp = useTranslations(lang).printer.specs;
 const rows = visiblePrinterSpecs();
 ---
 
-<section id="specs" class="section-y specs" aria-labelledby="specs-title" data-reveal-section>
+<section id="specs" class="on-carbon section-y specs" aria-labelledby="specs-title" data-reveal-section>
   <div class="wrap specs-grid">
     <h2 id="specs-title" data-motion data-reveal="heading">{sp.h2}</h2>
     <div>
-      <div class="card specs-card" data-motion data-reveal="item">
+      <div class="specs-card" data-motion data-reveal="item">
         <table class="specs-table">
           <caption class="sr-only">{sp.caption}</caption>
           <tbody>
@@ -33,7 +34,7 @@ const rows = visiblePrinterSpecs();
       </div>
       <p class="specs-note" data-motion data-reveal="fade">{sp.note}</p>
       <h3 id="box-title" class="box-title" data-motion data-reveal="fade">{sp.boxTitle}</h3>
-      <div class="card specs-card" data-motion data-reveal="item">
+      <div class="specs-card" data-motion data-reveal="item">
         <ul class="box-list" aria-labelledby="box-title">
           {boxContents.map((b) => <li>{b.item[lang]}</li>)}
         </ul>
@@ -43,9 +44,6 @@ const rows = visiblePrinterSpecs();
 </section>
 
 <style>
-  .specs {
-    border-top: 1px solid var(--color-line);
-  }
   .specs-grid {
     display: grid;
     gap: 32px;
@@ -57,42 +55,41 @@ const rows = visiblePrinterSpecs();
       align-items: start;
     }
   }
+  /* Rules on carbon: bone at low strength. */
   .specs-card {
-    padding-inline: 24px;
+    border-block: 1px solid rgb(243 239 232 / 0.16);
   }
   .specs-table {
     width: 100%;
     border-collapse: collapse;
   }
   .specs-table tr + tr {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid rgb(243 239 232 / 0.16);
   }
   .specs-table th,
   .specs-table td {
-    padding-block: 16px;
+    padding-block: 20px;
     text-align: start;
     vertical-align: top;
   }
   .specs-table th {
     width: 40%;
     padding-inline-end: 16px;
-    font-weight: 400;
-    color: var(--color-stone);
+    font-weight: 500;
+    color: var(--color-mist);
     font-size: calc(var(--fs-small) * var(--script-scale));
     line-height: var(--body-leading);
   }
-  /* Values in Readex Pro 500. */
   .specs-table td {
     font-family: var(--font-body);
     font-weight: 500;
   }
   .specs-note {
     margin-block-start: 16px;
-    color: var(--color-stone);
     font-size: calc(var(--fs-small) * var(--script-scale));
   }
   .box-title {
-    margin-block: 48px 16px;
+    margin-block: 56px 16px;
   }
   .box-list {
     list-style: none;
@@ -104,6 +101,6 @@ const rows = visiblePrinterSpecs();
     font-weight: 500;
   }
   .box-list li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid rgb(243 239 232 / 0.16);
   }
 </style>

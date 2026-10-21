@@ -23,7 +23,9 @@ const parts = (text: string) => {
         const p = parts(item);
         return (
           <li data-motion>
-            <Icon name={icons[i]} size={28} class="proof-icon" />
+            <span class="icon-chip proof-icon">
+              <Icon name={icons[i]} size={24} />
+            </span>
             <span>
               {p.before}
               {p.count && (
@@ -41,12 +43,26 @@ const parts = (text: string) => {
 </section>
 
 <style>
+  /* A white card that floats up over the bottom of the hero media. */
+  .proof {
+    position: relative;
+    z-index: 2;
+    margin-block-start: -40px;
+  }
+  @media (min-width: 1024px) {
+    .proof {
+      margin-block-start: -72px;
+    }
+  }
   .proof-list {
     list-style: none;
     margin-block: 0;
-    padding: 0;
+    padding: 8px 20px;
     display: grid;
-    border-block: 1px solid var(--color-line);
+    background: var(--color-white);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card-hover);
   }
   .proof-list li {
     display: flex;
@@ -54,29 +70,32 @@ const parts = (text: string) => {
     gap: 16px;
     padding-block: 16px;
     font-weight: 500;
+    line-height: 1.4;
   }
   .proof-list li + li {
     border-top: 1px solid var(--color-line);
   }
-  :global(.proof-icon) {
-    flex-shrink: 0;
-  }
-  /* Fixed width with tabular digits, so counting up never moves the words around it. */
+  /* The number in each fact is set in the heading face, a step up. */
   .count {
     display: inline-block;
     text-align: end;
+    font-family: var(--font-heading);
+    font-size: 1.35em;
+    line-height: 1;
+    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
+  }
+  .count:lang(ar) {
+    font-family: var(--font-body);
   }
   @media (min-width: 768px) {
     .proof-list {
       grid-template-columns: repeat(3, 1fr);
+      padding: 8px 8px;
     }
     .proof-list li {
       padding-block: 24px;
       padding-inline: 24px;
-    }
-    .proof-list li:first-child {
-      padding-inline-start: 0;
     }
     .proof-list li + li {
       border-top: 0;

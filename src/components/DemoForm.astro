@@ -1,5 +1,6 @@
 ---
-// The demo section (carbon): heading and subline on one side, the form on the other.
+// The demo section: a carbon panel on bone, heading and subline on one side, the form on the other.
+// The bone gap above the (carbon) footer keeps the booking moment its own object.
 import DemoFormFields from './DemoFormFields.astro';
 import { useTranslations, type Lang } from '../i18n';
 
@@ -12,14 +13,16 @@ const { lang, pageName = 'home' } = Astro.props;
 const d = useTranslations(lang).demo;
 ---
 
-<section id="demo" class="on-carbon section-y" aria-labelledby="demo-title">
-  <div class="wrap demo-grid">
-    <div class="demo-intro">
-      <h2 id="demo-title" data-motion>{d.h2}</h2>
-      <p data-motion>{d.subline}</p>
-    </div>
+<section id="demo" class="section-y demo" aria-labelledby="demo-title">
+  <div class="wrap">
+    <div class="on-carbon panel demo-grid">
+      <div class="demo-intro">
+        <h2 id="demo-title" data-motion>{d.h2}</h2>
+        <p data-motion>{d.subline}</p>
+      </div>
 
-    <DemoFormFields lang={lang} pageName={pageName} />
+      <DemoFormFields lang={lang} pageName={pageName} />
+    </div>
   </div>
 </section>
 

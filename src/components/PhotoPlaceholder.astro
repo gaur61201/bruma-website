@@ -2,6 +2,8 @@
 // A clearly labelled photo placeholder (bone box, line border, caption) until real photos exist.
 // It reveals with the same clip-path rise as the homepage media: on load in a hero (`hero`), or on
 // scroll everywhere else (motion.ts, data-reveal="photo").
+import Icon from './Icon.astro';
+
 interface Props {
   caption: string;
   ratio?: string;
@@ -17,15 +19,18 @@ const { caption, ratio = '4 / 3', hero = false } = Astro.props;
   data-reveal={hero ? undefined : 'photo'}
 >
   <figure class="placeholder-media photo-frame">
+    <span class="placeholder-icon" aria-hidden="true"><Icon name="camera" size={24} /></span>
     <figcaption>{caption}</figcaption>
   </figure>
 </div>
 
 <style>
+  /* The shadow sits on the outer box: the inner frame is clipped by it while it settles. */
   .photo {
     width: 100%;
-    border-radius: var(--radius-card);
+    border-radius: var(--radius-media);
     overflow: hidden;
+    box-shadow: var(--shadow-media);
   }
   .photo-frame {
     margin: 0;

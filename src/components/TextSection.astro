@@ -1,22 +1,24 @@
 ---
 // A content section for the inner pages: heading in one column, content in the other on desktop,
-// stacked on mobile. Optional paragraphs and a divided list are rendered from props; anything else
-// goes in the slot after them. Motion comes from the generic data-reveal hooks in motion.ts.
+// stacked on mobile. Optional paragraphs, a divided list and a row of chips are rendered from props;
+// anything else goes in the slot after them. Motion comes from the generic data-reveal hooks in motion.ts.
 interface Props {
   /** id for the h2 (the section is labelled by it). */
   id: string;
   title: string;
   paragraphs?: string[];
   list?: string[];
+  /** Short items (place names) shown as a wrapping row of chips instead of a divided list. */
+  chips?: string[];
   /** Optional id on the section itself, for in-page links. */
   anchor?: string;
   /** Heading above full-width content (for wide content: step cards, tables), instead of two columns. */
   stacked?: boolean;
 }
-const { id, title, paragraphs = [], list = [], anchor, stacked = false } = Astro.props;
+const { id, title, paragraphs = [], list = [], chips = [], anchor, stacked = false } = Astro.props;
 ---
 
-<section id={anchor} class="section-y text-section" aria-labelledby={id} data-reveal-section>
+<section id={anchor} class="text-section" aria-labelledby={id} data-reveal-section>
   <div class:list={['wrap', 'text-section-grid', { stacked }]}>
     <h2 id={id} data-motion data-reveal="heading">{title}</h2>
     <div class="text-section-body">
@@ -32,14 +34,44 @@ const { id, title, paragraphs = [], list = [], anchor, stacked = false } = Astro
           </ul>
         )
       }
+      {
+        chips.length > 0 && (
+          <ul class="chip-list">
+            {chips.map((item) => (
+              <li class="chip" data-motion data-reveal="item">
+                {item}
+              </li>
+            ))}
+          </ul>
+        )
+      }
       <slot />
     </div>
   </div>
 </section>
 
 <style>
+  /* Text sections run tighter than the composed sections, divided by a rule inside the content
+     width rather than a full-bleed line. */
   .text-section {
+    padding-block: 56px;
+  }
+  @media (min-width: 1024px) {
+    .text-section {
+      padding-block: 88px;
+    }
+  }
+  .text-section + .text-section .text-section-grid {
+    padding-block-start: 56px;
     border-top: 1px solid var(--color-line);
+  }
+  .text-section + .text-section {
+    padding-block-start: 0;
+  }
+  @media (min-width: 1024px) {
+    .text-section + .text-section .text-section-grid {
+      padding-block-start: 88px;
+    }
   }
   .text-section-grid {
     display: grid;
@@ -83,5 +115,24 @@ const { id, title, paragraphs = [], list = [], anchor, stacked = false } = Astro
   }
   .divided-list li:last-child {
     border-bottom: 1px solid var(--color-line);
+  }
+  .chip-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
   }
 </style>

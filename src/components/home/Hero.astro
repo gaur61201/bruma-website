@@ -2,6 +2,7 @@
 import Icon from '../Icon.astro';
 import HeroVideo from './HeroVideo.astro';
 import HeroHeading from '../HeroHeading.astro';
+import PriceDisplay from '../PriceDisplay.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -11,6 +12,7 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
+<!-- The proof strip (next section) floats up over the bottom of the hero media. -->
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
     <div class="hero-copy">
@@ -18,11 +20,11 @@ const t = useTranslations(lang);
       <HeroHeading id="hero-title" text={t.hero.h1} />
       <p class="hero-subline hero-rise" style="--i:0">{t.hero.subline}</p>
       <div class="hero-price hero-rise" style="--i:1">
-        <p class="price">{t.hero.price}</p>
+        <PriceDisplay text={t.hero.price} />
         <p class="price-note">{t.hero.priceNote}</p>
       </div>
       <div class="hero-actions">
-        <a href="#demo" class="btn btn-primary hero-rise" style="--i:2">
+        <a href="#demo" class="btn btn-primary btn-large hero-rise" style="--i:2">
           <span>{t.hero.primaryCta}</span>
           <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
         </a>
@@ -40,11 +42,11 @@ const t = useTranslations(lang);
 
 <style>
   .hero {
-    padding-block: 24px 56px;
+    padding-block: 16px 0;
   }
   @media (min-width: 1024px) {
     .hero {
-      padding-block: 48px 96px;
+      padding-block: 40px 0;
     }
   }
   .hero-grid {
@@ -52,48 +54,48 @@ const t = useTranslations(lang);
     gap: 40px;
     align-items: center;
   }
+  /* Desktop: the media sits on the hero's bottom edge, where the proof card overlaps it; the copy
+     keeps clear of that strip. */
   @media (min-width: 1024px) {
     .hero-grid {
-      grid-template-columns: 7fr 5fr;
-      gap: 64px;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 56px;
+      align-items: end;
+    }
+    .hero-copy {
+      align-self: center;
+      padding-block: 24px 112px;
     }
   }
   .hero-copy {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
   }
   .hero-copy :global(h1) {
-    max-width: 12em;
+    max-width: 11em;
   }
   .hero-copy :global(h1:lang(ar)) {
-    max-width: 14em;
+    max-width: 13em;
   }
   .hero-subline {
-    max-width: 32rem;
+    max-width: 30rem;
   }
   .hero-price {
-    margin-block-start: 8px;
-    padding-block-start: 16px;
-    border-top: 1px solid var(--color-line);
-  }
-  .price {
-    font-weight: 500;
-    font-size: calc(var(--fs-h3) * var(--script-scale));
-    line-height: var(--heading-leading);
+    margin-block-start: 12px;
   }
   .price-note {
-    margin-block-start: 8px;
+    margin-block-start: 12px;
     font-size: calc(var(--fs-small) * var(--script-scale));
     color: var(--color-stone);
-    max-width: 32rem;
+    max-width: 30rem;
   }
   .hero-actions {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
-    margin-block-start: 8px;
+    margin-block-start: 12px;
   }
   .hero-actions .btn {
     width: 100%;
@@ -103,7 +105,7 @@ const t = useTranslations(lang);
       flex-direction: row;
       flex-wrap: wrap;
       align-items: center;
-      gap: 24px;
+      gap: 24px 32px;
     }
     .hero-actions .btn {
       width: auto;
@@ -111,7 +113,7 @@ const t = useTranslations(lang);
   }
   .hero-media {
     width: 100%;
-    max-width: 480px;
+    max-width: 440px;
     justify-self: center;
   }
   @media (min-width: 1024px) {

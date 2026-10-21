@@ -8,9 +8,12 @@ interface Props {
 const t = useTranslations(Astro.props.lang);
 ---
 
+<!-- Desktop: the heading holds its column (sticky) while the six cards run beside it, two by two. -->
 <section class="section-y included" aria-labelledby="included-title">
-  <div class="wrap">
-    <h2 id="included-title" data-motion>{t.included.h2}</h2>
+  <div class="wrap included-layout">
+    <div class="included-head">
+      <h2 id="included-title" data-motion>{t.included.h2}</h2>
+    </div>
     <ul class="included-grid">
       {
         t.included.cards.map((card) => (
@@ -22,23 +25,36 @@ const t = useTranslations(Astro.props.lang);
 </section>
 
 <style>
+  .included-layout {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .included-layout {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: 64px;
+      align-items: start;
+    }
+    .included-head {
+      position: sticky;
+      top: 112px;
+    }
+  }
   .included-grid {
     list-style: none;
-    margin: 32px 0 0;
+    margin: 0;
     padding: 0;
     display: grid;
     gap: 16px;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
     .included-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (min-width: 1024px) {
     .included-grid {
-      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
-      margin-block-start: 48px;
     }
   }
 </style>

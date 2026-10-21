@@ -26,7 +26,7 @@ const serviceHours = config.serviceHours[lang];
   <PageHero title={b.h1} subline={b.subline} />
   <div class="book">
     <div class="wrap book-grid">
-      <div id="demo" class="on-carbon book-panel hero-rise" style="--i:1">
+      <div id="demo" class="on-carbon panel book-panel hero-rise" style="--i:1">
         <DemoFormFields lang={lang} pageName="book-a-demo" reveal={false} />
       </div>
       <section class="book-next hero-rise" style="--i:2" aria-labelledby="next-title">
@@ -36,7 +36,7 @@ const serviceHours = config.serviceHours[lang];
     </div>
   </div>
   <TextSection id="before-title" title={b.before.h2} list={b.before.items} />
-  <TextSection id="where-title" title={b.where.h2} paragraphs={[b.where.text]} list={t.governorates.map((g) => g.label)} />
+  <TextSection id="where-title" title={b.where.h2} paragraphs={[b.where.text]} chips={t.governorates.map((g) => g.label)} />
   <TextSection id="contact-title" title={b.contact.h2}>
     <ContactList lang={lang} trackLocation="book_a_demo" />
     <p data-motion data-reveal="fade">{t.demo.replyTime}</p>
@@ -47,11 +47,11 @@ const serviceHours = config.serviceHours[lang];
 
 <style>
   .book {
-    padding-block-end: 64px;
+    padding-block-end: 72px;
   }
   @media (min-width: 1024px) {
     .book {
-      padding-block-end: 96px;
+      padding-block-end: 128px;
     }
   }
   .book-grid {
@@ -65,11 +65,7 @@ const serviceHours = config.serviceHours[lang];
       align-items: start;
     }
   }
-  .book-panel {
-    padding: 32px 16px;
-    border-radius: var(--radius-card);
-  }
-  @media (min-width: 640px) {
+  @media (min-width: 1024px) {
     .book-panel {
       padding: 48px;
     }

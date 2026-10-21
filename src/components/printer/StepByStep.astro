@@ -1,6 +1,7 @@
 ---
-// "Step by step": the homepage's four steps in detail. Photo and text side by side on desktop,
-// alternating sides (the grid mirrors in Arabic); stacked on mobile.
+// "Step by step": the homepage's four steps in detail. Each step is a wide photo with a white copy
+// card overlapping its edge, alternating sides on desktop (the grid mirrors in Arabic); on mobile the
+// card overlaps the bottom of the photo.
 import PhotoPlaceholder from '../PhotoPlaceholder.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
@@ -18,7 +19,7 @@ const s = useTranslations(Astro.props.lang).printer.steps;
         s.items.map((step, i) => (
           <li class:list={['step-row', { 'step-row-flip': i % 2 === 1 }]}>
             <PhotoPlaceholder caption={step.photo} ratio="4 / 3" />
-            <div class="step-copy" data-motion data-reveal="item">
+            <div class="step-copy card" data-motion data-reveal="item">
               <span class="step-index ltr" aria-hidden="true">
                 {i + 1}
               </span>
@@ -34,55 +35,70 @@ const s = useTranslations(Astro.props.lang).printer.steps;
 </section>
 
 <style>
-  .step-detail {
-    border-top: 1px solid var(--color-line);
-  }
   .step-rows {
     list-style: none;
     margin: 32px 0 0;
     padding: 0;
     display: grid;
-    gap: 48px;
+    gap: 56px;
   }
   .step-row {
     display: grid;
-    gap: 24px;
     align-items: center;
   }
-  @media (min-width: 1024px) {
-    .step-rows {
-      gap: 64px;
-      margin-block-start: 48px;
-    }
-    .step-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-    }
-    .step-row-flip :global(.photo) {
-      order: 2;
-    }
-  }
   .step-copy {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    max-width: 32rem;
+    margin: -48px 16px 0;
+    padding: 28px 24px;
+    box-shadow: var(--shadow-card-hover);
+  }
+  @media (min-width: 1024px) {
+    .step-rows {
+      gap: 96px;
+      margin-block-start: 64px;
+    }
+    .step-row {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+    .step-copy {
+      margin: 0;
+      margin-inline-start: -96px;
+      padding: 40px;
+    }
+    /* Every other step: the photo on the other side, the card overlapping it from there. */
+    .step-row-flip {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+    .step-row-flip :global(.photo) {
+      order: 2;
+    }
+    .step-row-flip .step-copy {
+      margin-inline: 0 -96px;
+    }
   }
   .step-index {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    margin-block-end: 8px;
+    width: 48px;
+    height: 48px;
+    margin-block-end: 12px;
     border-radius: 50%;
     background: var(--color-carbon);
     color: var(--color-bone);
+    font-family: var(--font-heading);
     font-weight: 500;
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--fs-body) * var(--script-scale));
+  }
+  .step-index:lang(ar) {
+    font-family: var(--font-body);
   }
   .step-footnote {
-    margin-block-start: 48px;
+    margin-block-start: 56px;
     font-weight: 500;
   }
 </style>

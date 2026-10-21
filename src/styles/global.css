@@ -30,6 +30,10 @@
   --radius-pill: 999px;
   --radius-card: 16px;
   --radius-input: 12px;
+  /* Photos, video and their placeholders. */
+  --radius-media: 24px;
+  /* The carbon panels that float on bone (calculator, demo form). */
+  --radius-panel: 28px;
 
   --container-content: 1200px;
   --gutter: 16px;
@@ -38,9 +42,9 @@
 }
 
 /*
- * Type scale, fluid from 375px to ~1280px (H1 32→56, H2 26→40, H3 20→24, body 16→18, small 14).
- * Arabic sits about 12% larger: --script-scale is multiplied in at each element (inline), so a
- * lang="ar" block inside an English page scales too.
+ * Type scale, fluid from 375px to ~1280px (H1 38→80, H2 28→48, H3 20→24, body 16→18, small 14,
+ * display numerals 40→64). Arabic sits about 12% larger: --script-scale is multiplied in at each
+ * element (inline), so a lang="ar" block inside an English page scales too.
  */
 @theme inline {
   --text-h1: calc(var(--fs-h1) * var(--script-scale));
@@ -59,21 +63,40 @@
 
 @layer base {
   :root {
-    --fs-h1: clamp(2rem, 1.379rem + 2.652vw, 3.5rem);
-    --fs-h2: clamp(1.625rem, 1.2624rem + 1.547vw, 2.5rem);
+    --fs-h1: clamp(2.375rem, 1.2875rem + 4.641vw, 5rem);
+    --fs-h2: clamp(1.75rem, 1.232rem + 2.21vw, 3rem);
     --fs-h3: clamp(1.25rem, 1.146rem + 0.442vw, 1.5rem);
     --fs-body: clamp(1rem, 0.948rem + 0.221vw, 1.125rem);
     --fs-small: 0.875rem;
     --fs-stat: clamp(2rem, 1.586rem + 1.768vw, 3rem);
+    /* Prices set as numerals (hero, plan cards). */
+    --fs-display: clamp(2.5rem, 1.878rem + 2.652vw, 4rem);
     --script-scale: 1;
-    --heading-leading: 1.15;
+    --h1-leading: 1.08;
+    --heading-leading: 1.12;
+    /* Unbounded is wide: tighten it a touch at heading sizes (English only; Arabic resets to 0). */
+    --heading-tracking: -0.02em;
     --body-leading: 1.6;
     --focus: var(--color-carbon);
     color-scheme: light;
+
+    /*
+     * Depth: soft, layered shadows tinted from carbon (no new colour). Each has a tight contact
+     * shadow and a wide, low ambient one.
+     */
+    --shadow-sm: 0 1px 2px rgb(14 17 19 / 0.06), 0 2px 6px -2px rgb(14 17 19 / 0.08);
+    --shadow-card: 0 1px 2px rgb(14 17 19 / 0.04), 0 4px 10px -4px rgb(14 17 19 / 0.07), 0 20px 40px -20px rgb(14 17 19 / 0.16);
+    --shadow-card-hover: 0 1px 2px rgb(14 17 19 / 0.04), 0 10px 20px -8px rgb(14 17 19 / 0.1), 0 32px 56px -24px rgb(14 17 19 / 0.22);
+    --shadow-media: 0 2px 4px rgb(14 17 19 / 0.04), 0 20px 44px -18px rgb(14 17 19 / 0.2), 0 56px 100px -44px rgb(14 17 19 / 0.24);
+    --shadow-panel: 0 4px 10px rgb(14 17 19 / 0.08), 0 36px 72px -28px rgb(14 17 19 / 0.4), 0 72px 128px -56px rgb(14 17 19 / 0.32);
+
+    /* A very fine carbon grain for bone surfaces: an SVG noise tile, about 0.5 KB. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .055 0 0 0 0 .067 0 0 0 0 .075 0 0 0 .16 -.045'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   }
 
   :lang(ar) {
     --script-scale: 1.12;
+    --h1-leading: 1.25;
     --heading-leading: 1.25;
     --body-leading: 1.8;
   }
@@ -99,7 +122,7 @@
   }
 
   body {
-    background: var(--color-bone);
+    background: var(--color-bone) var(--grain);
     color: var(--color-carbon);
     font-family: var(--font-body);
     font-weight: 400;
@@ -116,7 +139,11 @@
     font-family: var(--font-heading);
     font-weight: 500;
     line-height: var(--heading-leading);
+    letter-spacing: var(--heading-tracking);
     text-wrap: balance;
+  }
+  h3 {
+    letter-spacing: -0.01em;
   }
 
   /* Unbounded has no Arabic: Arabic headings use Readex Pro. */
@@ -129,6 +156,7 @@
 
   h1 {
     font-size: calc(var(--fs-h1) * var(--script-scale));
+    line-height: var(--h1-leading);
   }
   h2 {
     font-size: calc(var(--fs-h2) * var(--script-scale));
@@ -164,6 +192,11 @@
     color: var(--color-bone);
   }
 
+  ::selection {
+    background: var(--color-mist);
+    color: var(--color-carbon);
+  }
+
   [hidden] {
     display: none !important;
   }
@@ -181,9 +214,32 @@
 }
 
 @utility section-y {
-  padding-block: 64px;
+  padding-block: 72px;
   @media (min-width: 1024px) {
-    padding-block: 96px;
+    padding-block: 128px;
+  }
+}
+
+/* Space between a section's H2 and its content. */
+@utility section-head-gap {
+  margin-block-start: 32px;
+  @media (min-width: 1024px) {
+    margin-block-start: 56px;
+  }
+}
+
+/* A carbon panel floating on bone (the calculator, the demo form). */
+@utility panel {
+  background: var(--color-carbon);
+  color: var(--color-bone);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  padding: 32px 20px;
+  @media (min-width: 640px) {
+    padding: 48px;
+  }
+  @media (min-width: 1024px) {
+    padding: 64px;
   }
 }
 
@@ -213,8 +269,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-height: 48px;
+    gap: 12px;
+    min-height: 52px;
     padding-inline: 24px;
     padding-block: 8px;
     border-radius: var(--radius-pill);
@@ -226,13 +282,17 @@
     text-align: center;
     text-decoration: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     transition:
       border-color 200ms ease,
       background-color 200ms ease,
-      transform 150ms ease;
+      box-shadow 200ms ease,
+      translate 160ms var(--ease-out);
   }
+  /* Pressed: the button sinks 1px and its drop shadow collapses into an inner one. */
   .btn:active {
-    transform: translateY(1px);
+    translate: 0 1px;
+    transition-duration: 60ms;
   }
   .btn:disabled,
   .btn[aria-disabled='true'] {
@@ -240,11 +300,37 @@
     opacity: 0.7;
   }
 
-  /* Vapor fill, always with carbon text. The hover darkening is in the Motion section below. */
+  /*
+   * Vapor fill, always with carbon text. A white top highlight and a carbon-tinted drop shadow give
+   * it body; the hover darkening is in the Motion section below.
+   */
   .btn-primary {
     background: var(--color-vapor);
     border-color: var(--color-vapor);
     color: var(--color-carbon);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.32),
+      inset 0 -1px 0 rgb(14 17 19 / 0.12),
+      0 1px 2px rgb(14 17 19 / 0.14),
+      0 8px 16px -8px rgb(14 17 19 / 0.4);
+  }
+  .btn-primary:active {
+    box-shadow:
+      inset 0 2px 4px rgb(14 17 19 / 0.22),
+      0 0 0 rgb(14 17 19 / 0);
+  }
+  /* The arrow sits in a small carbon disc at the end of primary buttons. */
+  .btn-primary:has(.btn-arrow) {
+    padding-inline-end: 10px;
+  }
+  .btn-primary .btn-arrow {
+    box-sizing: content-box;
+    width: 18px;
+    height: 18px;
+    padding: 7px;
+    border-radius: 50%;
+    background: var(--color-carbon);
+    color: var(--color-bone);
   }
 
   .btn-outline {
@@ -253,7 +339,16 @@
     color: var(--color-carbon);
   }
   .btn-outline:hover {
-    background: var(--color-bone);
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-large {
+    min-height: 60px;
+    padding-inline-start: 28px;
+  }
+  .btn-large:not(:has(.btn-arrow)) {
+    padding-inline-end: 28px;
   }
 
   .btn-small {
@@ -266,6 +361,10 @@
   .text-link {
     color: var(--color-deep-teal);
     font-weight: 500;
+  }
+  /* Text links on carbon: bone, never deep teal (which fails contrast there). */
+  .on-carbon .text-link {
+    color: var(--color-bone);
   }
 
   /* A text link with a trailing arrow (the arrow nudges on hover; Motion section). */
@@ -306,23 +405,74 @@
     letter-spacing: 0.08em;
   }
 
+  /*
+   * White cards lift off bone with a soft layered shadow instead of a 1px line. The transparent
+   * border keeps an outline in forced-colours mode, where shadows don't draw.
+   */
   .card {
     background: var(--color-white);
-    border: 1px solid var(--color-line);
+    border: 1px solid transparent;
     border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
   }
 
-  /* Placeholder for media that doesn't exist yet: a bone box with a line border and a caption. */
-  .placeholder-media {
+  /* An outline icon in a small bone disc (cards, lists). */
+  .icon-chip {
     display: grid;
     place-items: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
     background: var(--color-bone);
+    color: var(--color-carbon);
+  }
+  /* On bone, the disc is white and raised instead. */
+  .icon-chip-raised {
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /*
+   * Placeholder for media that doesn't exist yet: a bone box with a line border and a caption,
+   * framed like a mounted photo (grain, an inner mat line, a soft shadow) so it reads as a
+   * deliberate frame waiting for its picture, not a hole in the page.
+   */
+  .placeholder-media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 12px;
+    background: var(--color-bone) var(--grain);
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-card);
+    border-radius: var(--radius-media);
     color: var(--color-stone);
     font-size: calc(var(--fs-small) * var(--script-scale));
     text-align: center;
-    padding: 16px;
+    padding: 24px;
+  }
+  .placeholder-media::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid var(--color-line);
+    border-radius: calc(var(--radius-media) - 12px);
+    pointer-events: none;
+  }
+  .placeholder-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-white);
+    color: var(--color-carbon);
+    box-shadow: var(--shadow-sm);
+  }
+  .placeholder-media figcaption,
+  .placeholder-caption {
+    max-width: 22em;
   }
 }
 
@@ -444,15 +594,15 @@
   transform: scaleX(1);
 }
 
-/* Cards that lift on hover (desktop): up 4px, border turns carbon. No shadows. */
+/* Cards that lift on hover (desktop): up 4px while the shadow deepens. */
 .lift {
   transition:
     translate 250ms var(--ease-power3),
-    border-color 250ms ease;
+    box-shadow 250ms var(--ease-power3);
 }
 @media (hover: hover) and (min-width: 1024px) {
   .lift:hover {
-    border-color: var(--color-carbon);
+    box-shadow: var(--shadow-card-hover);
   }
 }
 
@@ -499,12 +649,13 @@
     transform: translateY(24px);
   }
 }
+/* The clip opens past the frame's edges (negative insets) so its soft shadow is never cut off. */
 @keyframes hero-media {
   from {
-    clip-path: inset(100% 0 0 0);
+    clip-path: inset(100% -30% 0 -30%);
   }
   to {
-    clip-path: inset(0);
+    clip-path: inset(-30%);
   }
 }
 @keyframes hero-media-settle {

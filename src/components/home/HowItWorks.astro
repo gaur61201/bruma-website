@@ -31,7 +31,7 @@ const last = t.how.steps.length - 1;
               {i < last && <span class="step-link" />}
             </div>
             <div class="step-card card" data-motion>
-              <Icon name={icons[i]} size={32} />
+              <span class="icon-chip"><Icon name={icons[i]} size={26} /></span>
               <h3>{step.title}</h3>
               <p>{step.text}</p>
             </div>
@@ -48,9 +48,6 @@ const last = t.how.steps.length - 1;
 </section>
 
 <style>
-  .how {
-    border-top: 1px solid var(--color-line);
-  }
   .steps {
     list-style: none;
     margin: 32px 0 0;
@@ -124,8 +121,13 @@ const last = t.how.steps.length - 1;
     gap: 8px;
     padding: 24px;
   }
-  .step-card :global(svg) {
-    margin-block-end: 8px;
+  .step-card .icon-chip {
+    margin-block-end: 12px;
+  }
+  @media (min-width: 1024px) {
+    .step-card {
+      padding: 28px;
+    }
   }
 
   /* Desktop: four columns, markers in a row above the cards, joined by a horizontal line. */

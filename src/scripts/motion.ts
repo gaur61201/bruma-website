@@ -357,7 +357,8 @@ export function initMotion() {
     if (!claim([el], el)) return;
     const inner = el.firstElementChild as HTMLElement | null;
     const tl = gsap.timeline({ scrollTrigger: once(el), defaults: { duration: 0.9, ease: 'expo.out' } });
-    tl.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', clearProps: 'clipPath' }, 0);
+    // The clip opens past the frame's edges so its shadow isn't cut off while it rises.
+    tl.fromTo(el, { clipPath: 'inset(100% -30% 0% -30%)' }, { clipPath: 'inset(-30% -30% -30% -30%)', clearProps: 'clipPath' }, 0);
     if (inner) tl.fromTo(inner, { scale: 1.06 }, { scale: 1, clearProps: 'transform' }, 0);
   };
 

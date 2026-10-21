@@ -44,7 +44,7 @@ const COPIES = 3;
                 {row.tiles.map((tile) => {
                   const credited = tile.image && tile.technician && tile.area;
                   return (
-                    <li class="tile card" dir={dir}>
+                    <li class:list={['tile', { 'tile-photo': tile.image }]} dir={dir}>
                       {tile.image ? (
                         <figure class="tile-figure">
                           <Image
@@ -64,7 +64,12 @@ const COPIES = 3;
                           )}
                         </figure>
                       ) : (
-                        <span class="tile-placeholder">{t.gallery.tilePlaceholder}</span>
+                        <div class="placeholder-media tile-placeholder">
+                          <span class="placeholder-icon" aria-hidden="true">
+                            <Icon name="camera" size={22} />
+                          </span>
+                          <span class="placeholder-caption">{t.galleryPage.placeholders[tile.category]}</span>
+                        </div>
                       )}
                     </li>
                   );
@@ -119,12 +124,11 @@ const COPIES = 3;
   }
   .marquee {
     display: grid;
-    gap: 16px;
-    margin-block-start: 32px;
+    margin-block-start: 16px;
   }
   @media (min-width: 1024px) {
     .marquee {
-      margin-block-start: 48px;
+      margin-block-start: 32px;
     }
   }
 
@@ -136,6 +140,8 @@ const COPIES = 3;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--gutter);
     padding-inline: var(--gutter);
+    /* Room for the tiles' shadows: the moving rows clip at their padding edge. */
+    padding-block: 12px 28px;
     scrollbar-width: none;
   }
   .marquee-row::-webkit-scrollbar {
@@ -166,8 +172,13 @@ const COPIES = 3;
     flex-shrink: 0;
     width: 60vw;
     aspect-ratio: 1;
-    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
     scroll-snap-align: start;
+  }
+  .tile-photo {
+    overflow: hidden;
+    background: var(--color-white);
   }
   @media (min-width: 768px) {
     .tile {
@@ -175,13 +186,11 @@ const COPIES = 3;
     }
   }
   .tile-placeholder {
-    display: grid;
-    place-items: center;
     height: 100%;
-    padding: 16px;
-    color: var(--color-stone);
-    font-size: calc(var(--fs-small) * var(--script-scale));
-    text-align: center;
+    border-radius: inherit;
+  }
+  .tile-placeholder::after {
+    border-radius: 8px;
   }
   .tile-figure {
     margin: 0;
@@ -269,7 +278,7 @@ const COPIES = 3;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-block-start: 24px;
+    margin-block-start: 8px;
   }
   .gallery-foot-text {
     display: flex;

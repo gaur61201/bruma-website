@@ -15,7 +15,7 @@ const Heading = `h${level}` as 'h3' | 'h4';
 ---
 
 <li class="card icon-card lift" data-motion data-reveal={reveal ? 'item' : undefined}>
-  <Icon name={icon as IconName} size={32} draw />
+  <span class="icon-chip"><Icon name={icon as IconName} size={26} draw /></span>
   <Heading class="icon-card-title">{title}</Heading>
   <p>{text}</p>
 </li>
@@ -25,10 +25,15 @@ const Heading = `h${level}` as 'h3' | 'h4';
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 24px;
+    padding: 28px;
+  }
+  @media (min-width: 1024px) {
+    .icon-card {
+      padding: 32px;
+    }
   }
   .icon-card-title {
-    margin-block-start: 8px;
+    margin-block-start: 16px;
     font-family: var(--font-heading);
     font-weight: 500;
     font-size: calc(var(--fs-h3) * var(--script-scale));

@@ -1,6 +1,7 @@
 ---
 // Wear-test results: the day 1 / 7 / 14 strip when flags.showWearTestResults is on; until then, an
 // invitation to see the photos at the demo. Used on the printer and gallery pages.
+import Icon from './Icon.astro';
 import PhotoPlaceholder from './PhotoPlaceholder.astro';
 import { config } from '../config';
 import { fill, useTranslations, type Lang } from '../i18n';
@@ -22,16 +23,22 @@ const w = useTranslations(Astro.props.lang).wearTest;
       ))}
     </ul>
   ) : (
-    <p class="wear-ask" data-motion data-reveal="fade">
-      {w.ask}
+    <p class="wear-ask card" data-motion data-reveal="fade">
+      <span class="icon-chip" aria-hidden="true"><Icon name="camera" size={24} /></span>
+      <span>{w.ask}</span>
     </p>
   )
 }
 
 <style>
+  /* Until results are confirmed: a small card inviting the salon to see the photos at the demo. */
   .wear-ask {
-    color: var(--color-stone);
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 16px;
+    padding-inline: 16px 24px;
+    font-weight: 500;
   }
   .wear-strip {
     list-style: none;

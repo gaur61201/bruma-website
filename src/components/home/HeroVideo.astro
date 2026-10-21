@@ -45,7 +45,7 @@ const poster = posterSrc ? await getImage({ src: posterSrc, width: 800, height: 
     </figure>
   ) : (
     <figure class="hero-media-frame placeholder-media">
-      <Icon name="play" size={32} />
+      <span class="placeholder-icon" aria-hidden="true"><Icon name="play" size={24} /></span>
       <figcaption>{t.hero.mediaCaption}</figcaption>
     </figure>
   )
@@ -89,11 +89,8 @@ const poster = posterSrc ? await getImage({ src: posterSrc, width: 800, height: 
     aspect-ratio: 4 / 5;
     width: 100%;
     overflow: hidden;
-    border-radius: var(--radius-card);
-  }
-  .placeholder-media {
-    gap: 8px;
-    align-content: center;
+    border-radius: var(--radius-media);
+    box-shadow: var(--shadow-media);
   }
   .hero-video {
     display: block;
