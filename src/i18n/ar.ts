@@ -84,6 +84,7 @@ export const ar: Dict = {
   gallery: {
     h2: 'تصاميم ستطلبها عميلاتك',
     tilePlaceholder: 'صورة: تصميم مطبوع على ظفر',
+    sampleLabel: 'تصاميم نموذجية',
     credit: 'تصميم: {technician}، {area}',
     note: 'تصاميم جاهزة للاختيار من المكتبة المدمجة في الطابعة.',
     rowLabels: ['تصاميم مطبوعة، الصف الأول', 'تصاميم مطبوعة، الصف الثاني'],
@@ -274,12 +275,13 @@ export const ar: Dict = {
     subline: 'تصاميم ستطلبها عميلاتك، تُطبع في ثوانٍ.',
     gridTitle: 'التصاميم',
     filterLabel: 'تصفية التصاميم حسب النمط',
-    categories: { all: 'الكل', gulf: 'خليجي', bridal: 'عرائس', minimal: 'بسيط', seasonal: 'مواسم' },
+    categories: { all: 'الكل', gulf: 'خليجي', bridal: 'عرائس', minimal: 'بسيط', seasonal: 'مواسم', playful: 'مرح' },
     placeholders: {
       gulf: 'صورة: تصميم أظافر خليجي',
       bridal: 'صورة: تصميم أظافر للعرائس',
       minimal: 'صورة: تصميم أظافر بسيط',
       seasonal: 'صورة: تصميم أظافر موسمي',
+      playful: 'صورة: تصميم أظافر مرح',
     },
     count: (n: number) => arCount(n, forms.designs),
     lightbox: {

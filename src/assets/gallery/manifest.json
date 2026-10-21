@@ -1,0 +1,212 @@
+[
+  {
+    "file": "sample-01.png",
+    "category": "bridal",
+    "alt": {
+      "en": "Nude almond nails with white flower accents and gold dots",
+      "ar": "أظافر لوزية بلون نود مع زهور بيضاء ونقاط ذهبية"
+    },
+    "width": 300,
+    "height": 298
+  },
+  {
+    "file": "sample-02.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Red French tips with cherry designs",
+      "ar": "أطراف فرنسية حمراء مع رسومات كرز"
+    },
+    "width": 305,
+    "height": 298
+  },
+  {
+    "file": "sample-03.png",
+    "category": "minimal",
+    "alt": {
+      "en": "Nude nails with black bows and fine black tips",
+      "ar": "أظافر نود مع فيونكات سوداء وأطراف سوداء رفيعة"
+    },
+    "width": 300,
+    "height": 298
+  },
+  {
+    "file": "sample-04.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Lilac floral marble nails",
+      "ar": "أظافر بنقشة رخامية زهرية بلون الليلك"
+    },
+    "width": 301,
+    "height": 301
+  },
+  {
+    "file": "sample-05.png",
+    "category": "minimal",
+    "alt": {
+      "en": "Deep red nails with a gold heart outline",
+      "ar": "أظافر حمراء داكنة مع قلب ذهبي"
+    },
+    "width": 300,
+    "height": 298
+  },
+  {
+    "file": "sample-06.png",
+    "category": "bridal",
+    "alt": {
+      "en": "Nude nails with raised white flowers",
+      "ar": "أظافر نود مع زهور بيضاء بارزة"
+    },
+    "width": 300,
+    "height": 296
+  },
+  {
+    "file": "sample-07.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Nude nails with blue swirl tips",
+      "ar": "أظافر نود مع أطراف بدوامات زرقاء"
+    },
+    "width": 305,
+    "height": 310
+  },
+  {
+    "file": "sample-08.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Nude nails with cherries and black tips",
+      "ar": "أظافر نود مع رسومات كرز وأطراف سوداء"
+    },
+    "width": 301,
+    "height": 311
+  },
+  {
+    "file": "sample-09.png",
+    "category": "minimal",
+    "alt": {
+      "en": "Sky-blue cloud marble nails with gold details",
+      "ar": "أظافر بنقشة غيوم زرقاء مع تفاصيل ذهبية"
+    },
+    "width": 301,
+    "height": 298
+  },
+  {
+    "file": "sample-10.png",
+    "category": "bridal",
+    "alt": {
+      "en": "Nude nails with a white bow and silver glitter tips",
+      "ar": "أظافر نود مع فيونكة بيضاء وأطراف لامعة فضية"
+    },
+    "width": 300,
+    "height": 302
+  },
+  {
+    "file": "sample-11.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Tortoiseshell French tips with gold details",
+      "ar": "أطراف فرنسية بنقشة صدف السلحفاة مع تفاصيل ذهبية"
+    },
+    "width": 305,
+    "height": 301
+  },
+  {
+    "file": "sample-12.png",
+    "category": "minimal",
+    "alt": {
+      "en": "Black French tips with star designs",
+      "ar": "أطراف فرنسية سوداء مع رسومات نجوم"
+    },
+    "width": 299,
+    "height": 301
+  },
+  {
+    "file": "sample-13.png",
+    "category": "minimal",
+    "alt": {
+      "en": "Nude nails with icy blue glitter tips",
+      "ar": "أظافر نود مع أطراف لامعة بالأزرق الجليدي"
+    },
+    "width": 304,
+    "height": 298
+  },
+  {
+    "file": "sample-14.png",
+    "category": "seasonal",
+    "alt": {
+      "en": "Nude nails with red cherries and dots",
+      "ar": "أظافر نود مع رسومات كرز ونقاط حمراء"
+    },
+    "width": 301,
+    "height": 296
+  },
+  {
+    "file": "sample-15.png",
+    "category": "bridal",
+    "alt": {
+      "en": "Nude nails with a gold bow accent",
+      "ar": "أظافر نود مع فيونكة ذهبية"
+    },
+    "width": 300,
+    "height": 309
+  },
+  {
+    "file": "sample-16.png",
+    "category": "bridal",
+    "alt": {
+      "en": "Nude nails with white flowers and gold dots",
+      "ar": "أظافر نود مع زهور بيضاء ونقاط ذهبية"
+    },
+    "width": 299,
+    "height": 311
+  },
+  {
+    "file": "sample-17.png",
+    "category": "playful",
+    "alt": {
+      "en": "Pink cherry blossom nails with fox-mask designs",
+      "ar": "أظافر وردية بزهر الكرز مع رسومات قناع ثعلب"
+    },
+    "width": 317,
+    "height": 344
+  },
+  {
+    "file": "sample-18.png",
+    "category": "playful",
+    "alt": {
+      "en": "Pastel nails with moons, stars and bunnies",
+      "ar": "أظافر بألوان باستيل مع أقمار ونجوم وأرانب"
+    },
+    "width": 318,
+    "height": 344
+  },
+  {
+    "file": "sample-19.png",
+    "category": "playful",
+    "alt": {
+      "en": "Sky-blue nails with stars, clouds and a pink bow",
+      "ar": "أظافر زرقاء مع نجوم وغيوم وفيونكة وردية"
+    },
+    "width": 317,
+    "height": 269
+  },
+  {
+    "file": "sample-20.png",
+    "category": "playful",
+    "alt": {
+      "en": "Pink and white nails with teddy bears and bows",
+      "ar": "أظافر وردية وبيضاء مع دببة وفيونكات"
+    },
+    "width": 315,
+    "height": 269
+  },
+  {
+    "file": "sample-21.png",
+    "category": "playful",
+    "alt": {
+      "en": "Navy nails with gold stars and a crescent moon",
+      "ar": "أظافر كحلية مع نجوم ذهبية وهلال"
+    },
+    "width": 317,
+    "height": 273
+  }
+]

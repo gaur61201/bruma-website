@@ -82,6 +82,7 @@ export const en = {
   gallery: {
     h2: 'Designs your clients will ask for',
     tilePlaceholder: 'Photo: printed nail design',
+    sampleLabel: 'Sample designs',
     credit: 'Design by {technician}, {area}',
     note: "Choose from the printer’s built-in design library.",
     rowLabels: ['Printed designs, row 1', 'Printed designs, row 2'],
@@ -274,12 +275,13 @@ export const en = {
     subline: 'Designs your clients will ask for, printed in seconds.',
     gridTitle: 'Designs',
     filterLabel: 'Filter designs by style',
-    categories: { all: 'All', gulf: 'Gulf', bridal: 'Bridal', minimal: 'Minimal', seasonal: 'Seasonal' },
+    categories: { all: 'All', gulf: 'Gulf', bridal: 'Bridal', minimal: 'Minimal', seasonal: 'Seasonal', playful: 'Playful' },
     placeholders: {
       gulf: 'Photo: Gulf nail design',
       bridal: 'Photo: bridal nail design',
       minimal: 'Photo: minimal nail design',
       seasonal: 'Photo: seasonal nail design',
+      playful: 'Photo: playful nail design',
     },
     count: (n: number) => enCount(n, 'design', 'designs'),
     lightbox: {

@@ -7,7 +7,7 @@
 // - Rows move only while the section is on screen. To stop them (WCAG 2.2.2): the pause button
 //   beside "See all designs", hovering a row, or focusing it from the keyboard.
 // - Without JS or under prefers-reduced-motion, rows are plain horizontal scroll strips with snap.
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import Icon from '../Icon.astro';
 import ArrowLink from '../ArrowLink.astro';
 import { homeTiles, type GalleryTile } from '../../data/gallery';
@@ -49,13 +49,12 @@ const isolate = (s: string) => `⁨${s}⁩`;
                     <li class:list={['tile', { 'tile-photo': tile.image }]} dir={dir}>
                       {tile.image ? (
                         <figure class="tile-figure">
-                          <Image
+                          <Picture
                             src={tile.image}
-                            alt={tile.alt?.[lang] ?? ''}
-                            width={280}
-                            height={280}
-                            densities={[1, 2]}
-                            fit="cover"
+                            alt={copy > 0 ? '' : (tile.alt?.[lang] ?? '')}
+                            width={tile.image.width}
+                            height={tile.image.height}
+                            formats={['avif', 'webp']}
                             loading="lazy"
                             class="tile-img"
                           />
@@ -87,6 +86,7 @@ const isolate = (s: string) => `⁨${s}⁩`;
 
   <div class="wrap gallery-foot">
     <div class="gallery-foot-text">
+      <p class="eyebrow">{t.gallery.sampleLabel}</p>
       <p class="gallery-note" data-motion>{t.gallery.note}</p>
       <ArrowLink href={localizedPath('/gallery/', lang)} text={t.gallery.allLink} />
     </div>
@@ -199,10 +199,15 @@ const isolate = (s: string) => `⁨${s}⁩`;
     margin: 0;
     height: 100%;
   }
+  /* Photos fill the square frame, centred; never served above their natural size. */
+  .tile-figure :global(picture) {
+    display: contents;
+  }
   .tile-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
   }
   .tile-caption {
     position: absolute;

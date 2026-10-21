@@ -116,12 +116,19 @@ function initLightbox(tiles: HTMLElement[]) {
   const show = (opener: HTMLButtonElement) => {
     current = opener;
     const list = openers();
-    const { full, alt, placeholder } = opener.dataset;
+    const { full, alt, placeholder, w, h } = opener.dataset;
     if (full) {
       const img = document.createElement('img');
       img.src = full;
       img.alt = alt ?? '';
       img.decoding = 'async';
+      // Shown as large as the viewer allows, but never above 1.5x the photo's natural size.
+      if (w && h) {
+        img.width = Number(w);
+        img.height = Number(h);
+        img.style.width = `min(100%, ${Number(w) * 1.5}px)`;
+        img.style.height = `min(100%, ${Number(h) * 1.5}px)`;
+      }
       media.replaceChildren(img);
     } else {
       const box = document.createElement('div');

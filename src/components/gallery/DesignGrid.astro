@@ -2,7 +2,7 @@
 // The gallery page's designs: style filters, a 2-column (mobile) / 4-column (desktop) grid and a
 // lightbox. Filtering is animated with GSAP Flip when motion is allowed (src/scripts/gallery.ts).
 // Without JS every design shows and the filters are hidden; the tiles stay plain pictures.
-import { Image, getImage } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import Icon from '../Icon.astro';
 import ArrowLink from '../ArrowLink.astro';
 import { config } from '../../config';
@@ -17,7 +17,8 @@ const t = useTranslations(lang);
 const g = t.galleryPage;
 
 type Filter = 'all' | GalleryCategory;
-const filters: Filter[] = ['all', ...galleryCategories];
+// A style gets a filter button only when it has at least one tile; "All" always shows.
+const filters: Filter[] = ['all', ...galleryCategories.filter((c) => galleryTiles.some((tile) => tile.category === c))];
 const countOf = (f: Filter) => (f === 'all' ? galleryTiles.length : galleryTiles.filter((tile) => tile.category === f).length);
 
 // First-strong isolates keep a Latin name inside an Arabic caption (or the reverse) in order.
@@ -25,8 +26,8 @@ const isolate = (s: string) => `⁨${s}⁩`;
 const tiles = await Promise.all(
   galleryTiles.map(async (tile) => {
     const credit = tile.image && tile.technician && tile.area ? fill(t.gallery.credit, { technician: isolate(tile.technician), area: isolate(tile.area[lang]) }) : '';
-    // The lightbox shows a larger version of real photos.
-    const full = tile.image ? (await getImage({ src: tile.image, width: 1200, format: 'webp' })).src : '';
+    // The lightbox shows the photo at its natural size (never upscaled on the server).
+    const full = tile.image ? (await getImage({ src: tile.image, width: tile.image.width, format: 'webp' })).src : '';
     const label = g.categories[tile.category];
     return { ...tile, credit, full, caption: credit ? `${label} · ${credit}` : label };
   }),
@@ -50,9 +51,10 @@ const tiles = await Promise.all(
       <p class="design-count" aria-live="polite" data-count-status>{g.count(galleryTiles.length)}</p>
     </div>
 
+    <p class="eyebrow sample-label">{t.gallery.sampleLabel}</p>
     <ul class="design-grid" data-design-grid>
       {
-        tiles.map((tile) => (
+        tiles.map((tile, i) => (
           <li class="design-tile" data-category={tile.category} data-motion data-reveal="item">
             <button
               type="button"
@@ -60,19 +62,20 @@ const tiles = await Promise.all(
               aria-haspopup="dialog"
               data-open
               data-full={tile.full || undefined}
+              data-w={tile.image?.width}
+              data-h={tile.image?.height}
               data-alt={tile.alt?.[lang]}
               data-placeholder={tile.image ? undefined : g.placeholders[tile.category]}
               data-caption={tile.caption}
             >
               {tile.image ? (
-                <Image
+                <Picture
                   src={tile.image}
                   alt={tile.alt?.[lang] ?? ''}
-                  width={400}
-                  height={400}
-                  densities={[1, 2]}
-                  fit="cover"
-                  loading="lazy"
+                  width={tile.image.width}
+                  height={tile.image.height}
+                  formats={['avif', 'webp']}
+                  loading={i < 4 ? 'eager' : 'lazy'}
                   class="design-img"
                 />
               ) : (
@@ -217,11 +220,19 @@ const tiles = await Promise.all(
   :global(.no-js) .design-open {
     cursor: default;
   }
-  /* The button doesn't clip (its hover shadow sits outside it), so the picture rounds its own corners. */
+  .sample-label {
+    margin-block-end: 16px;
+  }
+  /* The button doesn't clip (its hover shadow sits outside it), so the picture rounds its own corners.
+     Photos fill the square frame, centred; never served above their natural size. */
+  .design-open :global(picture) {
+    display: contents;
+  }
   .design-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     border-radius: inherit;
   }
   .design-placeholder {
@@ -312,9 +323,13 @@ const tiles = await Promise.all(
   .lightbox-media :global(.lightbox-placeholder) {
     box-shadow: var(--shadow-media);
   }
+  .lightbox-media {
+    display: grid;
+    place-items: center;
+  }
+  /* gallery.ts caps each photo at 1.5x its natural size so it never looks blurry. */
   .lightbox-media :global(img) {
     object-fit: contain;
-    background: var(--color-white);
   }
   .lightbox-caption {
     font-weight: 500;
