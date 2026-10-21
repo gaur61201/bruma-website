@@ -260,11 +260,12 @@ const errorId = (f: string) => `demo-${f}-error`;
   .demo-actions .btn {
     width: 100%;
   }
-  .on-carbon .btn-outline {
+  /* The carbon wrapper is outside this component, so match it globally. */
+  :global(.on-carbon) .btn-outline {
     border-color: var(--color-bone);
     color: var(--color-bone);
   }
-  .on-carbon .btn-outline:hover {
+  :global(.on-carbon) .btn-outline:hover {
     background: var(--color-bone);
     color: var(--color-carbon);
   }
