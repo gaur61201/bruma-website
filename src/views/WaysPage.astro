@@ -1,0 +1,60 @@
+---
+// The ways-to-own page, shared by /ways-to-own/ (English) and /ar/ways-to-own/ (Arabic).
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import PlanCards from '../components/PlanCards.astro';
+import TextSection from '../components/TextSection.astro';
+import NumberedSteps from '../components/NumberedSteps.astro';
+import CompareTable from '../components/ways/CompareTable.astro';
+import RunningCosts from '../components/RunningCosts.astro';
+import Faq from '../components/Faq.astro';
+import DemoForm from '../components/home/DemoForm.astro';
+import { faqSchema } from '../components/home/faq-items';
+import { config } from '../config';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const w = useTranslations(lang).waysPage;
+const { flags } = config;
+
+const subline = flags.showUpfrontSaving ? w.subline : w.sublineNoSaving;
+// Step 2 carries the plan terms once they're confirmed; until then, "explained at your demo".
+const steps = w.steps.items.map((text, i) => ({
+  text,
+  detail: i === 1 ? (flags.showPlanTerms ? w.steps.terms : w.steps.termsAtDemo) : undefined,
+}));
+const running = flags.showInkCostFaq ? [`${w.running.text} ${w.running.ink}`] : [w.running.text];
+---
+
+<Base lang={lang} title={w.meta.title} description={w.meta.description} schema={[faqSchema(lang, w.faq.items)]}>
+  <PageHero title={w.h1} subline={subline} />
+  <section class="plans" aria-label={w.plansLabel}>
+    <div class="wrap">
+      <PlanCards lang={lang} level={2} />
+    </div>
+  </section>
+  <TextSection id="compare-title" title={w.compare.h2} stacked>
+    <CompareTable lang={lang} />
+  </TextSection>
+  <TextSection id="plan-steps-title" title={w.steps.h2} stacked>
+    <NumberedSteps items={steps} />
+  </TextSection>
+  {flags.showPaymentMethods && <TextSection id="payments-title" title={w.paymentsTitle} list={config.paymentMethods[lang]} />}
+  <RunningCosts lang={lang} paragraphs={running} />
+  <Faq title={w.faq.h2} items={w.faq.items} />
+  <DemoForm lang={lang} pageName="ways-to-own" />
+</Base>
+
+<style>
+  .plans {
+    padding-block-end: 64px;
+  }
+  @media (min-width: 1024px) {
+    .plans {
+      padding-block-end: 96px;
+    }
+  }
+</style>

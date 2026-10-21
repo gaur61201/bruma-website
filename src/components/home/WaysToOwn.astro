@@ -1,7 +1,9 @@
 ---
+// Homepage: "Two ways to own it", the shared plan cards with a demo button and a link to the full
+// comparison on /ways-to-own/.
 import Icon from '../Icon.astro';
 import ArrowLink from '../ArrowLink.astro';
-import { config } from '../../config';
+import PlanCards from '../PlanCards.astro';
 import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -9,43 +11,13 @@ interface Props {
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const showSaving = config.flags.showUpfrontSaving;
-const plans = [
-  { ...t.ways.monthly, featured: true, id: 'plan-monthly' },
-  { ...t.ways.upfront, featured: false, id: 'plan-upfront' },
-];
 ---
 
 <section id="ways-to-own" class="section-y ways" aria-labelledby="ways-title">
   <div class="wrap">
     <h2 id="ways-title" data-motion>{t.ways.h2}</h2>
-    <div class="ways-grid">
-      {
-        plans.map((plan) => (
-          <article
-            class:list={['card', 'plan', { 'plan-featured': plan.featured }]}
-            aria-labelledby={plan.id}
-            data-motion
-            data-trace={plan.featured ? '' : undefined}
-          >
-            {showSaving && !plan.featured && <span class="save-pill plan-save">{t.upfrontSaving.badge}</span>}
-            <h3 id={plan.id}>{plan.title}</h3>
-            <div class="plan-price-block">
-              <p class="plan-price">{plan.price}</p>
-              {showSaving && !plan.featured && <p class="plan-price-note">{t.upfrontSaving.note}</p>}
-            </div>
-            <ul class="plan-list">
-              {plan.bullets.map((b) => (
-                <li>
-                  <Icon name="check" size={20} />
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-            {plan.small && <p class="plan-small">{plan.small}</p>}
-          </article>
-        ))
-      }
+    <div class="ways-cards">
+      <PlanCards lang={lang} />
     </div>
     <div class="ways-cta" data-motion>
       <a href="#demo" class="btn btn-primary">
@@ -61,87 +33,13 @@ const plans = [
   .ways {
     border-top: 1px solid var(--color-line);
   }
-  .ways-grid {
-    display: grid;
-    gap: 16px;
+  .ways-cards {
     margin-block-start: 32px;
   }
   @media (min-width: 768px) {
-    .ways-grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
+    .ways-cards {
       margin-block-start: 48px;
     }
-  }
-  .plan {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 32px 24px;
-  }
-  @media (min-width: 1024px) {
-    .plan {
-      padding: 40px;
-    }
-  }
-  /* Monthly plan: 2px vapor outline (requested in the phase brief). motion.ts traces it in once. */
-  .plan-featured {
-    border: 2px solid var(--color-vapor);
-  }
-  .plan-featured:global(.trace-pending) {
-    border-color: var(--color-line);
-  }
-  .plan :global(.plan-trace) {
-    position: absolute;
-    top: -2px;
-    inset-inline-start: -2px;
-    overflow: visible;
-    pointer-events: none;
-    color: var(--color-vapor);
-  }
-  .plan :global(.plan-trace:dir(rtl)) {
-    transform: scaleX(-1);
-  }
-  .plan-price-block {
-    padding-block-end: 16px;
-    border-bottom: 1px solid var(--color-line);
-  }
-  .plan-price {
-    font-weight: 500;
-    font-size: calc(var(--fs-h3) * var(--script-scale));
-    line-height: var(--heading-leading);
-  }
-  .plan-price-note {
-    margin-block-start: 8px;
-    color: var(--color-stone);
-    font-size: calc(var(--fs-small) * var(--script-scale));
-  }
-  .plan-save {
-    align-self: flex-start;
-  }
-  .plan-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .plan-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .plan-list :global(svg) {
-    flex-shrink: 0;
-    margin-block-start: 3px;
-  }
-  .plan-small {
-    margin-block-start: auto;
-    padding-block-start: 8px;
-    color: var(--color-stone);
-    font-size: calc(var(--fs-small) * var(--script-scale));
   }
   .ways-cta {
     margin-block-start: 32px;

@@ -260,8 +260,9 @@ export function initMotion() {
     batchIn($$('.hygiene-list > li'), { x: -SLIDE * dir }, 0.1);
   };
 
-  const ways = () => {
-    const cards = $$('.plan');
+  /** The plan cards (homepage and /ways-to-own/): they rise in, and the monthly card's outline traces in. */
+  const ways = (grid: Element) => {
+    const cards = $$('.plan', grid);
     cards.forEach((c) => {
       if (c.hasAttribute('data-trace') && fresh(c)) c.classList.add('trace-pending');
     });
@@ -444,7 +445,8 @@ export function initMotion() {
       [$('#earnings'), () => rise($('#earnings-title')), calculator],
       [$('.included'), () => rise($('#included-title')), included],
       [$('#hygiene'), () => rise($('#hygiene-title')), hygiene],
-      [$('#ways-to-own'), () => rise($('#ways-title')), ways],
+      [$('#ways-to-own'), () => rise($('#ways-title'))],
+      [$('[data-plans]'), () => ways($('[data-plans]')!)],
       [$('.faq'), () => rise($('#faq-title')), faq],
       [$('#demo'), () => rise($('#demo-title')), demo],
       [$('.stories'), () => rise($('#stories-title')), stories],

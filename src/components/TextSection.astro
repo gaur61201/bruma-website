@@ -10,12 +10,14 @@ interface Props {
   list?: string[];
   /** Optional id on the section itself, for in-page links. */
   anchor?: string;
+  /** Heading above full-width content (for wide content: step cards, tables), instead of two columns. */
+  stacked?: boolean;
 }
-const { id, title, paragraphs = [], list = [], anchor } = Astro.props;
+const { id, title, paragraphs = [], list = [], anchor, stacked = false } = Astro.props;
 ---
 
 <section id={anchor} class="section-y text-section" aria-labelledby={id} data-reveal-section>
-  <div class="wrap text-section-grid">
+  <div class:list={['wrap', 'text-section-grid', { stacked }]}>
     <h2 id={id} data-motion data-reveal="heading">{title}</h2>
     <div class="text-section-body">
       {paragraphs.map((text) => <p data-motion data-reveal="fade">{text}</p>)}
@@ -49,6 +51,18 @@ const { id, title, paragraphs = [], list = [], anchor } = Astro.props;
       gap: 64px;
       align-items: start;
     }
+  }
+  .text-section-grid.stacked {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .text-section-grid.stacked {
+      gap: 48px;
+    }
+  }
+  .stacked .text-section-body {
+    max-width: none;
   }
   .text-section-body {
     display: flex;

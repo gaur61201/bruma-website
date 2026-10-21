@@ -292,6 +292,65 @@ export const en = {
     instagram: 'Follow our latest designs',
   },
 
+  waysPage: {
+    meta: {
+      title: 'Monthly plan or pay upfront | BRUMA nail printer',
+      description: `Own the BRUMA nail printer on a monthly plan from ${plan} a month, or pay upfront and save. Training, warranty and support in Kuwait are included.`,
+    },
+    h1: 'Two ways to own it',
+    /** The "and save" version shows while flags.showUpfrontSaving is on. */
+    subline: `Pay monthly from ${plan}, or pay once and save. Training, warranty and support are included either way.`,
+    sublineNoSaving: `Pay monthly from ${plan}, or pay once upfront. Training, warranty and support are included either way.`,
+    plansLabel: 'The two ways to own it',
+    compare: {
+      h2: 'Compare the plans',
+      caption: 'The monthly plan and paying upfront, side by side',
+      rows: {
+        payment: { label: 'Payment', monthly: `From ${plan} a month`, upfront: 'One payment. Price at your demo' },
+        ownership: { label: 'Ownership', monthly: 'Yours after the final payment', upfront: 'Yours from day one' },
+        branding: { label: 'Branding', monthly: 'BRUMA name on the machine', upfront: "Your salon's name and logo" },
+        included: { label: 'Training, warranty, loaner', monthly: 'Included', upfront: 'Included' },
+      },
+      /** Shown only while flags.showUpfrontSaving is on; the upfront cell is the saving badge. */
+      saving: { label: 'Saving', none: 'No saving' },
+    },
+    steps: {
+      h2: 'How the monthly plan works',
+      items: [
+        'Sign the plan at your demo.',
+        'First payment at signing.',
+        'We deliver, install and train your team.',
+        'After the final payment, the printer is yours.',
+      ],
+      /** Under step 2: the terms while flags.showPlanTerms is on, otherwise `termsAtDemo`. */
+      terms: `${kwd(c.plan.depositKwd, 'en')} at signing, then ${c.plan.months} monthly payments of ${plan}.`,
+      termsAtDemo: 'Full plan terms are explained at your demo.',
+    },
+    /** Shown only while flags.showPaymentMethods is on. */
+    paymentsTitle: 'Ways to pay',
+    running: {
+      text: 'Ink refills are ordered separately and delivered to your salon.',
+      /** Added while flags.showInkCostFaq is on. */
+      ink: `Ink costs about ${kwd(c.calculator.cartridgeCostPerSet, 'en')} per set of 10 nails.`,
+    },
+    // TODO lawyer review: all four answers.
+    faq: {
+      h2: 'Questions about the plans',
+      items: [
+        { q: 'Can I pay off the plan early?', a: 'Yes. Pay the remaining amount at any time and the printer is yours.' },
+        {
+          q: 'Can I have my logo on a monthly-plan machine?',
+          a: 'Logos are for printers paid upfront. Monthly-plan printers carry the BRUMA name.',
+        },
+        {
+          q: 'What happens if payments stop?',
+          a: "We collect the printer, and payments made count as rental. You can still buy it later by paying the remaining amount, but you can't restart the monthly plan.",
+        },
+        { q: 'Are there extra charges on the plan?', a: 'The plan total is fixed when you sign.' },
+      ],
+    },
+  },
+
   /** Wear-test results (printer and gallery pages). The strip shows only when flags.showWearTestResults is true. */
   wearTest: {
     ask: 'Ask to see our wear-test photos at your demo.',

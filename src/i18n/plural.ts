@@ -28,6 +28,7 @@ export const ar = {
   months: { one: 'شهر واحد', two: 'شهرين', few: 'أشهر', many: 'شهراً' },
   sets: { one: 'مجموعة واحدة', two: 'مجموعتين', few: 'مجموعات', many: 'مجموعة' },
   designs: { one: 'تصميم واحد', two: 'تصميمان', few: 'تصاميم', many: 'تصميماً' },
+  payments: { one: 'دفعة شهرية واحدة', two: 'دفعتان شهريتان', few: 'دفعات شهرية', many: 'دفعة شهرية' },
 } satisfies Record<string, ArForms>;
 
 /** KWD amounts: "KWD 100" in English, "100 د.ك" in Arabic. */
