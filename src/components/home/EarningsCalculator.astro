@@ -53,7 +53,7 @@ const settings = {
 ---
 
 <!-- A full-width carbon band, edge to edge; the content sits at the normal content width. -->
-<section id="earnings" class="on-carbon section-y" aria-labelledby="earnings-title">
+<section id="earnings" class="on-carbon section-y calc-band" aria-labelledby="earnings-title">
   <div class="wrap">
     <div class="calc-head">
       <h2 id="earnings-title" data-motion>{t.calc.h2}</h2>
@@ -167,11 +167,28 @@ const settings = {
 </script>
 
 <style>
+  /*
+   * The band's type and controls scale up with the viewport (clamp, ~375px -> ~1280px), so mobile stays
+   * compact and desktop fills the full-width band. Arabic multiplies in --script-scale (one step larger).
+   */
+  .calc-band {
+    --calc-sub: clamp(1rem, 0.845rem + 0.663vw, 1.375rem); /* 16 -> 22 */
+    --calc-label: clamp(1rem, 0.948rem + 0.221vw, 1.125rem); /* 16 -> 18 */
+    --calc-toggle: clamp(1rem, 0.896rem + 0.442vw, 1.25rem); /* 16 -> 20 */
+    --calc-control-h: clamp(48px, 44.69px + 0.884vw, 56px); /* 48 -> 56 */
+    --calc-number: clamp(1.125rem, 0.97rem + 0.663vw, 1.5rem); /* 18 -> 24 */
+    --calc-result-label: clamp(0.875rem, 0.771rem + 0.442vw, 1.125rem); /* 14 -> 18 */
+    --calc-fig: clamp(2rem, 0.964rem + 4.42vw, 4.5rem); /* 32 -> 72 */
+    --calc-fig-main: clamp(2.5rem, 1.05rem + 6.188vw, 6rem); /* 40 -> 96 */
+    --calc-small: clamp(1rem, 0.896rem + 0.442vw, 1.25rem); /* 16 -> 20 */
+    padding-block: clamp(72px, 28.9px + 11.49vw, 176px);
+  }
   .calc-head {
     max-width: 720px;
   }
   .calc-intro {
     margin-block-start: 16px;
+    font-size: calc(var(--calc-sub) * var(--script-scale));
   }
   .calc-static {
     margin-block-start: 24px;
@@ -189,24 +206,26 @@ const settings = {
     gap: 40px;
     margin-block-start: 40px;
   }
+  /* Desktop: results get the wider column (their figures are the largest type on the page). */
   @media (min-width: 1024px) {
     .calc {
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: clamp(64px, 15.38vw - 93.5px, 128px);
       align-items: start;
+      margin-block-start: 64px;
     }
   }
   .calc-inputs {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: clamp(32px, 27px + 1.33vw, 44px);
   }
   .calc-label {
     display: block;
-    margin-block-end: 8px;
+    margin-block-end: 12px;
     font-weight: 500;
     color: var(--color-mist);
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--calc-label) * var(--script-scale));
   }
 
   .mode {
@@ -232,6 +251,8 @@ const settings = {
   }
   .mode-badges .save-pill {
     justify-self: center;
+    padding: 4px 14px;
+    font-size: calc(clamp(0.875rem, 0.797rem + 0.331vw, 1.0625rem) * var(--script-scale));
   }
   /* The bone thumb slides between the two options. */
   .mode-thumb {
@@ -268,11 +289,13 @@ const settings = {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
+    min-height: var(--calc-control-h);
     padding-inline: 16px;
     border: 1px solid rgb(243 239 232 / 0.32);
     border-radius: var(--radius-pill);
     font-weight: 500;
+    font-size: calc(var(--calc-toggle) * var(--script-scale));
+    line-height: 1.2;
     text-align: center;
     cursor: pointer;
   }
@@ -298,8 +321,9 @@ const settings = {
     gap: 16px;
   }
   .calc-number {
-    width: 96px;
-    min-height: 48px;
+    flex-shrink: 0;
+    width: clamp(96px, 79.4px + 4.42vw, 136px);
+    min-height: var(--calc-control-h);
     padding-inline: 12px;
     border: 0;
     border-radius: var(--radius-input);
@@ -307,6 +331,7 @@ const settings = {
     color: var(--color-carbon);
     font: inherit;
     font-weight: 500;
+    font-size: calc(var(--calc-number) * var(--script-scale));
     text-align: center;
   }
 
@@ -322,20 +347,20 @@ const settings = {
     cursor: pointer;
   }
   .calc-range::-webkit-slider-runnable-track {
-    height: 4px;
-    border-radius: 2px;
+    height: 6px;
+    border-radius: 3px;
     background: var(--color-line);
   }
   .calc-range::-moz-range-track {
-    height: 4px;
-    border-radius: 2px;
+    height: 6px;
+    border-radius: 3px;
     background: var(--color-line);
   }
   .calc-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 28px;
     height: 28px;
-    margin-top: -12px;
+    margin-top: -11px;
     border-radius: 50%;
     background: var(--color-mist);
     border: 3px solid var(--color-carbon);
@@ -351,18 +376,22 @@ const settings = {
     outline-offset: 0;
   }
 
+  /* A size container, so the big figures can be capped to their column's width (cqi) and never overflow. */
+  .calc-results {
+    container-type: inline-size;
+  }
   .calc-results dl {
     margin: 0;
     display: grid;
-    gap: 24px;
+    gap: clamp(24px, 19px + 1.33vw, 36px);
   }
   /* Dividers on carbon: bone at low strength, quieter than the line colour. */
   .result {
-    padding-block-end: 24px;
+    padding-block-end: clamp(24px, 19px + 1.33vw, 36px);
     border-bottom: 1px solid rgb(243 239 232 / 0.16);
   }
   .result dt {
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--calc-result-label) * var(--script-scale));
     font-weight: 500;
   }
   /* Revenue and running cost in white; what's left for the salon in profit green. */
@@ -374,7 +403,7 @@ const settings = {
     color: var(--color-white);
     font-family: var(--font-heading);
     font-weight: 500;
-    font-size: calc(var(--fs-stat) * var(--script-scale));
+    font-size: min(calc(var(--calc-fig) * var(--script-scale)), 14cqi);
     line-height: 1.1;
   }
   .result dd:lang(ar) {
@@ -384,7 +413,7 @@ const settings = {
     font-size: 0.5em;
   }
   .result-main dt {
-    font-size: calc(var(--fs-body) * var(--script-scale));
+    font-size: calc(var(--calc-small) * var(--script-scale));
   }
   /* The ink part of the running cost, as its own smaller line. */
   /* Same muted style as the other labels on carbon: Readex Pro, 14px, mist. */
@@ -393,24 +422,26 @@ const settings = {
     color: var(--color-mist);
     font-family: var(--font-body);
     font-weight: 500;
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--calc-small) * var(--script-scale));
     line-height: var(--body-leading);
   }
   .result .result-sub span,
   .result .result-sub span:not(.ltr) {
     font-size: inherit;
   }
+  /* What's left for the salon: the largest figure. */
   .result-main dd {
     color: var(--color-profit);
-    font-size: calc(var(--fs-stat) * var(--script-scale) * 1.25);
+    font-size: min(calc(var(--calc-fig-main) * var(--script-scale)), 16.5cqi);
   }
   .break-even {
-    margin-block-start: 24px;
+    margin-block-start: clamp(24px, 19px + 1.33vw, 36px);
     font-weight: 500;
+    font-size: calc(var(--calc-small) * var(--script-scale));
   }
   .calc-note {
-    margin-block-start: 48px;
-    max-width: 640px;
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    margin-block-start: clamp(48px, 37.6px + 2.76vw, 72px);
+    max-width: 720px;
+    font-size: calc(var(--calc-small) * var(--script-scale));
   }
 </style>
