@@ -17,6 +17,8 @@
   --color-line: #ddd7cc;
   --color-error: #b42318;
   --color-whatsapp: #25d366;
+  /* Profit green: only the calculator's "Left for your salon each month" figure (12.3:1 on carbon). */
+  --color-profit: #6ee7a8;
 
   --font-*: initial;
   --font-heading: 'Unbounded', 'Unbounded Fallback', sans-serif;
