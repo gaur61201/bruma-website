@@ -167,7 +167,38 @@ export function initMotion() {
     const fills = items.map((s) => $('.step-num-fill', s)!);
     const links = items.map((s) => $('.step-link', s));
     const cards = items.map((s) => $('.step-card', s)!);
-    if (!claim(cards, list)) return;
+
+    // The icon hop: each step icon rises 10px and drops back, one at a time in step order (so right
+    // to left in Arabic), then a 3s pause and again. It starts once the line has finished drawing on
+    // the first visit, and runs only while the steps are on screen. Transform only, icons only.
+    const icons = cards.map((c) => $<SVGElement>('svg', c)!);
+    const hop = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 3 });
+    icons.forEach((icon) =>
+      hop.to(icon, { y: -10, duration: 0.25, ease: 'power2.out' }).to(icon, { y: 0, duration: 0.25, ease: 'power2.in' }),
+    );
+    let lineDone = false;
+    let onScreen = false;
+    const sync = () => (lineDone && onScreen ? hop.play() : hop.pause());
+    const visibility = ScrollTrigger.create({
+      trigger: list,
+      start: 'top bottom',
+      end: 'bottom top',
+      onToggle: (self) => {
+        onScreen = self.isActive;
+        sync();
+      },
+    });
+    onScreen = visibility.isActive;
+    const startHops = () => {
+      if (lineDone) return;
+      lineDone = true;
+      sync();
+    };
+
+    if (!claim(cards, list)) {
+      startHops();
+      return;
+    }
     const axis = mode === 'scrub' ? 'scaleX' : 'scaleY';
     const filled = 'circle(75% at 50% 50%)';
     gsap.set(fills, { clipPath: 'circle(0% at 50% 50%)' });
@@ -175,8 +206,8 @@ export function initMotion() {
     gsap.set(cards, { x: -SLIDE * dir, opacity: 0 });
 
     if (mode === 'once') {
-      // Mobile: plays once (vertical timeline).
-      const tl = gsap.timeline({ scrollTrigger: once(list) });
+      // Mobile: plays once (vertical timeline), then the icons start hopping.
+      const tl = gsap.timeline({ scrollTrigger: once(list), onComplete: startHops });
       let t = 0;
       items.forEach((_, i) => {
         tl.to(fills[i], { clipPath: filled, duration: 0.2, ease: EASE }, t)
@@ -201,12 +232,15 @@ export function initMotion() {
       }
     });
     const shown = new Set<number>();
-    const reveal = (self: ScrollTrigger) =>
+    const reveal = (self: ScrollTrigger) => {
       marks.forEach((m, i) => {
         if (shown.has(i) || self.progress * t < m - 0.001) return;
         shown.add(i);
         gsap.to(cards[i], { x: 0, opacity: 1, duration: 0.7, ease: EASE });
       });
+      // The line has drawn all the way: start the icon hop.
+      if (self.progress > 0.999) startHops();
+    };
     ScrollTrigger.create({
       animation: tl,
       trigger: list,
