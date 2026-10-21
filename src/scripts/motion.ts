@@ -159,26 +159,47 @@ export function initMotion() {
 
   const howNote = () => fadeUp($('.set-time'));
 
-  /** How it works: the line draws, each circle fills as the line reaches it, then its card slides in. */
-  const steps = (mode: 'scrub' | 'once') => {
+  /**
+   * How it works. The connecting line is always drawn. The cards slide in once; then the icon hop runs:
+   * each step icon rises 10px and drops back, one at a time in step order (right to left in Arabic),
+   * then a 3s pause and again. In the same timeline, each step number is highlighted (carbon fill,
+   * bone number, scale 1.1) from the moment its icon starts hopping until the next icon starts; number
+   * 4 rests 0.5s after its icon lands. The hop runs only while the steps are on screen.
+   */
+  const steps = () => {
     const list = $('[data-steps]');
     if (!list) return;
     const items = $$('[data-step]', list);
+    const nums = items.map((s) => $('.step-num', s)!);
     const fills = items.map((s) => $('.step-num-fill', s)!);
-    const links = items.map((s) => $('.step-link', s));
     const cards = items.map((s) => $('.step-card', s)!);
-
-    // The icon hop: each step icon rises 10px and drops back, one at a time in step order (so right
-    // to left in Arabic), then a 3s pause and again. It starts once the line has finished drawing on
-    // the first visit, and runs only while the steps are on screen. Transform only, icons only.
     const icons = cards.map((c) => $<SVGElement>('svg', c)!);
-    const hop = gsap.timeline({ paused: true, repeat: -1, repeatDelay: 3 });
-    icons.forEach((icon) =>
-      hop.to(icon, { y: -10, duration: 0.25, ease: 'power2.out' }).to(icon, { y: 0, duration: 0.25, ease: 'power2.in' }),
-    );
-    let lineDone = false;
+
+    // Numbers rest as outlined circles; the carbon fill shows only while highlighted.
+    gsap.set(fills, { opacity: 0 });
+
+    const HOP = 0.25; // seconds up, and again down
+    const FADE = 0.15;
+    const PAUSE = 3; // after the last icon lands
+    const hop = gsap.timeline({ paused: true, repeat: -1 });
+    icons.forEach((icon, i) => {
+      const at = i * 2 * HOP;
+      hop
+        .to(icon, { y: -10, duration: HOP, ease: 'power2.out' }, at)
+        .to(icon, { y: 0, duration: HOP, ease: 'power2.in' }, at + HOP)
+        .to(fills[i], { opacity: 1, duration: FADE, ease: 'none' }, at)
+        .to(nums[i], { scale: 1.1, duration: FADE, ease: 'power2.out' }, at);
+      // Back to rest when the next icon starts; the last number 0.5s after its icon lands.
+      const rest = i < icons.length - 1 ? at + 2 * HOP : at + 2 * HOP + 0.5;
+      hop.to(fills[i], { opacity: 0, duration: FADE, ease: 'none' }, rest).to(nums[i], { scale: 1, duration: FADE, ease: 'power2.out' }, rest);
+    });
+    // Keep the hop loop as it was: 3s from the last icon landing to the first icon starting again.
+    const lastLanding = icons.length * 2 * HOP;
+    hop.repeatDelay(PAUSE - (hop.duration() - lastLanding));
+
+    let started = false;
     let onScreen = false;
-    const sync = () => (lineDone && onScreen ? hop.play() : hop.pause());
+    const sync = () => (started && onScreen ? hop.play() : hop.pause());
     const visibility = ScrollTrigger.create({
       trigger: list,
       start: 'top bottom',
@@ -190,8 +211,8 @@ export function initMotion() {
     });
     onScreen = visibility.isActive;
     const startHops = () => {
-      if (lineDone) return;
-      lineDone = true;
+      if (started) return;
+      started = true;
       sync();
     };
 
@@ -199,57 +220,7 @@ export function initMotion() {
       startHops();
       return;
     }
-    const axis = mode === 'scrub' ? 'scaleX' : 'scaleY';
-    const filled = 'circle(75% at 50% 50%)';
-    gsap.set(fills, { clipPath: 'circle(0% at 50% 50%)' });
-    gsap.set(links.filter(Boolean), { [axis]: 0 });
-    gsap.set(cards, { x: -SLIDE * dir, opacity: 0 });
-
-    if (mode === 'once') {
-      // Mobile: plays once (vertical timeline), then the icons start hopping.
-      const tl = gsap.timeline({ scrollTrigger: once(list), onComplete: startHops });
-      let t = 0;
-      items.forEach((_, i) => {
-        tl.to(fills[i], { clipPath: filled, duration: 0.2, ease: EASE }, t)
-          .to(cards[i], { x: 0, opacity: 1, duration: 0.6, ease: EASE }, t + 0.08);
-        if (links[i]) tl.to(links[i], { scaleY: 1, duration: 0.25, ease: EASE }, t + 0.2);
-        t += 0.45;
-      });
-      return;
-    }
-
-    // Desktop: the line and the fills are tied to scroll (no pinning); each card slides in once.
-    const tl = gsap.timeline({ defaults: { ease: 'none' } });
-    const marks: number[] = [];
-    let t = 0;
-    items.forEach((_, i) => {
-      tl.to(fills[i], { clipPath: filled, duration: 0.3 }, t);
-      t += 0.3;
-      marks.push(t);
-      if (links[i]) {
-        tl.to(links[i], { scaleX: 1, duration: 1 }, t);
-        t += 1;
-      }
-    });
-    const shown = new Set<number>();
-    const reveal = (self: ScrollTrigger) => {
-      marks.forEach((m, i) => {
-        if (shown.has(i) || self.progress * t < m - 0.001) return;
-        shown.add(i);
-        gsap.to(cards[i], { x: 0, opacity: 1, duration: 0.7, ease: EASE });
-      });
-      // The line has drawn all the way: start the icon hop.
-      if (self.progress > 0.999) startHops();
-    };
-    ScrollTrigger.create({
-      animation: tl,
-      trigger: list,
-      start: 'top 75%',
-      end: 'bottom 55%',
-      scrub: true,
-      onUpdate: reveal,
-      onRefresh: reveal,
-    });
+    gsap.from(cards, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08, scrollTrigger: once(list), onComplete: startHops });
   };
 
   const calculator = () => {
@@ -448,6 +419,7 @@ export function initMotion() {
       [$('.proof'), proof],
       [$('#gallery'), () => rise($('#gallery-title')), gallery],
       [$('#how-it-works'), () => rise($('#how-title')), howNote],
+      [$('[data-steps]'), steps],
       [$('#earnings'), () => rise($('#earnings-title')), calculator],
       [$('.included'), () => rise($('#included-title')), included],
       [$('#hygiene'), () => rise($('#hygiene-title')), hygiene],
@@ -462,11 +434,5 @@ export function initMotion() {
       undo();
     };
   });
-  mm.add('(prefers-reduced-motion: no-preference) and (min-width: 1024px)', (ctx) =>
-    lazily(ctx, [[$('[data-steps]'), () => steps('scrub')]]),
-  );
-  mm.add('(prefers-reduced-motion: no-preference) and (max-width: 1023px)', (ctx) =>
-    lazily(ctx, [[$('[data-steps]'), () => steps('once')]]),
-  );
   // Reduced motion: nothing is registered, so every element simply appears.
 }

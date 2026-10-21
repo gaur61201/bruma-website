@@ -14,9 +14,9 @@ const last = t.how.steps.length - 1;
   <div class="wrap">
     <h2 id="how-title" data-motion>{t.how.h2}</h2>
     <!--
-      Each step has a numbered marker; a thin carbon line links each marker to the next
-      (a horizontal track on desktop, a vertical timeline below 1024px). motion.ts draws the line,
-      fills each circle with carbon as the line reaches it, then slides that step's card in.
+      Each step has a numbered marker; a thin carbon line (always drawn) links each marker to the
+      next: a horizontal track on desktop, a vertical timeline below 1024px. motion.ts slides the
+      cards in, then runs the icon hop with each number highlighted while its icon hops.
     -->
     <ol class="steps" data-steps>
       {
@@ -70,21 +70,39 @@ const last = t.how.steps.length - 1;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 1px solid var(--color-carbon);
-    background: var(--color-bone);
+    /* A 1.5px carbon ring: Chrome rounds 1.5px borders down to 1px, so the ring is a carbon disc
+       with a bone disc inset 1.5px on top (two flat fills, no border or shadow). */
+    background: var(--color-carbon);
+    color: var(--color-carbon);
     font-weight: 500;
     font-size: calc(var(--fs-small) * var(--script-scale));
   }
-  /* The carbon fill. Shown filled by default (no JS, reduced motion); motion.ts grows it in. */
+  .step-num::before {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    z-index: -1;
+    border-radius: 50%;
+    background: var(--color-bone);
+  }
+  /*
+   * The highlight: carbon fill with a bone number. Shown on all four by default (no JS, reduced
+   * motion); with motion the numbers rest as outlined circles and motion.ts fades this in per step.
+   */
   .step-num-fill {
     position: absolute;
-    inset: -1px;
+    inset: 0;
     display: grid;
     place-items: center;
     border-radius: 50%;
     background: var(--color-carbon);
     color: var(--color-bone);
-    clip-path: circle(75% at 50% 50%);
+  }
+  /* With motion on, start at rest even before motion.ts arrives, so the circles never flash filled. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .step-num-fill {
+      opacity: 0;
+    }
   }
   .step-link {
     position: absolute;
