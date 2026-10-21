@@ -1,11 +1,12 @@
 ---
 import Icon, { type IconName } from '../Icon.astro';
-import { useTranslations, type Lang } from '../../i18n';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const t = useTranslations(Astro.props.lang);
+const { lang } = Astro.props;
+const t = useTranslations(lang);
 const icons: IconName[] = ['bottle', 'touchscreen', 'printer', 'lamp'];
 const last = t.how.steps.length - 1;
 ---
@@ -39,6 +40,10 @@ const last = t.how.steps.length - 1;
       }
     </ol>
     <p class="set-time" data-motion>{t.how.setTime}</p>
+    <a href={localizedPath('/printer/', lang)} class="text-link arrow-link printer-link">
+      <span>{t.how.printerLink}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
   </div>
 </section>
 
@@ -150,5 +155,12 @@ const last = t.how.steps.length - 1;
   .set-time {
     margin-block-start: 24px;
     font-weight: 500;
+  }
+  .printer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-block-start: 8px;
   }
 </style>

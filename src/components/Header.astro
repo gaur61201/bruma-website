@@ -14,11 +14,12 @@ const { lang, altHref } = Astro.props;
 const t = useTranslations(lang);
 const home = localizedPath('/', lang);
 const onHome = Astro.url.pathname === home;
-// Until their own pages exist, nav items point at homepage sections.
+// Pages that exist get their own link; the rest point at homepage sections until they're built.
 const section = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
+const printerPage = localizedPath('/printer/', lang);
 
 const links = [
-  { href: section('how-it-works'), label: t.nav.printer },
+  { href: printerPage, label: t.nav.printer, current: Astro.url.pathname === printerPage },
   { href: section('gallery'), label: t.nav.gallery },
   { href: section('ways-to-own'), label: t.nav.waysToOwn },
   { href: section('hygiene'), label: t.nav.hygiene },
@@ -41,7 +42,7 @@ const demoHref = section('demo');
         {
           links.map((l) => (
             <li>
-              <a href={l.href} class="slide-underline">
+              <a href={l.href} class="slide-underline" aria-current={l.current ? 'page' : undefined}>
                 {l.label}
               </a>
             </li>
@@ -74,7 +75,7 @@ const demoHref = section('demo');
       {
         links.map((l, i) => (
           <li style={`--i:${i}`}>
-            <a href={l.href} data-menu-link>
+            <a href={l.href} data-menu-link aria-current={l.current ? 'page' : undefined}>
               {l.label}
             </a>
           </li>

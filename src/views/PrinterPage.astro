@@ -1,0 +1,18 @@
+---
+// The printer page, shared by /printer/ (English) and /ar/printer/ (Arabic).
+import Base from '../layouts/Base.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<Base lang={lang} title={t.printer.meta.title} description={t.printer.meta.description}>
+  <section class="wrap section-y">
+    <p class="eyebrow">{t.printer.hero.eyebrow}</p>
+    <h1>{t.printer.hero.h1}</h1>
+  </section>
+</Base>

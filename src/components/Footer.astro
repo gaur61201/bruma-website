@@ -18,7 +18,7 @@ const onHome = Astro.url.pathname === home;
 const section = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
 
 const links = [
-  { href: section('how-it-works'), label: t.nav.printer },
+  { href: localizedPath('/printer/', lang), label: t.nav.printer },
   { href: section('gallery'), label: t.nav.gallery },
   { href: section('ways-to-own'), label: t.nav.waysToOwn },
   { href: section('hygiene'), label: t.nav.hygiene },

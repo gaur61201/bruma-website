@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config, printerSpec } from '../config';
 import { enCount, kwd } from './plural';
 
 const c = config;
@@ -98,6 +98,7 @@ export const en = {
       { title: 'Seal', text: 'Finish with top coat and cure.' },
     ],
     setTime: `A full set takes about ${enCount(c.minutesPerFullSet, 'minute', 'minutes')}.`,
+    printerLink: 'See the printer in detail',
   },
 
   calc: {
@@ -164,6 +165,100 @@ export const en = {
 
   stories: {
     h2: 'Salons using BRUMA',
+  },
+
+  printer: {
+    meta: {
+      title: 'The BRUMA nail printer for salons in Kuwait',
+      description: `The BRUMA nail printer for salons: any design on the nail in about ${seconds}. See the specs, training and support in Kuwait, then book a free demo.`,
+    },
+    hero: {
+      eyebrow: 'The BRUMA nail printer',
+      h1: 'Detailed nail art, printed in seconds',
+      subline: 'Prep the nail, pick a design, and the printer does the detail. Every set comes out the same, whoever is working.',
+      specsLink: 'See the specifications',
+      mediaCaption: 'Photo: the printer, three-quarter view',
+    },
+    why: {
+      h2: 'Why salons add it',
+      cards: [
+        { icon: 'sparkle', title: 'A new service on every set', text: 'Offer detailed nail art without hiring a specialist.' },
+        { icon: 'check', title: 'The same result every time', text: "The design doesn't depend on who's on shift." },
+        { icon: 'timer', title: 'Faster than painting by hand', text: `Each nail prints in about ${seconds}.` },
+      ],
+    },
+    steps: {
+      h2: 'Step by step',
+      items: [
+        {
+          title: 'Prep',
+          text: 'Prep the nails as your team already does: clean, shape and apply base coat. Your usual routine stays the same.',
+          photo: 'Photo: base coat on a prepared nail',
+        },
+        {
+          title: 'Choose',
+          text: "Your client picks a design on the touchscreen, from the printer's built-in design library. It's easy to browse together at the nail desk.",
+          photo: 'Photo: choosing a design on the touchscreen',
+        },
+        {
+          title: 'Print',
+          text: `The printer does the detailed work, one nail at a time. Each nail prints in about ${seconds}.`,
+          photo: 'Photo: a nail printing',
+        },
+        {
+          title: 'Seal',
+          text: 'Finish with top coat and cure, as you would any manicure. The design is sealed in under the top coat.',
+          photo: 'Photo: top coat and curing',
+        },
+      ],
+      footnote: `A full set takes about ${enCount(c.minutesPerFullSet, 'minute', 'minutes')}.`,
+    },
+    // TODO confirm on the demo unit
+    printedOn: {
+      h2: 'Printed on the nail, not stuck on',
+      text: "The design is printed directly onto the prepared nail, then sealed under top coat and cured. It's not a sticker, a wrap or a press-on.",
+      photo: 'Photo: finished nail, close-up',
+      wearAsk: 'Ask to see our wear-test photos at your demo.',
+      /** The wear-test strip, shown only when flags.showWearTestResults is true. */
+      wearDays: ['Day 1', 'Day 7', 'Day 14'],
+      wearPhoto: 'Photo: wear test, {day}',
+    },
+    specs: {
+      h2: 'Specifications',
+      caption: 'BRUMA nail printer specifications',
+      note: 'Fits on a standard nail desk. Check your space at the demo.',
+      labels: {
+        printTime: 'Print time',
+        curing: 'Curing',
+        screen: 'Screen',
+        size: 'Size',
+        weight: 'Weight',
+        power: 'Power',
+        ink: 'Ink',
+        inkYield: 'Ink yield',
+      },
+    },
+    training: {
+      h2: 'Training and support',
+      trainingTitle: 'Training',
+      trainingItems: ['Using the printer', 'Prepping nails for the best result', 'Cleaning between clients', 'Fixing simple problems'],
+      trainingNote: `On site, for ${c.techniciansTrained} technicians.`,
+      supportTitle: 'Support',
+      supportCards: [
+        { icon: 'whatsapp', title: 'WhatsApp help', text: 'Ask us anything on WhatsApp.' },
+        { icon: 'truck', title: 'On-site visits', text: 'We come to your salon when needed.' },
+      ],
+    },
+    running: {
+      h2: 'Running costs',
+      text: `Ink costs about ${kwd(c.calculator.cartridgeCostPerSet, 'en')} per set of 10 nails. Refills are delivered to your salon.`,
+      link: 'Try the earnings calculator',
+    },
+    faq: {
+      h2: 'Questions about the printer',
+      space: { q: 'How much space does it need?', a: `${printerSpec('size').en} on a nail desk, plus a standard socket.` },
+      installs: { q: 'Who installs it?', a: 'We deliver it, set it up in your salon and train your team on site.' },
+    },
   },
 
   /** Shown only when flags.showUpfrontSaving is true. */
