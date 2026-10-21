@@ -1,6 +1,7 @@
 ---
-// Specifications (#specs): a two-column table built from printerSpecs in src/config.ts.
-import { visiblePrinterSpecs } from '../../config';
+// Specifications (#specs): a two-column table built from printerSpecs in src/config.ts, then
+// "What's in the box" from boxContents.
+import { boxContents, visiblePrinterSpecs } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -31,6 +32,12 @@ const rows = visiblePrinterSpecs();
         </table>
       </div>
       <p class="specs-note" data-motion data-reveal="fade">{sp.note}</p>
+      <h3 id="box-title" class="box-title" data-motion data-reveal="fade">{sp.boxTitle}</h3>
+      <div class="card specs-card" data-motion data-reveal="item">
+        <ul class="box-list" aria-labelledby="box-title">
+          {boxContents.map((b) => <li>{b.item[lang]}</li>)}
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -83,5 +90,20 @@ const rows = visiblePrinterSpecs();
     margin-block-start: 16px;
     color: var(--color-stone);
     font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .box-title {
+    margin-block: 48px 16px;
+  }
+  .box-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .box-list li {
+    padding-block: 16px;
+    font-weight: 500;
+  }
+  .box-list li + li {
+    border-top: 1px solid var(--color-line);
   }
 </style>

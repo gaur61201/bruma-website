@@ -36,10 +36,10 @@ export const config = {
 };
 
 // Printer specifications for the printer page (/printer/). Labels are translated in the i18n files
-// (printer.specLabels); values are given in both languages here. A row with `onlyIf` shows only
+// (printer.specs.labels); values are given in both languages here. A row with `onlyIf` shows only
 // while that flag is on. Kept off the page until confirmed: camera resolution, number of built-in
 // designs, Arabic menus, whether it needs internet, uploading your own designs.
-export type PrinterSpecKey = 'printTime' | 'curing' | 'screen' | 'size' | 'weight' | 'power' | 'ink' | 'inkYield';
+export type PrinterSpecKey = 'printTime' | 'curing' | 'screen' | 'size' | 'weight' | 'power' | 'ink' | 'inkYield' | 'maintenance';
 export interface PrinterSpec {
   label: PrinterSpecKey;
   value: { en: string; ar: string };
@@ -71,6 +71,24 @@ export const printerSpecs: PrinterSpec[] = [
     confirmed: false, // TODO confirm on the demo unit
     onlyIf: 'showInkCostFaq',
   },
+  {
+    label: 'maintenance',
+    value: { en: 'Cleans its print head automatically', ar: 'تنظّف رأس الطباعة تلقائياً' },
+    confirmed: false, // TODO confirm on the demo unit
+  },
+];
+
+// What's in the box, listed on the printer page after the specifications.
+export interface BoxItem {
+  item: { en: string; ar: string };
+  confirmed: boolean;
+}
+export const boxContents: BoxItem[] = [
+  { item: { en: 'The printer', ar: 'الطابعة' }, confirmed: false }, // TODO confirm
+  { item: { en: 'A starter ink cartridge', ar: 'عبوة حبر للبدء' }, confirmed: false }, // TODO confirm
+  { item: { en: 'Print gel', ar: 'جل الطباعة' }, confirmed: false }, // TODO confirm
+  { item: { en: 'Nail holders', ar: 'حوامل الأظافر' }, confirmed: false }, // TODO confirm
+  { item: { en: 'A test card', ar: 'بطاقة اختبار' }, confirmed: false }, // TODO confirm
 ];
 
 /** The spec rows to show, honouring each row's flag. */

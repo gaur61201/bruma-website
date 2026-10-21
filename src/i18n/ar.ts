@@ -134,7 +134,7 @@ export const ar: Dict = {
       { icon: 'shield', title: `ضمان لمدة ${warranty}`, text: 'الصيانة تتم محلياً.' },
       { icon: 'swap', title: 'جهاز بديل', text: `إذا استغرقت الصيانة أكثر من ${loanerHours}، نوفر لكم طابعة بديلة.` },
       { icon: 'library', title: 'مكتبة التصاميم', text: 'تصاميم جاهزة مدمجة في الطابعة.' },
-      { icon: 'refill', title: 'عبوات الحبر', text: 'توصيل العبوات البديلة إلى صالونك.' },
+      { icon: 'refill', title: 'عبوات الحبر', text: 'توصيل العبوات البديلة إلى صالونك. وتأتي العبوة الأولى في صندوق الطابعة.' },
     ],
   },
 
@@ -226,6 +226,7 @@ export const ar: Dict = {
       h2: 'المواصفات',
       caption: 'مواصفات طابعة الأظافر من BRUMA',
       note: 'تناسب طاولة أظافر عادية. يمكن التأكد من المساحة خلال العرض.',
+      boxTitle: 'محتويات الصندوق',
       labels: {
         printTime: 'زمن الطباعة',
         curing: 'التجفيف',
@@ -235,6 +236,7 @@ export const ar: Dict = {
         power: 'الكهرباء',
         ink: 'الحبر',
         inkYield: 'إنتاجية الحبر',
+        maintenance: 'الصيانة',
       },
     },
     training: {

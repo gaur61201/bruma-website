@@ -133,7 +133,7 @@ export const en = {
       { icon: 'shield', title: `${c.warrantyMonths}-month warranty`, text: 'Repairs handled locally.' },
       { icon: 'swap', title: 'Loaner machine', text: `If a repair takes longer than ${loanerHours}, we lend you a printer.` },
       { icon: 'library', title: 'Design library', text: 'Ready-made designs built in.' },
-      { icon: 'refill', title: 'Cartridge refills', text: 'Delivered to your salon.' },
+      { icon: 'refill', title: 'Cartridge refills', text: 'Delivered to your salon. Your first cartridge comes in the box.' },
     ],
   },
 
@@ -227,6 +227,7 @@ export const en = {
       h2: 'Specifications',
       caption: 'BRUMA nail printer specifications',
       note: 'Fits on a standard nail desk. Check your space at the demo.',
+      boxTitle: "What's in the box",
       labels: {
         printTime: 'Print time',
         curing: 'Curing',
@@ -236,6 +237,7 @@ export const en = {
         power: 'Power',
         ink: 'Ink',
         inkYield: 'Ink yield',
+        maintenance: 'Maintenance',
       },
     },
     training: {
