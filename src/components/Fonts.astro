@@ -35,9 +35,10 @@ const css = [
   `@font-face{font-family:'Readex Pro Fallback';src:local('Arial');size-adjust:135%;ascent-override:74.07%;descent-override:18.52%;line-gap-override:0%;unicode-range:${ARABIC}}`,
 ].join('');
 
-// Hero weights: English uses Unbounded 500 (H1) and Readex 400 (subline);
-// Arabic uses Readex 500 (H1) and Readex 400 (subline).
-const preloads = lang === 'ar' ? [readexArabic500, readexArabic400] : [unboundedLatin500, readexLatin400];
+// Hero weights: English uses Unbounded 500 (H1, price numeral) and Readex 400 (subline);
+// Arabic uses Readex 500 (H1) and Readex 400 (subline), plus Readex 500 Latin for the Western digits
+// in the H1 and the large price numeral, which otherwise swap in late and shift the hero.
+const preloads = lang === 'ar' ? [readexArabic500, readexArabic400, readexLatin500] : [unboundedLatin500, readexLatin400];
 ---
 
 {preloads.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}

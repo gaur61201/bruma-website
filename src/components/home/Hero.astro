@@ -75,8 +75,12 @@ const t = useTranslations(lang);
   .hero-copy :global(h1) {
     max-width: 11em;
   }
+  /* Arabic: three short lines at every width, in Readex Pro and in its metric fallback alike, so the
+     font swap never rewraps the headline (a 2-to-3-line change shifted the whole hero on slow loads).
+     6.1em sits between the longest line (5.94em in the fallback) and the shortest two-word join
+     (6.32em). Re-measure if the Arabic headline copy changes. */
   .hero-copy :global(h1:lang(ar)) {
-    max-width: 13em;
+    max-width: 6.1em;
   }
   .hero-subline {
     max-width: 30rem;

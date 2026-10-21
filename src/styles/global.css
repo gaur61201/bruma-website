@@ -248,14 +248,6 @@
   }
 }
 
-/* Space between a section's H2 and its content. */
-@utility section-head-gap {
-  margin-block-start: 32px;
-  @media (min-width: 1024px) {
-    margin-block-start: 56px;
-  }
-}
-
 /* A carbon panel floating on bone (the calculator, the demo form). */
 @utility panel {
   background: var(--color-carbon);
@@ -546,6 +538,10 @@
  * Hero H1: the same line-by-line reveal, CSS-first so the LCP text never waits for GSAP. The inline
  * script in Hero.astro wraps each laid-out line in .hero-line; each line slides up from its mask.
  */
+.hero-h1.is-split {
+  display: flex;
+  flex-direction: column;
+}
 .hero-line {
   display: block;
   overflow: clip;

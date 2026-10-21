@@ -40,6 +40,9 @@ const { id, text } = Astro.props;
       lines[lines.length - 1].push(s.textContent);
     });
     h.textContent = '';
+    // A flex column while split: the line masks' negative margins don't collapse, so the split
+    // headline is exactly as tall as the plain text it hands back to (no shift at the end).
+    h.classList.add('is-split');
     lines.forEach((line, i) => {
       const mask = document.createElement('span');
       mask.className = 'hero-line';
@@ -54,6 +57,7 @@ const { id, text } = Astro.props;
     const restore = () => {
       if (restored) return;
       restored = true;
+      h.classList.remove('is-split');
       h.textContent = text;
     };
     h.lastElementChild.firstElementChild.addEventListener('animationend', restore, { once: true });
