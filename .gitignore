@@ -28,3 +28,10 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Local Claude Code skills and settings, design-tool working files
+.claude/skills/
+.claude/settings.local.json
+.impeccable/
+PRODUCT.md
+DESIGN.md
