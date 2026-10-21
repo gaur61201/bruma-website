@@ -1,0 +1,87 @@
+---
+// Specifications (#specs): a two-column table built from printerSpecs in src/config.ts.
+import { visiblePrinterSpecs } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const sp = useTranslations(lang).printer.specs;
+const rows = visiblePrinterSpecs();
+---
+
+<section id="specs" class="section-y specs" aria-labelledby="specs-title" data-reveal-section>
+  <div class="wrap specs-grid">
+    <h2 id="specs-title" data-motion data-reveal="heading">{sp.h2}</h2>
+    <div>
+      <div class="card specs-card" data-motion data-reveal="item">
+        <table class="specs-table">
+          <caption class="sr-only">{sp.caption}</caption>
+          <tbody>
+            {
+              rows.map((row) => (
+                <tr>
+                  <th scope="row">{sp.labels[row.label]}</th>
+                  <td>{row.value[lang]}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="specs-note" data-motion data-reveal="fade">{sp.note}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .specs {
+    border-top: 1px solid var(--color-line);
+  }
+  .specs-grid {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .specs-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .specs-card {
+    padding-inline: 24px;
+  }
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .specs-table tr + tr {
+    border-top: 1px solid var(--color-line);
+  }
+  .specs-table th,
+  .specs-table td {
+    padding-block: 16px;
+    text-align: start;
+    vertical-align: top;
+  }
+  .specs-table th {
+    width: 40%;
+    padding-inline-end: 16px;
+    font-weight: 400;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: var(--body-leading);
+  }
+  /* Values in Readex Pro 500. */
+  .specs-table td {
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  .specs-note {
+    margin-block-start: 16px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+// "Training and support": a training card plus support cards. The warranty and loaner cards reuse
+// the homepage "What's included" cards (same component, same copy).
+import Icon from '../Icon.astro';
+import IconCard from '../IconCard.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+const tr = t.printer.training;
+const [, , warranty, loaner] = t.included.cards;
+const support = [...tr.supportCards, warranty, loaner];
+---
+
+<section class="section-y training" aria-labelledby="training-title" data-reveal-section>
+  <div class="wrap">
+    <h2 id="training-title" data-motion data-reveal="heading">{tr.h2}</h2>
+    <div class="training-grid">
+      <div class="card training-card" data-motion data-reveal="item">
+        <h3>{tr.trainingTitle}</h3>
+        <ul class="check-list">
+          {
+            tr.trainingItems.map((item) => (
+              <li>
+                <Icon name="check" size={20} />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="training-note">{tr.trainingNote}</p>
+      </div>
+      <div class="support">
+        <h3 class="support-title" data-motion data-reveal="fade">{tr.supportTitle}</h3>
+        <ul class="support-grid">
+          {support.map((card) => <IconCard icon={card.icon} title={card.title} text={card.text} level={4} reveal />)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .training {
+    border-top: 1px solid var(--color-line);
+  }
+  .training-grid {
+    display: grid;
+    gap: 32px;
+    margin-block-start: 32px;
+  }
+  @media (min-width: 1024px) {
+    .training-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 48px;
+      align-items: start;
+      margin-block-start: 48px;
+    }
+  }
+  .training-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px 24px;
+  }
+  .check-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .check-list :global(svg) {
+    flex-shrink: 0;
+    margin-block-start: 3px;
+  }
+  .training-note {
+    padding-block-start: 16px;
+    border-top: 1px solid var(--color-line);
+    font-weight: 500;
+  }
+  .support-title {
+    margin-block-end: 16px;
+  }
+  .support-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .support-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

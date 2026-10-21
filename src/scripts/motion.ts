@@ -246,7 +246,7 @@ export function initMotion() {
 
   const included = () => {
     const shapes = (card: HTMLElement) => $$<SVGElement>('[data-draw] path, [data-draw] rect, [data-draw] circle', card);
-    const cards = $$('.included-card');
+    const cards = $$('.included .icon-card');
     cards.forEach((card) => {
       if (fresh(card)) gsap.set(shapes(card), { strokeDasharray: 1, strokeDashoffset: 1 });
     });
@@ -351,6 +351,27 @@ export function initMotion() {
     if (getComputedStyle(el).opacity !== '1') gsap.to(el, { x: 0, y: 0, opacity: 1, duration: 0.2, overwrite: true });
   };
 
+  /** Photo placeholders (and later photos) rise in with the same clip-path reveal as the homepage media. */
+  const photoRise = (el: HTMLElement) => {
+    if (!claim([el], el)) return;
+    const inner = el.firstElementChild as HTMLElement | null;
+    const tl = gsap.timeline({ scrollTrigger: once(el), defaults: { duration: 0.9, ease: 'expo.out' } });
+    tl.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', clearProps: 'clipPath' }, 0);
+    if (inner) tl.fromTo(inner, { scale: 1.06 }, { scale: 1, clearProps: 'transform' }, 0);
+  };
+
+  /**
+   * Generic hooks for pages built from shared parts (the printer page and later ones): inside a
+   * [data-reveal-section], headings reveal line by line, items slide in from the inline-start side,
+   * photos rise in, and [data-reveal="fade"] text fades up.
+   */
+  const genericHeadings = (section: Element) => $$('[data-reveal="heading"]', section).forEach(rise);
+  const genericBody = (section: Element) => {
+    $$('[data-reveal="fade"]', section).forEach((el) => fadeUp(el));
+    batchIn($$('[data-reveal="item"]', section), { x: -SLIDE * dir }, 0.08);
+    $$('[data-reveal="photo"]', section).forEach(photoRise);
+  };
+
   // --- Run ---------------------------------------------------------------------------------------
 
   type Setup = () => void | (() => void);
@@ -427,6 +448,7 @@ export function initMotion() {
       [$('.faq'), () => rise($('#faq-title')), faq],
       [$('#demo'), () => rise($('#demo-title')), demo],
       [$('.stories'), () => rise($('#stories-title')), stories],
+      ...$$('[data-reveal-section]').map((section): [Element, Setup, Setup] => [section, () => genericHeadings(section), () => genericBody(section)]),
     ]);
     return () => {
       document.removeEventListener('focusin', revealOnFocus);

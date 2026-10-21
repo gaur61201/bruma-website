@@ -1,0 +1,53 @@
+---
+// Running costs: rendered only when flags.showInkCostFaq is on (same switch as the ink-cost FAQ).
+import Icon from '../Icon.astro';
+import { config } from '../../config';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const r = useTranslations(lang).printer.running;
+const show = config.flags.showInkCostFaq;
+---
+
+{
+  show && (
+    <section class="section-y running" aria-labelledby="running-title" data-reveal-section>
+      <div class="wrap running-inner">
+        <h2 id="running-title" data-motion data-reveal="heading">
+          {r.h2}
+        </h2>
+        <p data-motion data-reveal="fade">
+          {r.text}
+        </p>
+        <a href={`${localizedPath('/', lang)}#earnings`} class="text-link arrow-link">
+          <span>{r.link}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .running {
+    border-top: 1px solid var(--color-line);
+  }
+  .running-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .running-inner p {
+    max-width: 36rem;
+  }
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+</style>

@@ -5,13 +5,16 @@ import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
+  /** Sent as `page` with the form, so leads show which page they came from. */
+  pageName?: string;
 }
-const { lang } = Astro.props;
+const { lang, pageName = 'home' } = Astro.props;
 const t = useTranslations(lang);
 const d = t.demo;
 
 const settings = {
   lang,
+  page: pageName,
   endpoint: config.formEndpoint,
   timeoutMs: config.formTimeoutMs,
   whatsappNumber: config.whatsappNumber,

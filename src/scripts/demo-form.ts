@@ -3,6 +3,7 @@ import { getLeadParams, storage } from './lead';
 
 interface Settings {
   lang: 'en' | 'ar';
+  page: string;
   endpoint: string;
   timeoutMs: number;
   whatsappNumber: string;
@@ -160,7 +161,7 @@ export function initDemoForm(form: HTMLFormElement) {
       lang: s.lang,
       src,
       rep,
-      page: window.location.origin + window.location.pathname,
+      page: s.page,
       submittedAt: new Date().toISOString(),
     };
 

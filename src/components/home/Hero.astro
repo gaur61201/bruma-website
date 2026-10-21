@@ -1,6 +1,7 @@
 ---
 import Icon from '../Icon.astro';
 import HeroVideo from './HeroVideo.astro';
+import HeroHeading from '../HeroHeading.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -14,58 +15,7 @@ const t = useTranslations(lang);
   <div class="wrap hero-grid">
     <div class="hero-copy">
       <p class="eyebrow hero-fade">{t.hero.eyebrow}</p>
-      <h1 id="hero-title" class="hero-h1">{t.hero.h1}</h1>
-      <!--
-        Line-by-line reveal without waiting for GSAP: this runs as soon as the H1 is parsed, groups its
-        words into the lines the browser laid out, and CSS keyframes (global.css) slide each line up
-        from its mask. When the last line lands, the H1 goes back to plain text. Words are split only
-        at spaces, so Arabic letters stay joined. Skipped without JS or under reduced motion.
-      -->
-      <script is:inline>
-        (() => {
-          const h = document.currentScript.previousElementSibling;
-          if (!document.documentElement.classList.contains('js')) return;
-          if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          const text = h.textContent.trim();
-          const words = text.split(/\s+/);
-          h.textContent = '';
-          const spans = words.map((word, i) => {
-            const s = document.createElement('span');
-            s.textContent = word;
-            h.append(s);
-            if (i < words.length - 1) h.append(' ');
-            return s;
-          });
-          const lines = [];
-          let top = -1e9;
-          spans.forEach((s) => {
-            if (Math.abs(s.offsetTop - top) > 2) {
-              lines.push([]);
-              top = s.offsetTop;
-            }
-            lines[lines.length - 1].push(s.textContent);
-          });
-          h.textContent = '';
-          lines.forEach((line, i) => {
-            const mask = document.createElement('span');
-            mask.className = 'hero-line';
-            const inner = document.createElement('span');
-            inner.className = 'hero-line-inner';
-            inner.style.setProperty('--i', String(i));
-            inner.textContent = line.join(' ');
-            mask.append(inner);
-            h.append(mask);
-          });
-          let restored = false;
-          const restore = () => {
-            if (restored) return;
-            restored = true;
-            h.textContent = text;
-          };
-          h.lastElementChild.firstElementChild.addEventListener('animationend', restore, { once: true });
-          setTimeout(restore, 2000);
-        })();
-      </script>
+      <HeroHeading id="hero-title" text={t.hero.h1} />
       <p class="hero-subline hero-rise" style="--i:0">{t.hero.subline}</p>
       <div class="hero-price hero-rise" style="--i:1">
         <p class="price">{t.hero.price}</p>
@@ -113,10 +63,10 @@ const t = useTranslations(lang);
     flex-direction: column;
     gap: 16px;
   }
-  .hero-copy h1 {
+  .hero-copy :global(h1) {
     max-width: 12em;
   }
-  .hero-copy h1:lang(ar) {
+  .hero-copy :global(h1:lang(ar)) {
     max-width: 14em;
   }
   .hero-subline {

@@ -1,0 +1,40 @@
+---
+// A white card with an outline icon, a title and one line of text ("What's included" and the
+// printer page's cards). `reveal` hooks it into the generic slide-in; `level` sets the heading level.
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  icon: string;
+  title: string;
+  text: string;
+  level?: 3 | 4;
+  reveal?: boolean;
+}
+const { icon, title, text, level = 3, reveal = false } = Astro.props;
+const Heading = `h${level}` as 'h3' | 'h4';
+---
+
+<li class="card icon-card lift" data-motion data-reveal={reveal ? 'item' : undefined}>
+  <Icon name={icon as IconName} size={32} draw />
+  <Heading class="icon-card-title">{title}</Heading>
+  <p>{text}</p>
+</li>
+
+<style>
+  .icon-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+  }
+  .icon-card-title {
+    margin-block-start: 8px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+    line-height: var(--heading-leading);
+  }
+  .icon-card-title:lang(ar) {
+    font-family: var(--font-body);
+  }
+</style>

@@ -1,5 +1,5 @@
 ---
-import Icon, { type IconName } from '../Icon.astro';
+import IconCard from '../IconCard.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -14,11 +14,7 @@ const t = useTranslations(Astro.props.lang);
     <ul class="included-grid">
       {
         t.included.cards.map((card) => (
-          <li class="card included-card lift" data-motion>
-            <Icon name={card.icon as IconName} size={32} draw />
-            <h3>{card.title}</h3>
-            <p>{card.text}</p>
-          </li>
+          <IconCard icon={card.icon} title={card.title} text={card.text} />
         ))
       }
     </ul>
@@ -44,14 +40,5 @@ const t = useTranslations(Astro.props.lang);
       gap: 24px;
       margin-block-start: 48px;
     }
-  }
-  .included-card {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 24px;
-  }
-  .included-card h3 {
-    margin-block-start: 8px;
   }
 </style>

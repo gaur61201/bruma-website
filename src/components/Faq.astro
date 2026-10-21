@@ -1,19 +1,17 @@
 ---
-import Icon from '../Icon.astro';
-import { faqItems } from './faq-items';
-import { useTranslations, type Lang } from '../../i18n';
+// Native <details> FAQ, shared by every page. Items come from src/components/home/faq-items.ts.
+import Icon from './Icon.astro';
 
 interface Props {
-  lang: Lang;
+  title: string;
+  items: { q: string; a: string }[];
 }
-const { lang } = Astro.props;
-const t = useTranslations(lang);
-const items = faqItems(lang);
+const { title, items } = Astro.props;
 ---
 
 <section class="section-y faq" aria-labelledby="faq-title">
   <div class="wrap faq-grid">
-    <h2 id="faq-title" data-motion>{t.faq.h2}</h2>
+    <h2 id="faq-title" data-motion>{title}</h2>
     <div class="faq-list">
       {
         items.map((item) => (

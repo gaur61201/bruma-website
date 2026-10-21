@@ -1,0 +1,35 @@
+---
+// A clearly labelled photo placeholder (bone box, line border, caption) until real photos exist.
+// It reveals with the same clip-path rise as the homepage media: on load in a hero (`hero`), or on
+// scroll everywhere else (motion.ts, data-reveal="photo").
+interface Props {
+  caption: string;
+  ratio?: string;
+  hero?: boolean;
+}
+const { caption, ratio = '4 / 3', hero = false } = Astro.props;
+---
+
+<div
+  class:list={['photo', { 'hero-media-reveal': hero }]}
+  style={`--ratio: ${ratio}`}
+  data-motion={hero ? undefined : ''}
+  data-reveal={hero ? undefined : 'photo'}
+>
+  <figure class="placeholder-media photo-frame">
+    <figcaption>{caption}</figcaption>
+  </figure>
+</div>
+
+<style>
+  .photo {
+    width: 100%;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+  .photo-frame {
+    margin: 0;
+    width: 100%;
+    aspect-ratio: var(--ratio);
+  }
+</style>

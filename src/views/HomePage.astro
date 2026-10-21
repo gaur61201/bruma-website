@@ -10,9 +10,9 @@ import Included from '../components/home/Included.astro';
 import Hygiene from '../components/home/Hygiene.astro';
 import WaysToOwn from '../components/home/WaysToOwn.astro';
 import SalonStories from '../components/home/SalonStories.astro';
-import Faq from '../components/home/Faq.astro';
+import Faq from '../components/Faq.astro';
 import DemoForm from '../components/home/DemoForm.astro';
-import { faqSchema } from '../components/home/faq-items';
+import { faqItems, faqSchema } from '../components/home/faq-items';
 import { useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -22,7 +22,7 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[faqSchema(lang)]}>
+<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[faqSchema(lang, faqItems(lang))]}>
   <Hero lang={lang} />
   <ProofStrip lang={lang} />
   <GalleryPreview lang={lang} />
@@ -32,6 +32,6 @@ const t = useTranslations(lang);
   <Hygiene lang={lang} />
   <WaysToOwn lang={lang} />
   <SalonStories lang={lang} />
-  <Faq lang={lang} />
+  <Faq title={t.faq.h2} items={faqItems(lang)} />
   <DemoForm lang={lang} />
 </Base>
