@@ -297,6 +297,15 @@
     white-space: nowrap;
   }
 
+  /* Navigation links, eyebrows and small labels: uppercase with 0.08em letter-spacing, in English
+     only. Arabic has no capitals and never gets letter-spacing (the :lang(ar) reset above wins). */
+  .caps:lang(en),
+  .eyebrow:lang(en),
+  .save-pill:lang(en) {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   .card {
     background: var(--color-white);
     border: 1px solid var(--color-line);

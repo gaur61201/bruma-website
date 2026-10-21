@@ -42,7 +42,7 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
         {
           links.map((l) => (
             <li>
-              <a href={l.href} class="slide-underline" aria-current={l.current ? 'page' : undefined}>
+              <a href={l.href} class="slide-underline caps" aria-current={l.current ? 'page' : undefined}>
                 {l.label}
               </a>
             </li>
@@ -75,7 +75,7 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
       {
         links.map((l, i) => (
           <li style={`--i:${i}`}>
-            <a href={l.href} data-menu-link aria-current={l.current ? 'page' : undefined}>
+            <a href={l.href} class="caps" data-menu-link aria-current={l.current ? 'page' : undefined}>
               {l.label}
             </a>
           </li>
