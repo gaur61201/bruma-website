@@ -334,7 +334,7 @@ export const ar: Dict = {
   footer: {
     tagline: 'طابعة الأظافر من BRUMA للصالونات والعيادات في الكويت.',
     navLabel: 'تذييل الصفحة',
-    sectionsHeading: 'في هذه الصفحة',
+    sectionsHeading: 'روابط سريعة',
     contactHeading: 'التواصل',
     whatsapp: 'واتساب',
     phone: 'الهاتف',

@@ -339,7 +339,7 @@ export const en = {
   footer: {
     tagline: 'The BRUMA nail printer for salons and clinics in Kuwait.',
     navLabel: 'Footer',
-    sectionsHeading: 'On this page',
+    sectionsHeading: 'Quick links',
     contactHeading: 'Contact',
     whatsapp: 'WhatsApp',
     phone: 'Phone',
