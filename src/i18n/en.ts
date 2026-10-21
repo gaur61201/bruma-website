@@ -444,6 +444,89 @@ export const en = {
     },
   },
 
+  /** The warranty and privacy pages. */
+  legal: {
+    /** {date} is the legalUpdated date from config. */
+    updated: 'Last updated {date}',
+  },
+
+  /** The slim carbon band at the end of the warranty and privacy pages. */
+  ctaBand: {
+    text: 'Want to see the printer in your salon?',
+    button: 'Book a free demo',
+  },
+
+  // TODO lawyer review: the whole warranty page.
+  warrantyPage: {
+    meta: {
+      title: 'BRUMA nail printer warranty terms',
+      description: `What the ${c.warrantyMonths}-month warranty on the BRUMA nail printer covers, what it doesn't, the loaner printer during repairs and how to make a claim in Kuwait.`,
+    },
+    h1: 'Warranty terms',
+    subline: 'The warranty on your BRUMA nail printer, in plain language.',
+    length: {
+      h2: 'How long it lasts',
+      text: `${enCount(c.warrantyMonths, 'month', 'months')} from the day we install your printer.`,
+    },
+    covered: {
+      h2: "What's covered",
+      text: "Faults in the printer's parts and workmanship. Repairs under warranty include parts and labour.",
+    },
+    notCovered: {
+      h2: "What's not covered",
+      items: [
+        'Damage from drops, liquids or power surges',
+        'Repairs or opening by anyone other than BRUMA',
+        'Consumables: ink cartridges, gels and nail holders',
+        'Normal wear',
+      ],
+    },
+    loaner: {
+      h2: 'Loaner printer',
+      text: `If a repair takes longer than ${loanerHours}, we lend you a printer so your salon keeps working.`,
+    },
+    claim: {
+      h2: 'How to make a claim',
+      steps: ['WhatsApp us with the problem and a photo or short video.', "Then we'll diagnose it remotely or visit your salon."],
+      button: 'Make a claim on WhatsApp',
+      message: "Hi BRUMA, I'd like to make a warranty claim.",
+    },
+    // TODO lawyer review: what happens to monthly-plan printers after the warranty period.
+    monthly: {
+      h2: 'Monthly-plan printers',
+      text: 'The same warranty applies to printers on the monthly plan for the warranty period.',
+    },
+  },
+
+  // TODO review: the whole privacy policy.
+  privacyPage: {
+    meta: {
+      title: 'Privacy policy | BRUMA',
+      description:
+        'How BRUMA uses the details you send with the demo form: what we collect, why, who sees it, how long we keep it and how to ask us to delete it.',
+    },
+    h1: 'Privacy policy',
+    subline: 'What we collect when you book a demo, and what we do with it.',
+    collect: {
+      h2: 'What we collect',
+      items: [
+        'From the demo form: your name, salon name, area and WhatsApp number',
+        'Which link or QR code brought you to the site',
+        'Cookieless, anonymous visit statistics',
+      ],
+    },
+    why: { h2: 'Why', text: 'To arrange and follow up your demo. Nothing else.' },
+    who: { h2: 'Who sees it', text: 'The BRUMA team only. We never sell or share your details.' },
+    // TODO confirm: the retention period (dataRetentionMonths in config).
+    keep: {
+      h2: 'How long we keep it',
+      text: `We keep your details for up to ${enCount(c.dataRetentionMonths, 'month', 'months')} after your last contact with us, then delete them.`,
+    },
+    choices: { h2: 'Your choices', text: 'Ask us to see or delete your details at any time, by WhatsApp or email.' },
+    cookies: { h2: 'Cookies', text: 'The site sets no tracking cookies.' },
+    contact: { h2: 'Contact' },
+  },
+
   /** Wear-test results (printer and gallery pages). The strip shows only when flags.showWearTestResults is true. */
   wearTest: {
     ask: 'Ask to see our wear-test photos at your demo.',

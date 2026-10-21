@@ -1,0 +1,23 @@
+---
+// "Last updated" line under the H1 of the warranty and privacy pages (date from config.legalUpdated).
+import { config } from '../config';
+import { formatDate, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const date = formatDate(config.legalUpdated, lang);
+const [before, after] = useTranslations(lang).legal.updated.split('{date}');
+---
+
+<p class="legal-updated hero-rise" style="--i:1">
+  {before}<time datetime={config.legalUpdated}>{date}</time>{after}
+</p>
+
+<style>
+  .legal-updated {
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

@@ -29,3 +29,9 @@ export const alternatePath = (pathname: string, current: Lang) =>
 /** Replace {key} placeholders. */
 export const fill = (template: string, values: Record<string, string | number>) =>
   template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
+
+/** A date like "21 October 2026" / "21 أكتوبر 2026" (Western digits in both languages), at build time. */
+export const formatDate = (iso: string, lang: Lang) =>
+  new Intl.DateTimeFormat(lang === 'ar' ? 'ar-KW-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+    new Date(`${iso}T00:00:00Z`),
+  );
