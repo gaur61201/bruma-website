@@ -13,16 +13,16 @@ interface Props {
 }
 const { lang, altHref } = Astro.props;
 const t = useTranslations(lang);
-const home = localizedPath('/', lang);
-const onHome = Astro.url.pathname === home;
-const section = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
+const page = (path: string, label: string) => ({ href: localizedPath(path, lang), label });
 
 const links = [
-  { href: localizedPath('/printer/', lang), label: t.nav.printer },
-  { href: section('gallery'), label: t.nav.gallery },
-  { href: section('ways-to-own'), label: t.nav.waysToOwn },
-  { href: section('hygiene'), label: t.nav.hygiene },
-  { href: section('demo'), label: t.nav.bookDemo },
+  page('/printer/', t.nav.printer),
+  page('/gallery/', t.nav.gallery),
+  page('/ways-to-own/', t.nav.waysToOwn),
+  page('/hygiene/', t.nav.hygiene),
+  page('/book-a-demo/', t.nav.bookDemo),
+  page('/warranty/', t.footer.warranty),
+  page('/privacy/', t.footer.privacy),
 ];
 ---
 

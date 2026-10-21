@@ -1,12 +1,14 @@
 ---
 import Icon from '../Icon.astro';
+import ArrowLink from '../ArrowLink.astro';
 import { config } from '../../config';
-import { useTranslations, type Lang } from '../../i18n';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const t = useTranslations(Astro.props.lang);
+const { lang } = Astro.props;
+const t = useTranslations(lang);
 const showSaving = config.flags.showUpfrontSaving;
 const plans = [
   { ...t.ways.monthly, featured: true, id: 'plan-monthly' },
@@ -50,6 +52,7 @@ const plans = [
         <span>{t.ways.cta}</span>
         <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
       </a>
+      <ArrowLink href={localizedPath('/ways-to-own/', lang)} text={t.ways.compareLink} />
     </div>
   </div>
 </section>
@@ -143,7 +146,9 @@ const plans = [
   .ways-cta {
     margin-block-start: 32px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
   @media (max-width: 639px) {
     .ways-cta .btn {

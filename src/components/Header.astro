@@ -13,18 +13,18 @@ interface Props {
 const { lang, altHref } = Astro.props;
 const t = useTranslations(lang);
 const home = localizedPath('/', lang);
-const onHome = Astro.url.pathname === home;
-// Pages that exist get their own link; the rest point at homepage sections until they're built.
-const section = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
-const printerPage = localizedPath('/printer/', lang);
+const page = (path: string, label: string) => {
+  const href = localizedPath(path, lang);
+  return { href, label, current: Astro.url.pathname === href };
+};
 
 const links = [
-  { href: printerPage, label: t.nav.printer, current: Astro.url.pathname === printerPage },
-  { href: section('gallery'), label: t.nav.gallery },
-  { href: section('ways-to-own'), label: t.nav.waysToOwn },
-  { href: section('hygiene'), label: t.nav.hygiene },
+  page('/printer/', t.nav.printer),
+  page('/gallery/', t.nav.gallery),
+  page('/ways-to-own/', t.nav.waysToOwn),
+  page('/hygiene/', t.nav.hygiene),
 ];
-const demoHref = section('demo');
+const demo = page('/book-a-demo/', t.nav.bookDemo);
 ---
 
 <header class="site-header" data-header>
@@ -53,7 +53,7 @@ const demoHref = section('demo');
 
     <div class="header-actions">
       <LangSwitch lang={lang} altHref={altHref} />
-      <a href={demoHref} class="btn btn-primary btn-small desktop-only">{t.nav.bookDemo}</a>
+      <a href={demo.href} class="btn btn-primary btn-small desktop-only" aria-current={demo.current ? 'page' : undefined}>{demo.label}</a>
       <button type="button" class="menu-button" aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menuOpen} data-menu-open>
         <Icon name="menu" />
       </button>
@@ -82,8 +82,8 @@ const demoHref = section('demo');
         ))
       }
     </ul>
-    <a href={demoHref} class="btn btn-primary menu-cta" data-menu-link style={`--i:${links.length}`}>
-      <span>{t.nav.bookDemo}</span>
+    <a href={demo.href} class="btn btn-primary menu-cta" data-menu-link aria-current={demo.current ? 'page' : undefined} style={`--i:${links.length}`}>
+      <span>{demo.label}</span>
       <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
     </a>
   </nav>

@@ -89,6 +89,7 @@ export const ar: Dict = {
     rowLabels: ['تصاميم مطبوعة، الصف الأول', 'تصاميم مطبوعة، الصف الثاني'],
     pause: 'إيقاف حركة التصاميم مؤقتاً',
     play: 'تشغيل حركة التصاميم',
+    allLink: 'عرض كل التصاميم',
   },
 
   how: {
@@ -145,6 +146,7 @@ export const ar: Dict = {
       { icon: 'document', text: 'صحائف بيانات السلامة للحبر والجل متاحة عند الطلب.' },
       { icon: 'hand', text: 'إرشادات اختبار الحساسية للعميلات ذوات البشرة الحساسة.' },
     ],
+    detailLink: 'تفاصيل النظافة والسلامة',
   },
 
   ways: {
@@ -162,6 +164,7 @@ export const ar: Dict = {
       small: '',
     },
     cta: 'حجز عرض مجاني',
+    compareLink: 'مقارنة الخيارين',
   },
 
   stories: {
@@ -341,6 +344,8 @@ export const ar: Dict = {
     whatsapp: 'واتساب',
     phone: 'الهاتف',
     email: 'البريد الإلكتروني',
+    warranty: 'شروط الضمان',
+    privacy: 'سياسة الخصوصية',
     copyright: `© ${new Date().getFullYear()} BRUMA`,
   },
 

@@ -87,6 +87,7 @@ export const en = {
     rowLabels: ['Printed designs, row 1', 'Printed designs, row 2'],
     pause: 'Pause the moving designs',
     play: 'Play the moving designs',
+    allLink: 'See all designs',
   },
 
   how: {
@@ -144,6 +145,7 @@ export const en = {
       { icon: 'document', text: 'Safety data sheets for the ink and gels, available on request.' },
       { icon: 'hand', text: 'Patch test advice for clients with sensitive skin.' },
     ],
+    detailLink: 'Hygiene and safety in detail',
   },
 
   ways: {
@@ -161,6 +163,7 @@ export const en = {
       small: '',
     },
     cta: 'Book a free demo',
+    compareLink: 'Compare the plans',
   },
 
   stories: {
@@ -346,6 +349,8 @@ export const en = {
     whatsapp: 'WhatsApp',
     phone: 'Phone',
     email: 'Email',
+    warranty: 'Warranty terms',
+    privacy: 'Privacy policy',
     copyright: `© ${new Date().getFullYear()} BRUMA`,
   },
 

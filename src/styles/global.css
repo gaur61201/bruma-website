@@ -268,6 +268,14 @@
     font-weight: 500;
   }
 
+  /* A text link with a trailing arrow (the arrow nudges on hover; Motion section). */
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+
   .eyebrow {
     font-size: calc(var(--fs-small) * var(--script-scale));
     font-weight: 500;

@@ -1,17 +1,20 @@
 ---
 import Icon, { type IconName } from '../Icon.astro';
-import { useTranslations, type Lang } from '../../i18n';
+import ArrowLink from '../ArrowLink.astro';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const t = useTranslations(Astro.props.lang);
+const { lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section id="hygiene" class="section-y hygiene" aria-labelledby="hygiene-title">
   <div class="wrap hygiene-grid">
     <h2 id="hygiene-title" data-motion>{t.hygiene.h2}</h2>
-    <ul class="hygiene-list">
+    <div>
+      <ul class="hygiene-list">
       {
         t.hygiene.points.map((point) => (
           <li data-motion>
@@ -20,7 +23,9 @@ const t = useTranslations(Astro.props.lang);
           </li>
         ))
       }
-    </ul>
+      </ul>
+      <ArrowLink href={localizedPath('/hygiene/', lang)} text={t.hygiene.detailLink} class="hygiene-more" />
+    </div>
   </div>
 </section>
 
@@ -53,6 +58,9 @@ const t = useTranslations(Astro.props.lang);
   }
   .hygiene-list li:last-child {
     border-bottom: 1px solid var(--color-line);
+  }
+  .hygiene-grid :global(.hygiene-more) {
+    margin-block-start: 16px;
   }
   .hygiene-list :global(svg) {
     flex-shrink: 0;

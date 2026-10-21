@@ -112,7 +112,7 @@ const errorId = (f: string) => `demo-${f}-error`;
 
       <div class="demo-notes" data-motion>
         <p>{d.replyTime}</p>
-        <p>{d.privacy}</p>
+        <p><a href={localizedPath('/privacy/', lang)} class="privacy-link">{d.privacy}</a></p>
       </div>
     </form>
   </div>
@@ -293,6 +293,14 @@ const errorId = (f: string) => `demo-${f}-error`;
   .form-status {
     font-weight: 500;
     color: var(--color-mist);
+  }
+  .privacy-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .privacy-link:hover {
+    text-decoration-thickness: 2px;
   }
   .demo-notes {
     display: flex;

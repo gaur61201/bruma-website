@@ -32,7 +32,29 @@ export const config = {
   nailsPerCartridge: 700, // TODO confirm by measuring on the demo unit
   upfrontSavingKwd: 150, // TODO confirm: monthly plan total minus upfront price
 
-  flags: { showSalonStories: false, showWearTestResults: false, showInkCostFaq: false, showUpfrontSaving: true },
+  instagramUrl: '', // TODO confirm. The gallery's Instagram link renders only when this is set.
+  plan: {
+    depositKwd: 150, // TODO confirm. First payment at signing; shown only when flags.showPlanTerms is on.
+    months: 10, // TODO confirm. Monthly payments after signing; shown only when flags.showPlanTerms is on.
+  },
+  // TODO confirm. Placeholders; listed on /ways-to-own/ only when flags.showPaymentMethods is on.
+  paymentMethods: { en: ['KNET', 'Bank transfer', 'Cash'], ar: ['كي نت', 'تحويل بنكي', 'نقداً'] },
+  disinfectant: { en: 'an alcohol-based surface disinfectant', ar: 'مطهّر أسطح يحتوي على الكحول' }, // TODO confirm
+  maxStorageTempC: null as number | null, // TODO confirm. The "Store below …°C" line renders only when set.
+  // TODO confirm. Day-to-day power advice for the hygiene page; empty means show the generic line.
+  printerPowerGuidance: { en: '', ar: '' },
+  serviceHours: { en: '', ar: '' }, // TODO confirm. Shown on /book-a-demo/ only when set.
+  dataRetentionMonths: 12, // TODO confirm. How long demo-form details are kept (privacy policy).
+  legalUpdated: '2026-10-21', // "Last updated" date on the warranty and privacy pages
+
+  flags: {
+    showSalonStories: false,
+    showWearTestResults: false,
+    showInkCostFaq: false,
+    showUpfrontSaving: true,
+    showPlanTerms: false,
+    showPaymentMethods: false,
+  },
 };
 
 // Printer specifications for the printer page (/printer/). Labels are translated in the i18n files
