@@ -9,7 +9,14 @@ const dictionaries: Record<Lang, Dict> = { en, ar };
 /** The language of a route: anything under /ar/ is Arabic, everything else English. */
 export const getLang = (url: URL): Lang => (/^\/ar(\/|$)/.test(url.pathname) ? 'ar' : 'en');
 
-export const useTranslations = (lang: Lang): Dict => dictionaries[lang];
+// Dev only: the stress-test data switch (astro.config.mjs, ?data=worst|empty under `astro dev`) swaps
+// in fixture dictionaries here. Never set in a production build.
+let override: Record<Lang, Dict> | null = null;
+export const setDictionaryOverride = (dicts: Record<Lang, Dict> | null) => {
+  override = dicts;
+};
+
+export const useTranslations = (lang: Lang): Dict => override?.[lang] ?? dictionaries[lang];
 
 export const dirOf = (lang: Lang) => (lang === 'ar' ? 'rtl' : 'ltr');
 

@@ -20,9 +20,11 @@ type Filter = 'all' | GalleryCategory;
 const filters: Filter[] = ['all', ...galleryCategories];
 const countOf = (f: Filter) => (f === 'all' ? galleryTiles.length : galleryTiles.filter((tile) => tile.category === f).length);
 
+// First-strong isolates keep a Latin name inside an Arabic caption (or the reverse) in order.
+const isolate = (s: string) => `⁨${s}⁩`;
 const tiles = await Promise.all(
   galleryTiles.map(async (tile) => {
-    const credit = tile.image && tile.technician && tile.area ? fill(t.gallery.credit, { technician: tile.technician, area: tile.area[lang] }) : '';
+    const credit = tile.image && tile.technician && tile.area ? fill(t.gallery.credit, { technician: isolate(tile.technician), area: isolate(tile.area[lang]) }) : '';
     // The lightbox shows a larger version of real photos.
     const full = tile.image ? (await getImage({ src: tile.image, width: 1200, format: 'webp' })).src : '';
     const label = g.categories[tile.category];

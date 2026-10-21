@@ -27,6 +27,8 @@ const rows: { tiles: GalleryTile[]; direction: 'to-left' | 'to-right' }[] = [
   { tiles: homeTiles.slice(half), direction: 'to-right' },
 ];
 const COPIES = 3;
+// First-strong isolates keep a Latin name inside an Arabic caption (or the reverse) in order.
+const isolate = (s: string) => `⁨${s}⁩`;
 ---
 
 <section id="gallery" class="section-y gallery" aria-labelledby="gallery-title">
@@ -34,6 +36,7 @@ const COPIES = 3;
     <h2 id="gallery-title" data-motion>{t.gallery.h2}</h2>
   </div>
 
+  {homeTiles.length > 0 && (
   <div class="marquee" data-marquee>
     {
       rows.map((row, r) => (
@@ -59,7 +62,7 @@ const COPIES = 3;
                           />
                           {credited && (
                             <figcaption class="tile-caption">
-                              {fill(t.gallery.credit, { technician: tile.technician!, area: tile.area![lang] })}
+                              {fill(t.gallery.credit, { technician: isolate(tile.technician!), area: isolate(tile.area![lang]) })}
                             </figcaption>
                           )}
                         </figure>
@@ -81,16 +84,19 @@ const COPIES = 3;
       ))
     }
   </div>
+  )}
 
   <div class="wrap gallery-foot">
     <div class="gallery-foot-text">
       <p class="gallery-note" data-motion>{t.gallery.note}</p>
       <ArrowLink href={localizedPath('/gallery/', lang)} text={t.gallery.allLink} />
     </div>
+    {homeTiles.length > 0 && (
     <button type="button" class="marquee-toggle press" data-marquee-toggle data-label-pause={t.gallery.pause} data-label-play={t.gallery.play} aria-label={t.gallery.pause}>
       <span data-icon-pause><Icon name="pause" size={20} /></span>
       <span data-icon-play hidden><Icon name="play" size={20} /></span>
     </button>
+    )}
   </div>
 </section>
 

@@ -29,7 +29,7 @@ const parts = (text: string) => {
             <span>
               {p.before}
               {p.count && (
-                <span class="count ltr" data-count={p.count} style={`min-width:${p.count.length}ch`}>
+                <span class="count ltr" data-count={p.count}>
                   {p.count}
                 </span>
               )}
@@ -75,7 +75,8 @@ const parts = (text: string) => {
   .proof-list li + li {
     border-top: 1px solid var(--color-line);
   }
-  /* The number in each fact is set in the heading face, a step up. */
+  /* The number in each fact is set in the heading face, a step up. While it counts up, motion.ts
+     holds its box at the final number's width, so the words around it never move. */
   .count {
     display: inline-block;
     text-align: end;

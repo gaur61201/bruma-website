@@ -153,7 +153,11 @@ export function initMotion() {
     if (!list || !claim(items, list)) return;
     const tl = gsap.timeline({ scrollTrigger: once(list, 'top 90%') });
     tl.from(items, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08 });
-    $$('[data-count]', list).forEach((el, i) => tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.08));
+    $$('[data-count]', list).forEach((el, i) => {
+      // Hold the box at the final number's width (read before anything changes), right-aligned.
+      el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+      tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.08);
+    });
   };
 
   // The gallery rows are a CSS marquee (GalleryPreview.astro); only the note fades up here.

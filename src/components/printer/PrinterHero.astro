@@ -3,6 +3,7 @@
 import Icon from '../Icon.astro';
 import HeroHeading from '../HeroHeading.astro';
 import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import { boxContents, visiblePrinterSpecs } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 }
 const t = useTranslations(Astro.props.lang);
 const h = t.printer.hero;
+// The specifications section renders only when it has rows or box contents.
+const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
 ---
 
 <section class="p-hero" aria-labelledby="printer-title">
@@ -23,10 +26,14 @@ const h = t.printer.hero;
           <span>{t.hero.primaryCta}</span>
           <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
         </a>
-        <a href="#specs" class="text-link arrow-link hero-rise" style="--i:2">
-          <span>{h.specsLink}</span>
-          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
-        </a>
+        {
+          hasSpecs && (
+            <a href="#specs" class="text-link arrow-link hero-rise" style="--i:2">
+              <span>{h.specsLink}</span>
+              <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+            </a>
+          )
+        }
       </div>
     </div>
     <div class="p-hero-media">

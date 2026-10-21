@@ -16,8 +16,11 @@ interface Props {
   stacked?: boolean;
 }
 const { id, title, paragraphs = [], list = [], chips = [], anchor, stacked = false } = Astro.props;
+// An empty section (say, a list emptied in the dictionary) renders nothing rather than a lone heading.
+const hasContent = paragraphs.length > 0 || list.length > 0 || chips.length > 0 || Astro.slots.has('default');
 ---
 
+{hasContent && (
 <section id={anchor} class="text-section" aria-labelledby={id} data-reveal-section>
   <div class:list={['wrap', 'text-section-grid', { stacked }]}>
     <h2 id={id} data-motion data-reveal="heading">{title}</h2>
@@ -49,6 +52,7 @@ const { id, title, paragraphs = [], list = [], chips = [], anchor, stacked = fal
     </div>
   </div>
 </section>
+)}
 
 <style>
   /* Text sections run tighter than the composed sections, divided by a rule inside the content

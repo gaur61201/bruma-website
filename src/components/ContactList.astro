@@ -68,4 +68,12 @@ const t = useTranslations(lang);
     flex-shrink: 0;
     color: var(--color-carbon);
   }
+  /* A long email wraps instead of widening the page. */
+  .contact-link {
+    max-width: 100%;
+  }
+  .contact-link .ltr {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
 </style>

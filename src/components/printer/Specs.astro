@@ -13,10 +13,13 @@ const sp = useTranslations(lang).printer.specs;
 const rows = visiblePrinterSpecs();
 ---
 
+{(rows.length > 0 || boxContents.length > 0) && (
+
 <section id="specs" class="on-carbon section-y specs" aria-labelledby="specs-title" data-reveal-section>
   <div class="wrap specs-grid">
     <h2 id="specs-title" data-motion data-reveal="heading">{sp.h2}</h2>
     <div>
+      {rows.length > 0 && (<>
       <div class="specs-card" data-motion data-reveal="item">
         <table class="specs-table">
           <caption class="sr-only">{sp.caption}</caption>
@@ -33,15 +36,19 @@ const rows = visiblePrinterSpecs();
         </table>
       </div>
       <p class="specs-note" data-motion data-reveal="fade">{sp.note}</p>
-      <h3 id="box-title" class="box-title" data-motion data-reveal="fade">{sp.boxTitle}</h3>
+      </>)}
+      {boxContents.length > 0 && (<>
+      <h3 id="box-title" class:list={['box-title', { 'box-title-first': rows.length === 0 }]} data-motion data-reveal="fade">{sp.boxTitle}</h3>
       <div class="specs-card" data-motion data-reveal="item">
         <ul class="box-list" aria-labelledby="box-title">
           {boxContents.map((b) => <li>{b.item[lang]}</li>)}
         </ul>
       </div>
+      </>)}
     </div>
   </div>
 </section>
+)}
 
 <style>
   .specs-grid {
@@ -90,6 +97,9 @@ const rows = visiblePrinterSpecs();
   }
   .box-title {
     margin-block: 56px 16px;
+  }
+  .box-title-first {
+    margin-block-start: 0;
   }
   .box-list {
     list-style: none;

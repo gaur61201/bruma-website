@@ -85,6 +85,10 @@ const links = [
     display: grid;
     gap: 40px;
   }
+  /* Columns may shrink below their content, so a long email wraps instead of widening the page. */
+  .footer-grid > * {
+    min-width: 0;
+  }
   @media (min-width: 768px) {
     .footer-grid {
       grid-template-columns: 2fr 1fr 1fr;
@@ -118,7 +122,15 @@ const links = [
     align-items: center;
     gap: 12px;
     min-height: 44px;
+    max-width: 100%;
     text-decoration: none;
+  }
+  .footer-list a :global(svg) {
+    flex-shrink: 0;
+  }
+  .footer-list .ltr {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .footer-list a:hover span:not(.sr-only) {
     text-decoration: underline;
