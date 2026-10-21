@@ -62,12 +62,13 @@ function initFilters(tiles: HTMLElement[]) {
     const state = Flip.getState(tiles);
     apply(filter);
     flip = Flip.from(state, {
-      duration: 0.6,
-      ease: 'power3.out',
+      // Tiles moving across the grid ease in and out; entering tiles ease out, leaving ones go faster.
+      duration: 0.5,
+      ease: 'power3.inOut',
       absolute: true,
       stagger: 0.02,
-      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }),
-      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.96, duration: 0.3, ease: 'power3.out' }),
+      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' }),
+      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.96, duration: 0.2, ease: 'power2.out' }),
     });
   };
 
@@ -125,7 +126,7 @@ function initLightbox(tiles: HTMLElement[]) {
   const animate = (from: Keyframe, to: Keyframe) =>
     reducedMotion()
       ? Promise.resolve()
-      : panel.animate([from, to], { duration: 200, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', fill: 'both' }).finished.catch(() => {});
+      : panel.animate([from, to], { duration: 200, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'both' }).finished.catch(() => {});
   const shown = { opacity: 1, transform: 'scale(1)' };
   const hiddenState = { opacity: 0, transform: 'scale(0.96)' };
 

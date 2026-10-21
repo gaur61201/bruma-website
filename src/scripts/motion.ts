@@ -95,12 +95,14 @@ export function initMotion() {
     });
   };
 
-  const countUp = (el: HTMLElement, to: number, duration = 1.2) => {
+  // expo.out reaches the final figure early and settles there, so in-between values (a "7-month"
+  // warranty) only flash past.
+  const countUp = (el: HTMLElement, to: number, duration = 1) => {
     const o = { v: 0 };
     return gsap.fromTo(
       o,
       { v: 0 },
-      { v: to, duration, ease: EASE, immediateRender: false, onUpdate: () => void (el.textContent = String(Math.round(o.v))) },
+      { v: to, duration, ease: 'expo.out', immediateRender: false, onUpdate: () => void (el.textContent = String(Math.round(o.v))) },
     );
   };
 
@@ -150,8 +152,8 @@ export function initMotion() {
     const items = $$('.proof-list > li');
     if (!list || !claim(items, list)) return;
     const tl = gsap.timeline({ scrollTrigger: once(list, 'top 90%') });
-    tl.from(items, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.1 });
-    $$('[data-count]', list).forEach((el, i) => tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.1));
+    tl.from(items, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08 });
+    $$('[data-count]', list).forEach((el, i) => tl.add(countUp(el, Number(el.dataset.count)), 0.15 + i * 0.08));
   };
 
   // The gallery rows are a CSS marquee (GalleryPreview.astro); only the note fades up here.
@@ -164,7 +166,9 @@ export function initMotion() {
    * each step icon rises 10px and drops back, one at a time in step order (right to left in Arabic),
    * then a 3s pause and again. In the same timeline, each step number is highlighted (carbon fill,
    * bone number, scale 1.1) from the moment its icon starts hopping until the next icon starts; number
-   * 4 rests 0.5s after its icon lands. The hop runs only while the steps are on screen.
+   * 4 rests 0.5s after its icon lands. The fill grows from the centre of the circle (clip-path) and
+   * switches off at once, so the number never passes through a half-faded grey state. The hop runs
+   * only while the steps are on screen.
    */
   const steps = () => {
     const list = $('[data-steps]');
@@ -176,10 +180,12 @@ export function initMotion() {
     const icons = cards.map((c) => $<SVGElement>('svg', c)!);
 
     // Numbers rest as outlined circles; the carbon fill shows only while highlighted.
-    gsap.set(fills, { opacity: 0 });
+    const EMPTY = 'circle(0% at 50% 50%)';
+    const FULL = 'circle(50% at 50% 50%)';
+    gsap.set(fills, { opacity: 1, clipPath: EMPTY });
 
     const HOP = 0.25; // seconds up, and again down
-    const FADE = 0.15;
+    const FILL = 0.18;
     const PAUSE = 3; // after the last icon lands
     const hop = gsap.timeline({ paused: true, repeat: -1 });
     icons.forEach((icon, i) => {
@@ -187,11 +193,12 @@ export function initMotion() {
       hop
         .to(icon, { y: -10, duration: HOP, ease: 'power2.out' }, at)
         .to(icon, { y: 0, duration: HOP, ease: 'power2.in' }, at + HOP)
-        .to(fills[i], { opacity: 1, duration: FADE, ease: 'none' }, at)
-        .to(nums[i], { scale: 1.1, duration: FADE, ease: 'power2.out' }, at);
+        .to(fills[i], { clipPath: FULL, duration: FILL, ease: 'power2.out' }, at)
+        .to(nums[i], { scale: 1.1, duration: FILL, ease: 'power2.out' }, at);
       // Back to rest when the next icon starts; the last number 0.5s after its icon lands.
       const rest = i < icons.length - 1 ? at + 2 * HOP : at + 2 * HOP + 0.5;
-      hop.to(fills[i], { opacity: 0, duration: FADE, ease: 'none' }, rest).to(nums[i], { scale: 1, duration: FADE, ease: 'power2.out' }, rest);
+      // The outgoing highlight switches off at once (a shrinking circle would slice through the digit).
+      hop.set(fills[i], { clipPath: EMPTY }, rest).to(nums[i], { scale: 1, duration: FILL, ease: 'power2.out' }, rest);
     });
     // Keep the hop loop as it was: 3s from the last icon landing to the first icon starting again.
     const lastLanding = icons.length * 2 * HOP;
@@ -257,7 +264,7 @@ export function initMotion() {
   };
 
   const hygiene = () => {
-    batchIn($$('.hygiene-list > li'), { x: -SLIDE * dir }, 0.1);
+    batchIn($$('.hygiene-list > li'), { x: -SLIDE * dir }, 0.08);
   };
 
   /** The plan cards (homepage and /ways-to-own/): they rise in, and the monthly card's outline traces in. */
@@ -266,7 +273,7 @@ export function initMotion() {
     cards.forEach((c) => {
       if (c.hasAttribute('data-trace') && fresh(c)) c.classList.add('trace-pending');
     });
-    batchIn(cards, { y: 32 }, 0.12, (card, tl, at) => {
+    batchIn(cards, { y: 32 }, 0.08, (card, tl, at) => {
       if (card.classList.contains('trace-pending')) tl.add(() => traceOutline(card), at + 0.25);
     });
     fadeUp($('.ways-cta'));
@@ -286,11 +293,12 @@ export function initMotion() {
 
     const close = (d: HTMLDetailsElement) => {
       d.classList.add('is-closing');
+      // Closing is the system responding: quicker than opening.
       gsap.to(answer(d), {
         height: 0,
         opacity: 0,
-        duration: 0.35,
-        ease: EASE,
+        duration: 0.24,
+        ease: 'power2.out',
         overwrite: true,
         onComplete: () => {
           d.open = false;
@@ -304,7 +312,7 @@ export function initMotion() {
       const wasClosed = !d.open;
       d.classList.remove('is-closing');
       d.open = true;
-      const done = { height: 'auto', opacity: 1, duration: 0.35, ease: EASE, overwrite: true, clearProps: 'height,opacity' };
+      const done = { height: 'auto', opacity: 1, duration: 0.32, ease: EASE, overwrite: true, clearProps: 'height,opacity' };
       if (wasClosed) gsap.fromTo(answer(d), { height: 0, opacity: 0 }, done);
       else gsap.to(answer(d), done);
     };
@@ -330,7 +338,7 @@ export function initMotion() {
   };
 
   const stories = () => {
-    batchIn($$('.story'), { x: -SLIDE * dir }, 0.1);
+    batchIn($$('.story'), { x: -SLIDE * dir }, 0.08);
   };
 
   /**

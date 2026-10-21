@@ -38,7 +38,8 @@
   --container-content: 1200px;
   --gutter: 16px;
 
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Strong ease-out for UI feedback (hover, press, toggles). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /*
@@ -287,12 +288,7 @@
       border-color 200ms ease,
       background-color 200ms ease,
       box-shadow 200ms ease,
-      translate 160ms var(--ease-out);
-  }
-  /* Pressed: the button sinks 1px and its drop shadow collapses into an inner one. */
-  .btn:active {
-    translate: 0 1px;
-    transition-duration: 60ms;
+      scale 160ms var(--ease-out);
   }
   .btn:disabled,
   .btn[aria-disabled='true'] {
@@ -338,9 +334,11 @@
     border-color: var(--color-carbon);
     color: var(--color-carbon);
   }
-  .btn-outline:hover {
-    background: var(--color-white);
-    box-shadow: var(--shadow-sm);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-outline:hover {
+      background: var(--color-white);
+      box-shadow: var(--shadow-sm);
+    }
   }
 
   .btn-large {
@@ -349,6 +347,11 @@
   }
   .btn-large:not(:has(.btn-arrow)) {
     padding-inline-end: 28px;
+  }
+
+  /* Small pressable controls (icon buttons, chips): the :active scale lives in the Motion section. */
+  .press {
+    transition: scale 160ms var(--ease-out);
   }
 
   .btn-small {
@@ -482,9 +485,12 @@
  * ========================================================================== */
 
 :root {
-  /* CSS equivalents of GSAP's power3.out and expo.out. */
+  /* CSS equivalents of GSAP's power3.out and expo.out (scroll and load reveals). */
   --ease-power3: cubic-bezier(0.33, 1, 0.68, 1);
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* On-screen movement between two states, and the mobile menu panel (iOS-like drawer). */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /*
@@ -554,13 +560,15 @@
   transition: opacity 200ms ease;
   pointer-events: none;
 }
-.btn-primary:hover::before {
-  opacity: 0.1;
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover::before {
+    opacity: 0.1;
+  }
 }
 /* The arrow nudges 4px in the reading direction. */
 .btn-arrow {
   flex-shrink: 0;
-  transition: translate 250ms var(--ease-power3);
+  transition: translate 200ms var(--ease-out);
 }
 
 /* Text links: the underline slides in from the inline-start side. */
@@ -579,26 +587,30 @@
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 300ms var(--ease-power3);
+  transition: transform 250ms var(--ease-out);
   pointer-events: none;
 }
 .text-link:dir(rtl)::after,
 .slide-underline:dir(rtl)::after {
   transform-origin: right center;
 }
-.text-link:hover::after,
 .text-link:focus-visible::after,
 .slide-underline[aria-current='page']::after,
-.slide-underline:hover::after,
 .slide-underline:focus-visible::after {
   transform: scaleX(1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .text-link:hover::after,
+  .slide-underline:hover::after {
+    transform: scaleX(1);
+  }
 }
 
 /* Cards that lift on hover (desktop): up 4px while the shadow deepens. */
 .lift {
   transition:
-    translate 250ms var(--ease-power3),
-    box-shadow 250ms var(--ease-power3);
+    translate 250ms var(--ease-out),
+    box-shadow 250ms var(--ease-out);
 }
 @media (hover: hover) and (min-width: 1024px) {
   .lift:hover {
@@ -607,13 +619,20 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .btn:hover .btn-arrow,
-  .arrow-link:hover .btn-arrow {
-    translate: 4px 0;
+  /* Pressed: buttons scale down a touch (their drop shadow also collapses; see .btn-primary). */
+  .btn:active,
+  .press:active {
+    scale: 0.97;
   }
-  .btn:hover .btn-arrow:dir(rtl),
-  .arrow-link:hover .btn-arrow:dir(rtl) {
-    translate: -4px 0;
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover .btn-arrow,
+    .arrow-link:hover .btn-arrow {
+      translate: 4px 0;
+    }
+    .btn:hover .btn-arrow:dir(rtl),
+    .arrow-link:hover .btn-arrow:dir(rtl) {
+      translate: -4px 0;
+    }
   }
   @media (hover: hover) and (min-width: 1024px) {
     .lift:hover {

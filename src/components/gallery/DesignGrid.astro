@@ -39,7 +39,7 @@ const tiles = await Promise.all(
       <div class="filters" role="group" aria-label={g.filterLabel} data-filters>
         {
           filters.map((f) => (
-            <button type="button" class="filter" aria-pressed={f === 'all' ? 'true' : 'false'} data-filter={f} data-count={g.count(countOf(f))}>
+            <button type="button" class="filter press" aria-pressed={f === 'all' ? 'true' : 'false'} data-filter={f} data-count={g.count(countOf(f))}>
               {g.categories[f]}
             </button>
           ))
@@ -102,7 +102,7 @@ const tiles = await Promise.all(
   <div class="lightbox-panel" data-lightbox-panel>
     <div class="lightbox-bar">
       <p class="lightbox-count" data-lightbox-count></p>
-      <button type="button" class="icon-btn" aria-label={g.lightbox.close} data-lightbox-close>
+      <button type="button" class="icon-btn press" aria-label={g.lightbox.close} data-lightbox-close>
         <Icon name="close" />
       </button>
     </div>
@@ -111,10 +111,10 @@ const tiles = await Promise.all(
       <figcaption class="lightbox-caption" aria-live="polite" data-lightbox-caption></figcaption>
     </figure>
     <div class="lightbox-nav">
-      <button type="button" class="icon-btn lightbox-prev" aria-label={g.lightbox.prev} data-lightbox-prev>
+      <button type="button" class="icon-btn press lightbox-prev" aria-label={g.lightbox.prev} data-lightbox-prev>
         <Icon name="arrow" />
       </button>
-      <button type="button" class="icon-btn" aria-label={g.lightbox.next} data-lightbox-next>
+      <button type="button" class="icon-btn press" aria-label={g.lightbox.next} data-lightbox-next>
         <Icon name="arrow" class="flip-rtl" />
       </button>
     </div>
@@ -169,13 +169,12 @@ const tiles = await Promise.all(
       box-shadow 200ms ease,
       background-color 200ms ease,
       color 200ms ease,
-      translate 160ms var(--ease-out);
+      scale 160ms var(--ease-out);
   }
-  .filter:hover {
-    box-shadow: var(--shadow-card);
-  }
-  .filter:active {
-    translate: 0 1px;
+  @media (hover: hover) and (pointer: fine) {
+    .filter:hover {
+      box-shadow: var(--shadow-card);
+    }
   }
   .filter[aria-pressed='true'] {
     background: var(--color-carbon);
@@ -329,10 +328,14 @@ const tiles = await Promise.all(
     background: var(--color-white);
     color: var(--color-carbon);
     cursor: pointer;
-    transition: border-color 200ms ease;
+    transition:
+      border-color 200ms ease,
+      scale 160ms var(--ease-out);
   }
-  .icon-btn:hover {
-    border-color: var(--color-carbon);
+  @media (hover: hover) and (pointer: fine) {
+    .icon-btn:hover {
+      border-color: var(--color-carbon);
+    }
   }
   /* "Previous" points back against the reading direction. */
   .lightbox-prev :global(svg) {

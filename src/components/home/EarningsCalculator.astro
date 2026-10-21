@@ -252,10 +252,15 @@ const settings = {
   }
   @media (prefers-reduced-motion: no-preference) {
     .mode-thumb {
-      transition: translate 350ms var(--ease-power3);
+      transition: translate 260ms var(--ease-out);
     }
     .mode-option {
-      transition: color 250ms ease;
+      transition:
+        color 200ms ease,
+        scale 160ms var(--ease-out);
+    }
+    .mode-option:active {
+      scale: 0.97;
     }
   }
   .mode-option {

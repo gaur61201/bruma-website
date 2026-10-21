@@ -54,7 +54,7 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     <div class="header-actions">
       <LangSwitch lang={lang} altHref={altHref} />
       <a href={demo.href} class="btn btn-primary btn-small desktop-only" aria-current={demo.current ? 'page' : undefined}>{demo.label}</a>
-      <button type="button" class="menu-button" aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menuOpen} data-menu-open>
+      <button type="button" class="menu-button press" aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menuOpen} data-menu-open>
         <Icon name="menu" />
       </button>
     </div>
@@ -66,7 +66,7 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     <a href={home} class="logo-link" data-menu-link>
       <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} class="logo" />
     </a>
-    <button type="button" class="menu-button" aria-label={t.nav.menuClose} data-menu-close>
+    <button type="button" class="menu-button press" aria-label={t.nav.menuClose} data-menu-close>
       <Icon name="close" />
     </button>
   </div>
@@ -189,8 +189,8 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     .header-inner,
     .header-inner .logo {
       transition:
-        opacity 300ms var(--ease-power3),
-        transform 300ms var(--ease-power3);
+        opacity 250ms var(--ease-out),
+        transform 250ms var(--ease-out);
     }
   }
 
@@ -259,8 +259,13 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
     color: var(--color-carbon);
     cursor: pointer;
   }
-  .menu-button:hover {
-    background: var(--color-white);
+  .menu-button {
+    transition: background-color 200ms ease, scale 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .menu-button:hover {
+      background: var(--color-white);
+    }
   }
 
   @media (min-width: 1024px) {
@@ -298,18 +303,19 @@ const demo = page('/book-a-demo/', t.nav.bookDemo);
   .mobile-menu::backdrop {
     background: transparent;
   }
-  /* The panel slides in from the inline-end edge, then the links stagger in 0.05s apart. */
+  /* The panel slides in from the inline-end edge (iOS-like drawer curve), then the links stagger in
+     0.05s apart. */
   @media (prefers-reduced-motion: no-preference) {
     .mobile-menu[open] {
-      animation: menu-in 400ms var(--ease-power3);
+      animation: menu-in 380ms var(--ease-drawer);
     }
     .mobile-menu[open]:dir(rtl) {
       animation-name: menu-in-rtl;
     }
     .mobile-menu[open] .menu-nav li,
     .mobile-menu[open] .menu-cta {
-      animation: menu-item 450ms var(--ease-power3) both;
-      animation-delay: calc(0.18s + var(--i) * 0.05s);
+      animation: menu-item 320ms var(--ease-out) both;
+      animation-delay: calc(0.12s + var(--i) * 0.05s);
     }
   }
   @keyframes menu-in {

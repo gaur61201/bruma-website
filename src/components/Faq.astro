@@ -62,17 +62,19 @@ const { title, items } = Astro.props;
   summary::-webkit-details-marker {
     display: none;
   }
-  summary:hover span {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover span {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
   }
   :global(.faq-icon) {
     flex-shrink: 0;
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(.faq-icon) {
-      transition: rotate 300ms var(--ease-power3);
+      transition: rotate 250ms var(--ease-out);
     }
   }
   /* The chevron turns 180° while open (and turns back as soon as closing starts). */

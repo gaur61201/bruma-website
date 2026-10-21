@@ -38,7 +38,7 @@ const poster = posterSrc ? await getImage({ src: posterSrc, width: 800, height: 
       >
         <source src={`/${VIDEO}`} type="video/mp4" />
       </video>
-      <button type="button" class="video-toggle" data-video-toggle data-label-pause={t.hero.pauseVideo} data-label-play={t.hero.playVideo} aria-label={t.hero.playVideo}>
+      <button type="button" class="video-toggle press" data-video-toggle data-label-pause={t.hero.pauseVideo} data-label-play={t.hero.playVideo} aria-label={t.hero.playVideo}>
         <span data-icon-pause hidden><Icon name="pause" size={20} /></span>
         <span data-icon-play><Icon name="play" size={20} /></span>
       </button>
