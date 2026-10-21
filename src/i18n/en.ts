@@ -166,6 +166,12 @@ export const en = {
     h2: 'Salons using BRUMA',
   },
 
+  /** Shown only when flags.showUpfrontSaving is true. */
+  upfrontSaving: {
+    badge: `Save ${kwd(c.upfrontSavingKwd, 'en')}`,
+    note: 'Compared with paying monthly for the full plan.',
+  },
+
   faq: {
     h2: 'Questions salons ask',
     items: [

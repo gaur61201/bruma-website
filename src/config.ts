@@ -28,8 +28,9 @@ export const config = {
     cartridgeCostPerSet: 0.6, // Ink cost to the salon per 10-nail set, TODO confirm after the demo-unit test
   },
   nailsPerCartridge: 700, // TODO confirm by measuring on the demo unit
+  upfrontSavingKwd: 200, // TODO confirm: monthly plan total minus upfront price
 
-  flags: { showSalonStories: false, showWearTestResults: false, showInkCostFaq: false },
+  flags: { showSalonStories: false, showWearTestResults: false, showInkCostFaq: false, showUpfrontSaving: true },
 };
 
 // Slider ranges for the earnings calculator.

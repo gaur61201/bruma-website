@@ -1,11 +1,13 @@
 ---
 import Icon from '../Icon.astro';
+import { config } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
 const t = useTranslations(Astro.props.lang);
+const showSaving = config.flags.showUpfrontSaving;
 const plans = [
   { ...t.ways.monthly, featured: true, id: 'plan-monthly' },
   { ...t.ways.upfront, featured: false, id: 'plan-upfront' },
@@ -24,8 +26,12 @@ const plans = [
             data-motion
             data-trace={plan.featured ? '' : undefined}
           >
+            {showSaving && !plan.featured && <span class="save-pill plan-save">{t.upfrontSaving.badge}</span>}
             <h3 id={plan.id}>{plan.title}</h3>
-            <p class="plan-price">{plan.price}</p>
+            <div class="plan-price-block">
+              <p class="plan-price">{plan.price}</p>
+              {showSaving && !plan.featured && <p class="plan-price-note">{t.upfrontSaving.note}</p>}
+            </div>
             <ul class="plan-list">
               {plan.bullets.map((b) => (
                 <li>
@@ -94,12 +100,22 @@ const plans = [
   .plan :global(.plan-trace:dir(rtl)) {
     transform: scaleX(-1);
   }
+  .plan-price-block {
+    padding-block-end: 16px;
+    border-bottom: 1px solid var(--color-line);
+  }
   .plan-price {
     font-weight: 500;
     font-size: calc(var(--fs-h3) * var(--script-scale));
     line-height: var(--heading-leading);
-    padding-block-end: 16px;
-    border-bottom: 1px solid var(--color-line);
+  }
+  .plan-price-note {
+    margin-block-start: 8px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .plan-save {
+    align-self: flex-start;
   }
   .plan-list {
     list-style: none;

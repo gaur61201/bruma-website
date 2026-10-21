@@ -21,6 +21,7 @@ const initial = estimate({
   plan: config.planMonthlyKwd,
   cartridge: c.cartridgeCostPerSet,
 });
+const showSaving = config.flags.showUpfrontSaving;
 const fmt = (n: number) => `${n < 0 ? '−' : ''}${Math.abs(Math.round(n)).toLocaleString('en-US')}`;
 const breakEvenText = (n: number) => {
   if (n === 1) return t.calc.breakEvenOne;
@@ -64,6 +65,16 @@ const settings = {
       <div class="calc-inputs">
         <fieldset class="mode" data-motion>
           <legend class="calc-label">{t.calc.modeLegend}</legend>
+          {
+            showSaving && (
+              <div class="mode-badges" aria-hidden="true">
+                <span />
+                <span class="save-pill" id="calc-save-badge">
+                  {t.upfrontSaving.badge}
+                </span>
+              </div>
+            )
+          }
           <div class="mode-options">
             <span class="mode-thumb" aria-hidden="true"></span>
             <label class="mode-option">
@@ -71,7 +82,7 @@ const settings = {
               <span>{t.calc.monthly}</span>
             </label>
             <label class="mode-option">
-              <input type="radio" name="mode" value="upfront" />
+              <input type="radio" name="mode" value="upfront" aria-describedby={showSaving ? 'calc-save-badge' : undefined} />
               <span>{t.calc.upfront}</span>
             </label>
           </div>
@@ -209,6 +220,16 @@ const settings = {
   }
   .mode-options {
     position: relative;
+  }
+  /* The saving badge sits above the "Paid upfront" option (same two columns as the toggle). */
+  .mode-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-block-end: 8px;
+  }
+  .mode-badges .save-pill {
+    justify-self: center;
   }
   /* The bone thumb slides between the two options. */
   .mode-thumb {
@@ -355,17 +376,21 @@ const settings = {
     font-size: calc(var(--fs-body) * var(--script-scale));
   }
   /* The ink part of the running cost, as its own smaller line. */
+  /* Same muted style as the other labels on carbon: Readex Pro, 14px, mist. */
   .result .result-sub {
     margin-block-start: 8px;
+    color: var(--color-mist);
     font-family: var(--font-body);
+    font-weight: 500;
     font-size: calc(var(--fs-small) * var(--script-scale));
     line-height: var(--body-leading);
   }
-  .result .result-sub span {
+  .result .result-sub span,
+  .result .result-sub span:not(.ltr) {
     font-size: inherit;
   }
   .result-main dd {
-    color: var(--color-profit);
+    color: var(--color-mist);
     font-size: calc(var(--fs-stat) * var(--script-scale) * 1.25);
   }
   .break-even {

@@ -167,6 +167,11 @@ export const ar: Dict = {
     h2: 'صالونات تستخدم BRUMA',
   },
 
+  upfrontSaving: {
+    badge: `وفّر ${kwd(c.upfrontSavingKwd, 'ar')}`,
+    note: 'مقارنةً بالدفع الشهري طوال مدة الخطة.',
+  },
+
   faq: {
     h2: 'أسئلة شائعة من الصالونات',
     items: [
