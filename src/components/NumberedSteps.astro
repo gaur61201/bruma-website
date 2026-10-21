@@ -5,14 +5,16 @@
 interface Props {
   items: { text: string; detail?: string }[];
   variant?: 'cards' | 'timeline';
+  /** Scroll-reveal the steps (motion.ts). Off when the list is above the fold and revealed with CSS on load. */
+  reveal?: boolean;
 }
-const { items, variant = 'cards' } = Astro.props;
+const { items, variant = 'cards', reveal = true } = Astro.props;
 ---
 
 <ol class:list={['steps', `steps-${variant}`]}>
   {
     items.map((item, i) => (
-      <li class:list={['step', { card: variant === 'cards' }]} data-motion data-reveal="item">
+      <li class:list={['step', { card: variant === 'cards' }]} data-motion={reveal ? '' : undefined} data-reveal={reveal ? 'item' : undefined}>
         <span class="step-num ltr" aria-hidden="true">
           {i + 1}
         </span>

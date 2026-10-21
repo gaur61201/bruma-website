@@ -409,6 +409,41 @@ export const en = {
     },
   },
 
+  bookPage: {
+    meta: {
+      title: 'Book a free nail printer demo in Kuwait | BRUMA',
+      description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation. We visit all six governorates of Kuwait.`,
+    },
+    h1: 'Book a free demo in your salon',
+    subline: `We bring the printer to you. About ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation.`,
+    next: {
+      h2: 'What happens next',
+      steps: ['Send the form.', `We message you on WhatsApp within ${replyHours}.`, 'We visit with the printer.', 'You decide, with no obligation.'],
+    },
+    before: {
+      h2: 'Before we arrive',
+      items: ['A table near a power socket', 'One team member or client happy to try a printed nail'],
+    },
+    where: {
+      h2: 'Where we go',
+      text: "We visit salons and clinics in all six of Kuwait's governorates.",
+    },
+    contact: {
+      h2: 'Contact',
+      /** Shown only when serviceHours is set in config. */
+      hours: 'Service hours: {hours}',
+    },
+    faq: {
+      h2: 'Questions about the demo',
+      items: [
+        { q: 'Is the demo free?', a: 'Yes. The demo is free.' },
+        { q: 'Do I have to buy?', a: 'No. You decide after the demo, with no obligation.' },
+        // TODO confirm
+        { q: 'Can you come outside working hours?', a: "Ask us on WhatsApp and we'll try to find a time that suits your salon." },
+      ],
+    },
+  },
+
   /** Wear-test results (printer and gallery pages). The strip shows only when flags.showWearTestResults is true. */
   wearTest: {
     ask: 'Ask to see our wear-test photos at your demo.',

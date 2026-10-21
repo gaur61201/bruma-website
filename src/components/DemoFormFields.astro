@@ -1,14 +1,19 @@
 ---
-import Icon from '../Icon.astro';
-import { config, whatsappLink } from '../../config';
-import { localizedPath, useTranslations, type Lang } from '../../i18n';
+// The demo-booking form itself (fields, honeypot, buttons, notes) and its script. Styled for a
+// carbon background. Used inside the homepage-style demo section (DemoForm) and on /book-a-demo/.
+import Icon from './Icon.astro';
+import { config, whatsappLink } from '../config';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
   /** Sent as `page` with the form, so leads show which page they came from. */
   pageName?: string;
+  /** Scroll-reveal the fields (motion.ts). Off when the form is above the fold and the page reveals it with CSS on load. */
+  reveal?: boolean;
 }
-const { lang, pageName = 'home' } = Astro.props;
+const { lang, pageName = 'home', reveal = true } = Astro.props;
+const motion = reveal ? '' : undefined;
 const t = useTranslations(lang);
 const d = t.demo;
 
@@ -31,114 +36,90 @@ const settings = {
 const errorId = (f: string) => `demo-${f}-error`;
 ---
 
-<section id="demo" class="on-carbon section-y" aria-labelledby="demo-title">
-  <div class="wrap demo-grid">
-    <div class="demo-intro">
-      <h2 id="demo-title" data-motion>{d.h2}</h2>
-      <p data-motion>{d.subline}</p>
-    </div>
-
-    <form class="demo-form" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
-      <div class="field" data-motion>
-        <label for="demo-name">{d.nameLabel}</label>
-        <input id="demo-name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={errorId('name')} />
-        <p id={errorId('name')} class="field-error" aria-live="polite"></p>
-      </div>
-
-      <div class="field" data-motion>
-        <label for="demo-salon">{d.salonLabel}</label>
-        <input id="demo-salon" name="salon" type="text" autocomplete="organization" required maxlength="120" aria-describedby={errorId('salon')} />
-        <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
-      </div>
-
-      <div class="field" data-motion>
-        <label for="demo-area">{d.areaLabel}</label>
-        <div class="select-wrap">
-          <select id="demo-area" name="area" required autocomplete="address-level1" aria-describedby={errorId('area')}>
-            <option value="" selected disabled>{d.areaPlaceholder}</option>
-            {t.governorates.map((g) => <option value={g.value}>{g.label}</option>)}
-          </select>
-          <Icon name="chevron" size={20} class="select-icon" />
-        </div>
-        <p id={errorId('area')} class="field-error" aria-live="polite"></p>
-      </div>
-
-      <div class="field" data-motion>
-        <label for="demo-whatsapp">{d.whatsappLabel}</label>
-        <p id="demo-whatsapp-hint" class="field-hint">{d.whatsappHint}</p>
-        <div class="phone-group" dir="ltr">
-          <span class="phone-prefix" aria-hidden="true">+965</span>
-          <input
-            id="demo-whatsapp"
-            name="whatsapp"
-            type="tel"
-            inputmode="numeric"
-            autocomplete="tel-national"
-            required
-            maxlength="16"
-            aria-describedby={`demo-whatsapp-hint ${errorId('whatsapp')}`}
-          />
-        </div>
-        <p id={errorId('whatsapp')} class="field-error" aria-live="polite"></p>
-      </div>
-
-      <!-- Honeypot: hidden from people and screen readers. Bots that fill it are dropped. -->
-      <div class="hp" aria-hidden="true">
-        <label for="demo-website">{d.honeypotLabel}</label>
-        <input id="demo-website" name="website" type="text" tabindex="-1" autocomplete="off" />
-      </div>
-
-      <div class="demo-actions" data-motion>
-        <button type="submit" class="btn btn-primary" data-submit>
-          <span data-submit-label>{d.submit}</span>
-          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
-          <span class="spinner" aria-hidden="true"></span>
-        </button>
-        <a
-          href={whatsappLink(t.whatsapp.floatMessage)}
-          class="btn btn-outline"
-          target="_blank"
-          rel="noopener"
-          data-demo-whatsapp
-          data-track="whatsapp_click"
-          data-track-location="demo_form"
-        >
-          <Icon name="whatsapp" size={20} />
-          <span>{d.whatsappAlt}</span>
-        </a>
-      </div>
-
-      <p class="form-status" role="status" aria-live="polite" data-status></p>
-
-      <div class="demo-notes" data-motion>
-        <p>{d.replyTime}</p>
-        <p><a href={localizedPath('/privacy/', lang)} class="privacy-link">{d.privacy}</a></p>
-      </div>
-    </form>
+<form class="demo-form" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
+  <div class="field" data-motion={motion}>
+    <label for="demo-name">{d.nameLabel}</label>
+    <input id="demo-name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby={errorId('name')} />
+    <p id={errorId('name')} class="field-error" aria-live="polite"></p>
   </div>
-</section>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-salon">{d.salonLabel}</label>
+    <input id="demo-salon" name="salon" type="text" autocomplete="organization" required maxlength="120" aria-describedby={errorId('salon')} />
+    <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-area">{d.areaLabel}</label>
+    <div class="select-wrap">
+      <select id="demo-area" name="area" required autocomplete="address-level1" aria-describedby={errorId('area')}>
+        <option value="" selected disabled>{d.areaPlaceholder}</option>
+        {t.governorates.map((g) => <option value={g.value}>{g.label}</option>)}
+      </select>
+      <Icon name="chevron" size={20} class="select-icon" />
+    </div>
+    <p id={errorId('area')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-whatsapp">{d.whatsappLabel}</label>
+    <p id="demo-whatsapp-hint" class="field-hint">{d.whatsappHint}</p>
+    <div class="phone-group" dir="ltr">
+      <span class="phone-prefix" aria-hidden="true">+965</span>
+      <input
+        id="demo-whatsapp"
+        name="whatsapp"
+        type="tel"
+        inputmode="numeric"
+        autocomplete="tel-national"
+        required
+        maxlength="16"
+        aria-describedby={`demo-whatsapp-hint ${errorId('whatsapp')}`}
+      />
+    </div>
+    <p id={errorId('whatsapp')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <!-- Honeypot: hidden from people and screen readers. Bots that fill it are dropped. -->
+  <div class="hp" aria-hidden="true">
+    <label for="demo-website">{d.honeypotLabel}</label>
+    <input id="demo-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="demo-actions" data-motion={motion}>
+    <button type="submit" class="btn btn-primary" data-submit>
+      <span data-submit-label>{d.submit}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+      <span class="spinner" aria-hidden="true"></span>
+    </button>
+    <a
+      href={whatsappLink(t.whatsapp.floatMessage)}
+      class="btn btn-outline"
+      target="_blank"
+      rel="noopener"
+      data-demo-whatsapp
+      data-track="whatsapp_click"
+      data-track-location="demo_form"
+    >
+      <Icon name="whatsapp" size={20} />
+      <span>{d.whatsappAlt}</span>
+    </a>
+  </div>
+
+  <p class="form-status" role="status" aria-live="polite" data-status></p>
+
+  <div class="demo-notes" data-motion={motion}>
+    <p>{d.replyTime}</p>
+    <p><a href={localizedPath('/privacy/', lang)} class="privacy-link">{d.privacy}</a></p>
+  </div>
+</form>
 
 <script>
-  import { initDemoForm } from '../../scripts/demo-form';
+  import { initDemoForm } from '../scripts/demo-form';
   document.querySelectorAll<HTMLFormElement>('[data-demo-form]').forEach(initDemoForm);
 </script>
 
 <style>
-  .demo-grid {
-    display: grid;
-    gap: 40px;
-  }
-  @media (min-width: 1024px) {
-    .demo-grid {
-      grid-template-columns: 5fr 7fr;
-      gap: 64px;
-      align-items: start;
-    }
-  }
-  .demo-intro p {
-    margin-block-start: 16px;
-    max-width: 26rem;
-  }
   .demo-form {
     display: flex;
     flex-direction: column;

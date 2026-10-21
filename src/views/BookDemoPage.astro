@@ -1,0 +1,80 @@
+---
+// The book-a-demo page, shared by /book-a-demo/ (English) and /ar/book-a-demo/ (Arabic).
+// The form and "What happens next" sit above the fold, so they reveal with the CSS load sequence
+// (like a hero) instead of waiting for the scroll motion.
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import DemoFormFields from '../components/DemoFormFields.astro';
+import NumberedSteps from '../components/NumberedSteps.astro';
+import TextSection from '../components/TextSection.astro';
+import ContactList from '../components/ContactList.astro';
+import Faq from '../components/Faq.astro';
+import { faqSchema } from '../components/home/faq-items';
+import { config } from '../config';
+import { fill, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const b = t.bookPage;
+const serviceHours = config.serviceHours[lang];
+---
+
+<Base lang={lang} title={b.meta.title} description={b.meta.description} schema={[faqSchema(lang, b.faq.items)]}>
+  <PageHero title={b.h1} subline={b.subline} />
+  <div class="book">
+    <div class="wrap book-grid">
+      <div id="demo" class="on-carbon book-panel hero-rise" style="--i:1">
+        <DemoFormFields lang={lang} pageName="book-a-demo" reveal={false} />
+      </div>
+      <section class="book-next hero-rise" style="--i:2" aria-labelledby="next-title">
+        <h2 id="next-title">{b.next.h2}</h2>
+        <NumberedSteps items={b.next.steps.map((text) => ({ text }))} variant="timeline" reveal={false} />
+      </section>
+    </div>
+  </div>
+  <TextSection id="before-title" title={b.before.h2} list={b.before.items} />
+  <TextSection id="where-title" title={b.where.h2} paragraphs={[b.where.text]} list={t.governorates.map((g) => g.label)} />
+  <TextSection id="contact-title" title={b.contact.h2}>
+    <ContactList lang={lang} trackLocation="book_a_demo" />
+    <p data-motion data-reveal="fade">{t.demo.replyTime}</p>
+    {serviceHours && <p data-motion data-reveal="fade">{fill(b.contact.hours, { hours: serviceHours })}</p>}
+  </TextSection>
+  <Faq title={b.faq.h2} items={b.faq.items} />
+</Base>
+
+<style>
+  .book {
+    padding-block-end: 64px;
+  }
+  @media (min-width: 1024px) {
+    .book {
+      padding-block-end: 96px;
+    }
+  }
+  .book-grid {
+    display: grid;
+    gap: 48px;
+  }
+  @media (min-width: 1024px) {
+    .book-grid {
+      grid-template-columns: 7fr 5fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .book-panel {
+    padding: 32px 16px;
+    border-radius: var(--radius-card);
+  }
+  @media (min-width: 640px) {
+    .book-panel {
+      padding: 48px;
+    }
+  }
+  .book-next h2 {
+    margin-block-end: 32px;
+  }
+</style>

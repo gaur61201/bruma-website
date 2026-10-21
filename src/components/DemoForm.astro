@@ -1,0 +1,42 @@
+---
+// The demo section (carbon): heading and subline on one side, the form on the other.
+import DemoFormFields from './DemoFormFields.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Sent as `page` with the form, so leads show which page they came from. */
+  pageName?: string;
+}
+const { lang, pageName = 'home' } = Astro.props;
+const d = useTranslations(lang).demo;
+---
+
+<section id="demo" class="on-carbon section-y" aria-labelledby="demo-title">
+  <div class="wrap demo-grid">
+    <div class="demo-intro">
+      <h2 id="demo-title" data-motion>{d.h2}</h2>
+      <p data-motion>{d.subline}</p>
+    </div>
+
+    <DemoFormFields lang={lang} pageName={pageName} />
+  </div>
+</section>
+
+<style>
+  .demo-grid {
+    display: grid;
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .demo-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  .demo-intro p {
+    margin-block-start: 16px;
+    max-width: 26rem;
+  }
+</style>
