@@ -1,7 +1,7 @@
 ---
 // "Printed on the nail, not stuck on", with the shared wear-test strip (or the invitation to see the
 // wear-test photos at the demo, until results are confirmed).
-import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import MediaSplit from '../MediaSplit.astro';
 import WearTest from '../WearTest.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
@@ -12,36 +12,7 @@ const { lang } = Astro.props;
 const p = useTranslations(lang).printer.printedOn;
 ---
 
-<section class="section-y printed" aria-labelledby="printed-title" data-reveal-section>
-  <div class="wrap printed-grid">
-    <div class="printed-copy">
-      <h2 id="printed-title" data-motion data-reveal="heading">{p.h2}</h2>
-      <p data-motion data-reveal="fade">{p.text}</p>
-      <WearTest lang={lang} />
-    </div>
-    <PhotoPlaceholder caption={p.photo} ratio="1 / 1" />
-  </div>
-</section>
-
-<style>
-  .printed {
-    border-top: 1px solid var(--color-line);
-  }
-  .printed-grid {
-    display: grid;
-    gap: 32px;
-    align-items: center;
-  }
-  @media (min-width: 1024px) {
-    .printed-grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-    }
-  }
-  .printed-copy {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 34rem;
-  }
-</style>
+<MediaSplit id="printed-title" title={p.h2} photo={p.photo}>
+  <p data-motion data-reveal="fade">{p.text}</p>
+  <WearTest lang={lang} />
+</MediaSplit>

@@ -351,6 +351,64 @@ export const en = {
     },
   },
 
+  // Hygiene between clients (the salon's job) and the printer's automatic print-head cleaning
+  // (maintenance) stay strictly separate. Never describe the automatic cleaning as hygiene.
+  hygienePage: {
+    meta: {
+      title: 'Hygiene and safety with the nail printer | BRUMA',
+      description:
+        'How to clean the parts that touch your client between clients, use gel safely and store ink and gels. Safety data sheets on request. Free demo in Kuwait.',
+    },
+    h1: 'Hygiene and safety',
+    subline: 'What touches your client, how to clean it, and how to keep ink and gels in good condition.',
+    // TODO confirm on the demo unit
+    touches: {
+      h2: 'What touches your client',
+      text: 'Two parts touch your client: the finger rest, where the hand sits, and the nail holder, which keeps the finger steady while the nail prints. These are the parts you clean between clients.',
+      photo: 'Photo: the finger rest and nail holder',
+    },
+    between: {
+      h2: 'Between every client',
+      steps: [
+        'Remove the nail holder.',
+        `Wipe the finger rest and holder with ${c.disinfectant.en}.`,
+        'Let them dry fully.',
+        'Refit and start the next client.',
+      ],
+      note: 'Your team learns this during training.',
+    },
+    printHead: {
+      h2: 'The printer looks after its print head',
+      text: 'It cleans its print head automatically, so the ink stays fresh and prints stay sharp.',
+      separate: "This is maintenance for print quality. It doesn't replace cleaning between clients.",
+      /** Shown while printerPowerGuidance is empty in config. */
+      power: "We'll show you how to power it day to day when we install it.",
+    },
+    // TODO professional review
+    gel: {
+      h2: 'Using gel safely',
+      intro: 'The printer works with gel products, so the usual gel care applies.',
+      points: [
+        'Keep uncured gel off the skin. If it touches the skin, wipe it off before curing.',
+        'Cure every layer fully.',
+        "Don't use gel products on a client who has reacted to gel nails before.",
+        'If a client gets irritation, stop and advise them to see a doctor.',
+      ],
+    },
+    storage: {
+      h2: 'Storing ink and gels',
+      text: 'Keep them in a cool, dry place, out of direct sun. Never leave them in a car.',
+      /** Shown only when maxStorageTempC is set in config. */
+      maxTemp: 'Store below {temp}°C.',
+    },
+    sds: {
+      h2: 'Safety data sheets',
+      text: 'Safety data sheets for the ink, print gel and gels are available on request.',
+      button: 'Ask for the safety data sheets',
+      message: 'Please send me the safety data sheets.',
+    },
+  },
+
   /** Wear-test results (printer and gallery pages). The strip shows only when flags.showWearTestResults is true. */
   wearTest: {
     ask: 'Ask to see our wear-test photos at your demo.',

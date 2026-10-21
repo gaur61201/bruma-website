@@ -66,7 +66,7 @@ export function initMotion() {
 
   const fadeUp = (el: HTMLElement | null, delay = 0) => {
     if (!el || !claim([el], el)) return;
-    gsap.from(el, { y: 24, opacity: 0, duration: 0.7, ease: EASE, delay, scrollTrigger: once(el) });
+    gsap.from(el, { y: 24, opacity: 0, duration: 0.7, ease: EASE, delay, clearProps: 'transform', scrollTrigger: once(el) });
   };
 
   /**

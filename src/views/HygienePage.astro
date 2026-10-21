@@ -1,0 +1,53 @@
+---
+// The hygiene and safety page, shared by /hygiene/ (English) and /ar/hygiene/ (Arabic).
+// Hygiene between clients (the salon's job) and the printer's automatic print-head cleaning
+// (maintenance) are separate sections; the automatic cleaning is never presented as hygiene.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import MediaSplit from '../components/MediaSplit.astro';
+import TextSection from '../components/TextSection.astro';
+import NumberedSteps from '../components/NumberedSteps.astro';
+import DemoForm from '../components/home/DemoForm.astro';
+import { config, whatsappLink } from '../config';
+import { fill, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const h = useTranslations(lang).hygienePage;
+
+const powerLine = config.printerPowerGuidance[lang] || h.printHead.power;
+const storage = config.maxStorageTempC === null ? [h.storage.text] : [h.storage.text, fill(h.storage.maxTemp, { temp: config.maxStorageTempC })];
+---
+
+<Base lang={lang} title={h.meta.title} description={h.meta.description}>
+  <PageHero title={h.h1} subline={h.subline} />
+  <MediaSplit id="touches-title" title={h.touches.h2} photo={h.touches.photo}>
+    <p data-motion data-reveal="fade">{h.touches.text}</p>
+  </MediaSplit>
+  <TextSection id="between-title" title={h.between.h2} stacked>
+    <NumberedSteps items={h.between.steps.map((text) => ({ text }))} />
+    <p data-motion data-reveal="fade">{h.between.note}</p>
+  </TextSection>
+  <TextSection id="print-head-title" title={h.printHead.h2} paragraphs={[h.printHead.text, h.printHead.separate, powerLine]} />
+  <TextSection id="gel-title" title={h.gel.h2} paragraphs={[h.gel.intro]} list={h.gel.points} />
+  <TextSection id="storage-title" title={h.storage.h2} paragraphs={storage} />
+  <TextSection id="sds-title" title={h.sds.h2} paragraphs={[h.sds.text]}>
+    <a
+      href={whatsappLink(h.sds.message)}
+      class="btn btn-outline"
+      target="_blank"
+      rel="noopener"
+      data-track="whatsapp_click"
+      data-track-location="safety_data_sheets"
+      data-motion
+      data-reveal="fade"
+    >
+      <Icon name="whatsapp" size={20} />
+      <span>{h.sds.button}</span>
+    </a>
+  </TextSection>
+  <DemoForm lang={lang} pageName="hygiene" />
+</Base>
