@@ -21,9 +21,15 @@ export const config = {
   warrantyMonths: 12,
   loanerWithinHours: 72, // TODO confirm
   techniciansTrained: 2, // TODO confirm
-  calculator: { pricePerSet: 6, setsPerDay: 3, workDays: 26, cartridgeCostPerSet: 0.5 }, // TODO confirm all
+  calculator: {
+    pricePerSet: 6, // TODO confirm
+    setsPerDay: 3, // TODO confirm
+    workDays: 26, // TODO confirm
+    cartridgeCostPerSet: 0.6, // Ink cost to the salon per 10-nail set, TODO confirm after the demo-unit test
+  },
+  nailsPerCartridge: 700, // TODO confirm by measuring on the demo unit
 
-  flags: { showSalonStories: false, showWearTestResults: false },
+  flags: { showSalonStories: false, showWearTestResults: false, showInkCostFaq: false },
 };
 
 // Slider ranges for the earnings calculator.

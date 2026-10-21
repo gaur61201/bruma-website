@@ -45,7 +45,7 @@ const settings = {
   breakEven: t.calc.breakEven,
   breakEvenOne: t.calc.breakEvenOne,
   underCost: t.calc.underCost,
-  labels: { revenue: t.calc.revenue, running: t.calc.running, left: t.calc.left },
+  labels: { revenue: t.calc.revenue, running: t.calc.running, ink: t.calc.ink, left: t.calc.left },
   currencyPrefix: t.calc.currencyPrefix,
   currencySuffix: t.calc.currencySuffix,
 };
@@ -125,6 +125,14 @@ const settings = {
                   <span class="ltr" data-out={o.key}>{fmt(o.value)}</span>
                   {t.calc.currencySuffix && <span> {t.calc.currencySuffix}</span>}
                 </dd>
+                {o.key === 'running' && (
+                  <dd class="result-sub">
+                    <span>{t.calc.ink}</span>{' '}
+                    {t.calc.currencyPrefix && <span>{t.calc.currencyPrefix} </span>}
+                    <span class="ltr" data-out="ink">{fmt(initial.ink)}</span>
+                    {t.calc.currencySuffix && <span> {t.calc.currencySuffix}</span>}
+                  </dd>
+                )}
               </div>
             ))
           }
@@ -345,6 +353,16 @@ const settings = {
   }
   .result-main dt {
     font-size: calc(var(--fs-body) * var(--script-scale));
+  }
+  /* The ink part of the running cost, as its own smaller line. */
+  .result .result-sub {
+    margin-block-start: 8px;
+    font-family: var(--font-body);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: var(--body-leading);
+  }
+  .result .result-sub span {
+    font-size: inherit;
   }
   .result-main dd {
     color: var(--color-profit);

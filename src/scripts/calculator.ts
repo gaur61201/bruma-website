@@ -11,7 +11,7 @@ interface Settings {
   breakEven: string;
   breakEvenOne: string;
   underCost: string;
-  labels: { revenue: string; running: string; left: string };
+  labels: { revenue: string; running: string; ink: string; left: string };
   currencyPrefix: string;
   currencySuffix: string;
 }
@@ -58,6 +58,7 @@ export function initCalculator(form: HTMLFormElement) {
     const e = estimate({ ...values, monthly, plan: s.plan, cartridge: s.cartridge });
     showNumber(out('revenue'), e.revenue, fmt);
     showNumber(out('running'), e.running, fmt);
+    showNumber(out('ink'), e.ink, fmt);
     showNumber(out('left'), e.left, fmt);
     const be = out('breakEven');
     if (e.breakEven === null) {
@@ -72,7 +73,7 @@ export function initCalculator(form: HTMLFormElement) {
       announceTimer = window.setTimeout(() => {
         const parts = [
           `${s.labels.revenue}: ${money(e.revenue)}.`,
-          `${s.labels.running}: ${money(e.running)}.`,
+          `${s.labels.running}: ${money(e.running)} (${s.labels.ink}: ${money(e.ink)}).`,
           `${s.labels.left}: ${money(e.left)}.`,
         ];
         if (!be.hidden) parts.push(be.textContent ?? '');

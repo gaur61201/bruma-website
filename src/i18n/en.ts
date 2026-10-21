@@ -112,6 +112,7 @@ export const en = {
     resultsLabel: 'Your estimate',
     revenue: 'Nail-art revenue a month',
     running: 'Running cost a month',
+    ink: 'Ink',
     left: 'Left for your salon each month',
     /** {n} is filled in the browser. */
     breakEven: 'About {n} sets a month cover the plan.',
@@ -191,6 +192,11 @@ export const en = {
         a: 'Yes, if you pay upfront. Monthly-plan machines carry the BRUMA name.',
       },
     ],
+    /** Shown as a sixth question only when flags.showInkCostFaq is true. */
+    inkItem: {
+      q: 'What does the ink cost per set?',
+      a: `About ${kwd(c.calculator.cartridgeCostPerSet, 'en')} per set of 10 nails. One cartridge prints about ${c.nailsPerCartridge} nails, and we deliver refills to your salon.`,
+    },
   },
 
   demo: {
