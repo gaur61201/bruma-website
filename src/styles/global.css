@@ -384,6 +384,14 @@
     }
   }
 
+  /* A secondary button used as a toggle chip: the selected one is filled carbon. */
+  .btn-secondary[aria-pressed='true'],
+  .btn-secondary[aria-pressed='true']:hover {
+    background: var(--color-carbon);
+    border-color: var(--color-carbon);
+    color: var(--color-bone);
+  }
+
   .btn-small {
     --btn-h: 44px;
     padding: 0 18px;

@@ -208,6 +208,16 @@ export const en = {
       specsLink: 'See the specifications',
       mediaCaption: 'Photo: the printer, three-quarter view',
     },
+    /** The hero's "Try it" demo (an illustration; the status line gives the real print time). */
+    demo: {
+      eyebrow: 'Try it',
+      title: 'Pick a design. Watch it print.',
+      pickerLabel: 'Choose a design',
+      print: 'Print this nail',
+      status: `About ${seconds} a nail on the real printer.`,
+      printing: 'Printing…',
+      done: 'Printed. Seal with top coat and cure.',
+    },
     why: {
       h2: 'Why salons add it',
       cards: [

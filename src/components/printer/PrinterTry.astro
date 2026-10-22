@@ -1,0 +1,171 @@
+---
+// "Try it": the printer page hero's interactive demo. Pick one of six designs (chips with aria-pressed),
+// press "Print this nail", and the illustrated nail prints (the print-head sweep, about 1.4s) and then
+// seals (a gloss sweep). The status line is aria-live. On load it prints the French tip once, so the page
+// starts with movement. The first real use fires `printer_demo_used` once per visit.
+import NailIllustration, { nailDesigns } from '../NailIllustration.astro';
+import Icon from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const d = t.printer.demo;
+---
+
+<div class="try card" data-try data-status-done={d.done} data-status-printing={d.printing} data-status-idle={d.status}>
+  <div class="try-head">
+    <p class="eyebrow">{d.eyebrow}</p>
+    <h2 class="try-title">{d.title}</h2>
+  </div>
+
+  <div class="try-stage">
+    <NailIllustration lang={lang} design="french" designs={nailDesigns} stage="sealed" class="try-nail" />
+  </div>
+
+  <div class="try-controls">
+    <div class="try-chips" role="group" aria-label={d.pickerLabel}>
+      {
+        nailDesigns.map((design) => (
+          <button type="button" class="btn btn-secondary btn-small try-chip" aria-pressed={design === 'french' ? 'true' : 'false'} data-design={design}>
+            {t.nail.designs[design]}
+          </button>
+        ))
+      }
+    </div>
+    <button type="button" class="btn btn-primary try-print" data-try-print>
+      <span>{d.print}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </button>
+    <p class="try-status" aria-live="polite" data-try-status>{d.status}</p>
+  </div>
+</div>
+
+<script>
+  import { animatePrint, animateSeal, setDesign, setStage, type NailDesign } from '../../scripts/nail';
+  import { track } from '../../scripts/analytics';
+
+  const USED_KEY = 'bruma_printer_demo_used';
+  const root = document.querySelector<HTMLElement>('[data-try]');
+  const svg = root?.querySelector<SVGSVGElement>('[data-nail]');
+  if (root && svg) {
+    const status = root.querySelector<HTMLElement>('[data-try-status]')!;
+    const printBtn = root.querySelector<HTMLButtonElement>('[data-try-print]')!;
+    const chips = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-design]'));
+    let running = false;
+
+    const say = (text: string | undefined) => {
+      if (text && status.textContent !== text) status.textContent = text;
+    };
+    const markUsed = () => {
+      try {
+        if (sessionStorage.getItem(USED_KEY)) return;
+        sessionStorage.setItem(USED_KEY, '1');
+      } catch {
+        // Storage blocked: still count it once for this page view.
+        if (root.dataset.used) return;
+        root.dataset.used = '1';
+      }
+      track('printer_demo_used', { lang: document.documentElement.lang });
+    };
+    const run = async (announce: boolean) => {
+      if (running) return;
+      running = true;
+      printBtn.setAttribute('aria-disabled', 'true');
+      if (announce) say(root.dataset.statusPrinting);
+      await animatePrint(svg);
+      await animateSeal(svg);
+      if (announce) say(root.dataset.statusDone);
+      printBtn.removeAttribute('aria-disabled');
+      running = false;
+    };
+
+    // Picking a design shows it as an outline preview on the base coat, ready to print.
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => {
+        if (running) return;
+        chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        setDesign(svg, chip.dataset.design as NailDesign);
+        setStage(svg, 'choose');
+        say(root.dataset.statusIdle);
+        markUsed();
+      }),
+    );
+    printBtn.addEventListener('click', () => {
+      markUsed();
+      run(true);
+    });
+
+    // One automatic print of the French tip after the page has loaded (silent: no status change).
+    const autoplay = () => {
+      setStage(svg, 'base');
+      window.setTimeout(() => run(false), 400);
+    };
+    if (document.readyState === 'complete') autoplay();
+    else window.addEventListener('load', autoplay, { once: true });
+  }
+</script>
+
+<style>
+  .try {
+    display: grid;
+    gap: 16px;
+    padding: 24px;
+  }
+  @media (min-width: 1024px) {
+    .try {
+      padding: 32px;
+    }
+  }
+  .try-head {
+    display: grid;
+    gap: 6px;
+  }
+  .try-title {
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+  /* The nail sits on a bone stage inside the white card. */
+  .try-stage {
+    display: grid;
+    place-items: center;
+    padding: 20px 16px 12px;
+    border-radius: var(--radius-card);
+    background: var(--color-bone) var(--grain);
+  }
+  .try-stage :global(.try-nail) {
+    width: min(100%, 160px);
+  }
+  @media (min-width: 1024px) {
+    .try-stage :global(.try-nail) {
+      width: min(100%, 176px);
+    }
+  }
+  .try-controls {
+    display: grid;
+    gap: 14px;
+  }
+  .try-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .try-chip {
+    padding-inline: 14px;
+  }
+  .try-print {
+    justify-self: start;
+  }
+  @media (max-width: 639px) {
+    .try-print {
+      width: 100%;
+    }
+  }
+  .try-status {
+    min-height: 1.6em;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    color: var(--color-stone);
+  }
+</style>

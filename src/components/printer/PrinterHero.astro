@@ -1,15 +1,17 @@
 ---
-// Printer page hero (bone). Same load sequence as the homepage hero: CSS only, done by 1.2s.
+// Printer page hero (bone): the copy and buttons, beside the "Try it" demo (PrinterTry). The copy uses the
+// same load sequence as the homepage hero: CSS only, done by 1.2s.
 import Icon from '../Icon.astro';
 import HeroHeading from '../HeroHeading.astro';
-import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import PrinterTry from './PrinterTry.astro';
 import { boxContents, visiblePrinterSpecs } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const t = useTranslations(Astro.props.lang);
+const { lang } = Astro.props;
+const t = useTranslations(lang);
 const h = t.printer.hero;
 // The specifications section renders only when it has rows or box contents.
 const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
@@ -36,8 +38,8 @@ const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
         }
       </div>
     </div>
-    <div class="p-hero-media">
-      <PhotoPlaceholder caption={h.mediaCaption} ratio="4 / 5" hero />
+    <div class="p-hero-media hero-rise" style="--i:2">
+      <PrinterTry lang={lang} />
     </div>
   </div>
 </section>

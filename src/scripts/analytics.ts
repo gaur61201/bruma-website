@@ -8,7 +8,7 @@ interface AnalyticsWindow extends Window {
   plausible?: (event: string, options?: { props?: Props }) => void;
 }
 
-export type TrackEvent = 'whatsapp_click' | 'demo_submit' | 'calculator_used' | 'lang_switch';
+export type TrackEvent = 'whatsapp_click' | 'demo_submit' | 'calculator_used' | 'lang_switch' | 'printer_demo_used';
 
 export function track(event: TrackEvent, props: Props = {}) {
   const w = window as AnalyticsWindow;
