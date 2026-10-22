@@ -495,7 +495,7 @@ export const en = {
     },
     where: {
       h2: 'Where we go',
-      text: "We visit salons and clinics in all 6 of Kuwait’s governorates.",
+      text: 'We visit salons and clinics in all 6 of Kuwait’s governorates: Capital, Hawalli, Farwaniya, Ahmadi, Jahra and Mubarak Al-Kabeer.',
     },
     contact: {
       h2: 'Contact',
@@ -683,7 +683,6 @@ export const en = {
   ],
 
   footer: {
-    tagline: 'The BRUMA nail printer for salons and clinics in Kuwait.',
     navLabel: 'Footer',
     sectionsHeading: 'Quick links',
     contactHeading: 'Contact',
