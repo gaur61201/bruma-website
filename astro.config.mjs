@@ -39,6 +39,8 @@ export default defineConfig({
     sitemap({
       // The thank-you pages are noindex; the 404 page isn't a real URL.
       filter: (page) => !/\/thank-you\/$/.test(page) && !/\/404\/?$/.test(page),
+      // Every URL carries the build time as its last modification date.
+      lastmod: new Date(),
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en', ar: 'ar' },
