@@ -12,6 +12,7 @@ import SalonStories from '../components/home/SalonStories.astro';
 import Faq from '../components/Faq.astro';
 import DemoForm from '../components/DemoForm.astro';
 import { faqItems, faqSchema } from '../components/home/faq-items';
+import { serviceSchema } from '../schema';
 import { useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -21,7 +22,7 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[faqSchema(lang, faqItems(lang))]}>
+<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[serviceSchema(t, lang), faqSchema(lang, faqItems(lang))]}>
   <Hero lang={lang} />
   <ProofStrip lang={lang} />
   <GalleryPreview lang={lang} />

@@ -175,7 +175,7 @@ const worstEn: Deep<Dict> = {
     },
     contact: { h2: 'Contact us directly' },
   },
-  footer: { tagline: 'The BRUMA nail printer for nail salons, beauty salons and clinics in all six governorates of Kuwait.' },
+  identity: 'BRUMA supplies AI nail art printers to nail salons, beauty salons and beauty clinics in all six governorates of Kuwait, with delivery, installation, on-site training and local support.',
 };
 
 const worstAr: Deep<Dict> = {

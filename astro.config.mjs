@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import brandNoTranslate from './scripts/brand-no-translate.mjs';
+import llmsFull from './scripts/llms-full.mjs';
 
 /**
  * Dev-only stress-test data switch for the break-ui pass: under `astro dev`, open any page with
@@ -36,9 +37,12 @@ export default defineConfig({
   integrations: [
     stressData,
     brandNoTranslate(),
+    llmsFull(),
     sitemap({
       // The thank-you pages are noindex; the 404 page isn't a real URL.
       filter: (page) => !/\/thank-you\/$/.test(page) && !/\/404\/?$/.test(page),
+      // Every URL carries the build time as its last modification date.
+      lastmod: new Date(),
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en', ar: 'ar' },

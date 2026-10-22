@@ -37,7 +37,7 @@ const links = [
   <div class="wrap footer-grid">
     <div class="footer-brand">
       <Image src={wordmarkOnDark} alt="BRUMA" height={40} densities={[1, 2]} format="webp" quality={90} class="footer-logo" />
-      <p>{t.footer.tagline}</p>
+      <p>{t.identity}</p>
     </div>
 
     <nav aria-labelledby="footer-sections">
@@ -68,12 +68,17 @@ const links = [
             <span class="sr-only">{t.footer.phone}: </span><span class="ltr phone">{config.phoneDisplay}</span>
           </a>
         </li>
-        <li>
-          <a href={`mailto:${config.email}`}>
-            <Icon name="mail" size={20} />
-            <span class="sr-only">{t.footer.email}: </span><span class="ltr">{config.email}</span>
-          </a>
-        </li>
+        {
+          config.email && (
+            <li>
+              <a href={`mailto:${config.email}`}>
+                <Icon name="mail" size={20} />
+                <span class="sr-only">{t.footer.email}: </span>
+                <span class="ltr">{config.email}</span>
+              </a>
+            </li>
+          )
+        }
       </ul>
     </div>
   </div>

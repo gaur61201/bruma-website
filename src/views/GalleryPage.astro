@@ -1,5 +1,6 @@
 ---
 // The gallery page, shared by /gallery/ (English) and /ar/gallery/ (Arabic).
+import RelatedLinks from '../components/RelatedLinks.astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import DesignGrid from '../components/gallery/DesignGrid.astro';
@@ -21,5 +22,6 @@ const g = useTranslations(lang).galleryPage;
   <TextSection id="wear-title" title={g.wearTitle}>
     <WearTest lang={lang} />
   </TextSection>
+  <RelatedLinks lang={lang} pages={['printer', 'ways']} />
   <DemoForm lang={lang} pageName="gallery" />
 </Base>

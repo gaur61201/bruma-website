@@ -2,6 +2,7 @@
 // The hygiene and safety page, shared by /hygiene/ (English) and /ar/hygiene/ (Arabic).
 // Hygiene between clients (the salon's job) and the printer's automatic print-head cleaning
 // (maintenance) are separate sections; the automatic cleaning is never presented as hygiene.
+import RelatedLinks from '../components/RelatedLinks.astro';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import PageHero from '../components/PageHero.astro';
@@ -49,5 +50,6 @@ const storage = config.maxStorageTempC === null ? [h.storage.text] : [h.storage.
       <span>{h.sds.button}</span>
     </a>
   </TextSection>
+  <RelatedLinks lang={lang} pages={['printer', 'warranty']} />
   <DemoForm lang={lang} pageName="hygiene" />
 </Base>

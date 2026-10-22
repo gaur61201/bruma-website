@@ -1,0 +1,40 @@
+---
+// "Related pages": a short list of descriptive text links to other pages, as a text section, for pages
+// whose content has no natural place to link out (internal linking for visitors and search engines).
+import Icon from './Icon.astro';
+import TextSection from './TextSection.astro';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+import { relatedPaths, type RelatedPage } from '../related';
+
+interface Props {
+  lang: Lang;
+  pages: RelatedPage[];
+}
+const { lang, pages } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<TextSection id="related-title" title={t.related.title}>
+  <ul class="related-list">
+    {
+      pages.map((page) => (
+        <li data-motion data-reveal="item">
+          <a href={localizedPath(relatedPaths[page], lang)} class="text-link arrow-link">
+            <span>{t.related[page]}</span>
+            <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</TextSection>
+
+<style>
+  .related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+</style>

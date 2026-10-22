@@ -1,5 +1,6 @@
 ---
 // Thank-you page after the demo form (noindex), shared by /thank-you/ and /ar/thank-you/.
+import RelatedLinks from '../components/RelatedLinks.astro';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { whatsappLink } from '../config';
@@ -40,6 +41,7 @@ const ty = t.thankYou;
       </a>
     </div>
   </section>
+  <RelatedLinks lang={lang} pages={['gallery', 'printer']} />
 </Base>
 
 <script>

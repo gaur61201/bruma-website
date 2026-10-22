@@ -6,9 +6,11 @@ import { ar as arForms, arCount, enCount } from './i18n/plural';
 export const config = {
   siteUrl: 'https://brumakw.com',
 
-  whatsappNumber: '965XXXXXXXX', // TODO confirm
-  phoneDisplay: '+965 XXXX XXXX', // TODO confirm
-  email: 'hello@brumakw.com', // TODO confirm
+  whatsappNumber: '96597644083',
+  phoneDisplay: '+965 9764 4083',
+  // Empty until the mailbox exists. The footer, contact sections, privacy page and Organization schema
+  // show the email only once it's set.
+  email: '',
   formEndpoint: '', // n8n webhook URL. Empty means use the WhatsApp fallback.
   formTimeoutMs: 10000, // after this, the form falls back to WhatsApp
   analyticsId: '', // Umami website ID (cookieless). Empty means analytics off. // TODO confirm provider

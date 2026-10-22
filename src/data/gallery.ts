@@ -1,25 +1,25 @@
 import type { ImageMetadata } from 'astro';
-import sample01 from '../assets/gallery/sample-01.png';
-import sample02 from '../assets/gallery/sample-02.png';
-import sample03 from '../assets/gallery/sample-03.png';
-import sample04 from '../assets/gallery/sample-04.png';
-import sample05 from '../assets/gallery/sample-05.png';
-import sample06 from '../assets/gallery/sample-06.png';
-import sample07 from '../assets/gallery/sample-07.png';
-import sample08 from '../assets/gallery/sample-08.png';
-import sample09 from '../assets/gallery/sample-09.png';
-import sample10 from '../assets/gallery/sample-10.png';
-import sample11 from '../assets/gallery/sample-11.png';
-import sample12 from '../assets/gallery/sample-12.png';
-import sample13 from '../assets/gallery/sample-13.png';
-import sample14 from '../assets/gallery/sample-14.png';
-import sample15 from '../assets/gallery/sample-15.png';
-import sample16 from '../assets/gallery/sample-16.png';
-import sample17 from '../assets/gallery/sample-17.png';
-import sample18 from '../assets/gallery/sample-18.png';
-import sample19 from '../assets/gallery/sample-19.png';
-import sample20 from '../assets/gallery/sample-20.png';
-import sample21 from '../assets/gallery/sample-21.png';
+import sample01 from '../assets/gallery/nail-design-01-nude-almond-nails-white-flower-accents.png';
+import sample02 from '../assets/gallery/nail-design-02-red-french-tips-cherry-designs.png';
+import sample03 from '../assets/gallery/nail-design-03-nude-nails-black-bows-fine-black.png';
+import sample04 from '../assets/gallery/nail-design-04-lilac-floral-marble-nails.png';
+import sample05 from '../assets/gallery/nail-design-05-deep-red-nails-gold-heart-outline.png';
+import sample06 from '../assets/gallery/nail-design-06-nude-nails-raised-white-flowers.png';
+import sample07 from '../assets/gallery/nail-design-07-nude-nails-blue-swirl-tips.png';
+import sample08 from '../assets/gallery/nail-design-08-nude-nails-cherries-black-tips.png';
+import sample09 from '../assets/gallery/nail-design-09-sky-blue-cloud-marble-nails-gold.png';
+import sample10 from '../assets/gallery/nail-design-10-nude-nails-white-bow-silver-glitter.png';
+import sample11 from '../assets/gallery/nail-design-11-tortoiseshell-french-tips-gold-details.png';
+import sample12 from '../assets/gallery/nail-design-12-black-french-tips-star-designs.png';
+import sample13 from '../assets/gallery/nail-design-13-nude-nails-icy-blue-glitter-tips.png';
+import sample14 from '../assets/gallery/nail-design-14-nude-nails-red-cherries-dots.png';
+import sample15 from '../assets/gallery/nail-design-15-nude-nails-gold-bow-accent.png';
+import sample16 from '../assets/gallery/nail-design-16-nude-nails-white-flowers-gold-dots.png';
+import sample17 from '../assets/gallery/nail-design-17-pink-cherry-blossom-nails-fox-mask.png';
+import sample18 from '../assets/gallery/nail-design-18-pastel-nails-moons-stars-bunnies.png';
+import sample19 from '../assets/gallery/nail-design-19-sky-blue-nails-stars-clouds-pink.png';
+import sample20 from '../assets/gallery/nail-design-20-pink-white-nails-teddy-bears-bows.png';
+import sample21 from '../assets/gallery/nail-design-21-navy-nails-gold-stars-crescent-moon.png';
 
 // Design tiles for the gallery page (all of them, filterable by style) and the homepage marquee
 // (the first 16: tiles 1-8 fill the top row, 9-16 the bottom row).
