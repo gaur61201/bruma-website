@@ -55,6 +55,7 @@ export const config = {
     showPlanTerms: false,
     showPaymentMethods: false,
     showStepPhotos: false, // /printer/ step story: a real photo beside each step once they exist
+    showCloseUpPhoto: false, // /printer/ "Printed on the nail": the finished-nail close-up beside the layer diagram
   },
 };
 

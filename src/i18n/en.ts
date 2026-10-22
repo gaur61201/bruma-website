@@ -259,6 +259,13 @@ export const en = {
       h2: 'Printed on the nail, not stuck on',
       text: "The design is printed directly onto the prepared nail, then sealed under top coat and cured. It’s not a sticker, a wrap or a press-on.",
       photo: 'Photo: finished nail, close-up',
+      /** The layer diagram (an illustration). */
+      layers: { nail: 'Natural nail', base: 'Base coat', print: 'Printed design', film: 'Sticker film', top: 'Top coat, cured' },
+      compareLabel: 'Compare with a sticker',
+      printed: 'Printed',
+      sticker: 'Sticker',
+      printedNote: 'Printed: the design lies flat between the base coat and the top coat.',
+      stickerNote: 'Sticker: a separate film laid on top, with an edge that can lift.',
     },
     specs: {
       h2: 'Specifications',
