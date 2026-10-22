@@ -121,12 +121,14 @@ export function initDemoForm(form: HTMLFormElement) {
     waLink.href = complete ? fallbackUrl() : whatsappUrl(s.genericMessage);
   });
 
+  // Loading: the label stays, the width is locked (so nothing jumps) and a spinner replaces the arrow.
   const setSending = (on: boolean) => {
     sending = on;
+    submitBtn.style.minWidth = on ? `${submitBtn.getBoundingClientRect().width}px` : '';
     submitBtn.disabled = on;
     submitBtn.setAttribute('aria-busy', String(on));
     submitBtn.toggleAttribute('data-sending', on);
-    submitLabel.textContent = on ? s.sending : s.submit;
+    submitLabel.textContent = s.submit;
   };
 
   const openWhatsApp = () => {

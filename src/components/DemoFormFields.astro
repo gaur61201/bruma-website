@@ -90,11 +90,11 @@ const errorId = (f: string) => `demo-${f}-error`;
     <button type="submit" class="btn btn-primary" data-submit>
       <span data-submit-label>{d.submit}</span>
       <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
-      <span class="spinner" aria-hidden="true"></span>
+      <span class="btn-spinner" aria-hidden="true"></span>
     </button>
     <a
       href={whatsappLink(t.whatsapp.floatMessage)}
-      class="btn btn-outline"
+      class="btn btn-secondary"
       target="_blank"
       rel="noopener"
       data-demo-whatsapp
@@ -205,31 +205,6 @@ const errorId = (f: string) => `demo-${f}-error`;
     }
   }
 
-  /* Sending: a small spinner replaces the arrow (it only turns while a request is in flight). */
-  .spinner {
-    display: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    border-inline-end-color: transparent;
-  }
-  [data-sending] .spinner {
-    display: inline-block;
-  }
-  [data-sending] :global(.btn-arrow) {
-    display: none;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    [data-sending] .spinner {
-      animation: spin 0.8s linear infinite;
-    }
-  }
-  @keyframes spin {
-    to {
-      rotate: 1turn;
-    }
-  }
   .field-error {
     align-self: flex-start;
     display: inline-flex;
@@ -251,27 +226,16 @@ const errorId = (f: string) => `demo-${f}-error`;
     inset-inline-start: -10000px;
   }
 
+  /* Submit spans the form; the WhatsApp alternative keeps its natural width. */
   .demo-actions {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 16px;
     margin-block-start: 8px;
   }
-  .demo-actions .btn {
+  .demo-actions .btn-primary {
     width: 100%;
-  }
-  .demo-actions .btn-outline {
-    gap: 8px;
-    padding-inline: 16px;
-  }
-  /* The carbon wrapper is outside this component, so match it globally. */
-  :global(.on-carbon) .btn-outline {
-    border-color: var(--color-bone);
-    color: var(--color-bone);
-  }
-  :global(.on-carbon) .btn-outline:hover {
-    background: var(--color-bone);
-    color: var(--color-carbon);
   }
   .form-status:empty {
     display: none;

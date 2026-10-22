@@ -234,53 +234,53 @@ const settings = {
     padding: 0;
     min-width: 0;
   }
-  .mode-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
+  /*
+   * "How you pay" is a segmented control: one outlined track (1px bone at 25%, 14px radius, 4px
+   * padding) with a bone thumb that slides under the selected segment. The segments are radio inputs,
+   * so arrow keys move between them and the group reads as one choice.
+   */
   .mode-options {
     position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    border: 1px solid rgb(243 239 232 / 0.25);
+    border-radius: var(--radius-button);
   }
-  /* The saving badge sits above the "Paid upfront" option (same two columns as the toggle). */
+  /* The saving badge sits over the "Paid upfront" segment (same two columns as the track). */
   .mode-badges {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-block-end: 8px;
+    padding-inline: 4px;
+    margin-block-end: 6px;
   }
   .mode-badges .save-pill {
     justify-self: center;
     padding: 4px 14px;
     font-size: calc(clamp(0.875rem, 0.797rem + 0.331vw, 1.0625rem) * var(--script-scale));
   }
-  /* The bone thumb slides between the two options. */
+  /* The bone thumb under the selected segment. */
   .mode-thumb {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    inset-inline-start: 0;
+    top: 4px;
+    bottom: 4px;
+    inset-inline-start: 4px;
     width: calc(50% - 4px);
-    border-radius: var(--radius-pill);
+    border-radius: 10px;
     background: var(--color-bone);
+    box-shadow:
+      0 1px 2px rgb(14 17 19 / 0.3),
+      0 2px 6px -2px rgb(14 17 19 / 0.35);
   }
   .mode-options:has(input[value='upfront']:checked) .mode-thumb {
-    translate: calc(100% + 8px) 0;
+    translate: 100% 0;
   }
   .mode-options:has(input[value='upfront']:checked) .mode-thumb:dir(rtl) {
-    translate: calc(-100% - 8px) 0;
+    translate: -100% 0;
   }
   @media (prefers-reduced-motion: no-preference) {
     .mode-thumb {
       transition: translate 260ms var(--ease-out);
-    }
-    .mode-option {
-      transition:
-        color 200ms ease,
-        scale 160ms var(--ease-out);
-    }
-    .mode-option:active {
-      scale: 0.97;
     }
   }
   .mode-option {
@@ -289,15 +289,21 @@ const settings = {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: var(--calc-control-h);
+    min-height: calc(var(--calc-control-h) - 10px);
     padding-inline: 16px;
-    border: 1px solid rgb(243 239 232 / 0.32);
-    border-radius: var(--radius-pill);
+    border-radius: 10px;
+    color: rgb(243 239 232 / 0.75);
     font-weight: 500;
     font-size: calc(var(--calc-toggle) * var(--script-scale));
     line-height: 1.2;
     text-align: center;
     cursor: pointer;
+    transition: color 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .mode-option:hover {
+      color: var(--color-bone);
+    }
   }
   .mode-option input {
     position: absolute;
@@ -306,12 +312,12 @@ const settings = {
     margin: 0;
     cursor: pointer;
   }
-  .mode-option:has(input:checked) {
+  .mode-option:has(input:checked),
+  .mode-option:has(input:checked):hover {
     color: var(--color-carbon);
-    border-color: transparent;
   }
   .mode-option:has(input:focus-visible) {
-    outline: 3px solid var(--color-mist);
+    outline: 2px solid var(--color-mist);
     outline-offset: 3px;
   }
 
@@ -325,14 +331,20 @@ const settings = {
     width: clamp(96px, 79.4px + 4.42vw, 136px);
     min-height: var(--calc-control-h);
     padding-inline: 12px;
-    border: 0;
+    /* Reads as an editable field: a line edge, a soft inner shadow and a mist focus ring. */
+    border: 1px solid var(--color-line);
     border-radius: var(--radius-input);
     background: var(--color-white);
+    box-shadow: inset 0 1px 2px rgb(14 17 19 / 0.12);
     color: var(--color-carbon);
     font: inherit;
     font-weight: 500;
     font-size: calc(var(--calc-number) * var(--script-scale));
     text-align: center;
+  }
+  .calc-number:focus-visible {
+    outline: 2px solid var(--color-mist);
+    outline-offset: 2px;
   }
 
   /* Slider: a line-coloured track with a mist thumb. */
