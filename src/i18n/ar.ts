@@ -102,8 +102,6 @@ export const ar: Dict = {
       { title: 'التثبيت', text: 'الإنهاء بالطبقة العلوية ثم التجفيف بالمصباح.' },
     ],
     setTime: `تستغرق المجموعة الكاملة نحو ${arCount(c.minutesPerFullSet, forms.minutes)}.`,
-    pause: 'إيقاف حركة الخطوات مؤقتاً',
-    play: 'تشغيل حركة الخطوات',
     printerLink: 'تفاصيل الطابعة',
   },
 

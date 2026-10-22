@@ -170,13 +170,14 @@ export function initMotion() {
   const howNote = () => fadeUp($('.set-time'));
 
   /**
-   * How it works. The connecting line is always drawn. The cards slide in once; then the icon hop runs:
-   * each step icon rises 10px and drops back, one at a time in step order (right to left in Arabic),
-   * then a 3s pause and again. In the same timeline, each step number is highlighted (carbon fill,
-   * bone number, scale 1.1) from the moment its icon starts hopping until the next icon starts; number
-   * 4 rests 0.5s after its icon lands. The fill grows from the centre of the circle (clip-path) and
-   * switches off at once, so the number never passes through a half-faded grey state. The hop runs
-   * only while the steps are on screen.
+   * How it works. The connecting line is always drawn. The cards slide in once, the first time the steps
+   * scroll into view; then the icon hop plays once: each step icon rises 10px and drops back, one at a
+   * time in step order (right to left in Arabic), and stops after step 4. No repeat, and no replay when
+   * scrolling back; it plays again only after a reload. A run takes under 5s, so it needs no pause
+   * control. In the same timeline, each step number is highlighted (carbon fill, bone number, scale
+   * 1.1) from the moment its icon starts hopping until the next icon starts; number 4 rests 0.5s after
+   * its icon lands. The fill grows from the centre of the circle (clip-path) and switches off at once,
+   * so the number never passes through a half-faded grey state.
    */
   const steps = () => {
     const list = $('[data-steps]');
@@ -194,8 +195,7 @@ export function initMotion() {
 
     const HOP = 0.25; // seconds up, and again down
     const FILL = 0.18;
-    const PAUSE = 3; // after the last icon lands
-    const hop = gsap.timeline({ paused: true, repeat: -1 });
+    const hop = gsap.timeline({ paused: true });
     icons.forEach((icon, i) => {
       const at = i * 2 * HOP;
       hop
@@ -208,54 +208,18 @@ export function initMotion() {
       // The outgoing highlight switches off at once (a shrinking circle would slice through the digit).
       hop.set(fills[i], { clipPath: EMPTY }, rest).to(nums[i], { scale: 1, duration: FILL, ease: 'power2.out' }, rest);
     });
-    // Keep the hop loop as it was: 3s from the last icon landing to the first icon starting again.
-    const lastLanding = icons.length * 2 * HOP;
-    hop.repeatDelay(PAUSE - (hop.duration() - lastLanding));
-
-    // The hop pauses with its button (WCAG 2.2.2), while a pointer rests on the steps, and while
-    // keyboard focus is inside the section.
-    const section = list.closest('section') ?? list;
-    const toggle = $<HTMLButtonElement>('[data-hop-toggle]', section);
-    let userPaused = false;
-    let hovered = false;
-    let focused = false;
+    // A single run, started once.
     let started = false;
-    let onScreen = false;
-    const sync = () => (started && onScreen && !userPaused && !hovered && !focused ? hop.play() : hop.pause());
-    if (toggle) {
-      toggle.hidden = false;
-      toggle.addEventListener('click', () => {
-        userPaused = !userPaused;
-        toggle.setAttribute('aria-label', (userPaused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
-        $('[data-icon-pause]', toggle)?.toggleAttribute('hidden', userPaused);
-        $('[data-icon-play]', toggle)?.toggleAttribute('hidden', !userPaused);
-        sync();
-      });
-    }
-    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      list.addEventListener('pointerenter', () => ((hovered = true), sync()));
-      list.addEventListener('pointerleave', () => ((hovered = false), sync()));
-    }
-    section.addEventListener('focusin', (e) => ((focused = (e.target as HTMLElement).matches(':focus-visible') && e.target !== toggle), sync()));
-    section.addEventListener('focusout', () => ((focused = false), sync()));
-    const visibility = ScrollTrigger.create({
-      trigger: list,
-      start: 'top bottom',
-      end: 'bottom top',
-      onToggle: (self) => {
-        onScreen = self.isActive;
-        sync();
-      },
-    });
-    onScreen = visibility.isActive;
     const startHops = () => {
       if (started) return;
       started = true;
-      sync();
+      hop.play();
     };
 
+    // Cards already shown (failsafe or keyboard focus): the hop still waits for the first time the
+    // steps scroll into view.
     if (!claim(cards, list)) {
-      startHops();
+      ScrollTrigger.create({ ...once(list), onEnter: startHops });
       return;
     }
     gsap.from(cards, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08, scrollTrigger: once(list), onComplete: startHops });

@@ -101,8 +101,6 @@ export const en = {
     ],
     setTime: `A full set takes about ${enCount(c.minutesPerFullSet, 'minute', 'minutes')}.`,
     printerLink: 'See the printer in detail',
-    pause: 'Pause the step animation',
-    play: 'Play the step animation',
   },
 
   calc: {
