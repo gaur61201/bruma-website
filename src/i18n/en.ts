@@ -495,7 +495,7 @@ export const en = {
     },
     where: {
       h2: 'Where we go',
-      text: 'We visit salons and clinics in all 6 of Kuwait’s governorates: Capital, Hawalli, Farwaniya, Ahmadi, Jahra and Mubarak Al-Kabeer.',
+      text: "We visit salons and clinics in all 6 of Kuwait’s governorates.",
     },
     contact: {
       h2: 'Contact',
