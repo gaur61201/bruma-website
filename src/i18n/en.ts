@@ -214,6 +214,8 @@ export const en = {
     },
     why: {
       h2: 'Why salons add it',
+      /** The unit after the featured card's big print-time figure. */
+      figureUnit: 's',
       cards: [
         { icon: 'sparkle', title: 'A new service on every set', text: 'Offer detailed nail art without hiring a specialist.' },
         { icon: 'check', title: 'The same result every time', text: "The design doesn’t depend on who’s on shift." },
