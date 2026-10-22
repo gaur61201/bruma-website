@@ -49,6 +49,9 @@ export const config = {
   legalUpdated: '2026-10-21', // "Last updated" date on the warranty and privacy pages
 
   flags: {
+    // Soft launch: while true, every page carries a noindex, nofollow robots tag and robots.txt disallows
+    // everything. Set to false when the site is ready to be indexed.
+    noIndex: true,
     showSalonStories: false,
     showWearTestResults: false,
     showInkCostFaq: false,
