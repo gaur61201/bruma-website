@@ -16,7 +16,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const inc = t.included;
-// sample-01, sample-02 and sample-05 (decorative: the link beside them says what they are).
+// sample designs 1, 2 and 5 (decorative: the link beside them says what they are).
 const thumbs = [galleryTiles[0], galleryTiles[1], galleryTiles[4]].map((tile) => tile.image).filter((img) => img !== undefined);
 const halves = [
   { n: config.warrantyMonths, unit: inc.warranty.unit(config.warrantyMonths), title: inc.warranty.title, text: inc.warranty.text },
