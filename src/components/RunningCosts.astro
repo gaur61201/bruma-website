@@ -1,0 +1,18 @@
+---
+// Running costs, with a link to the homepage earnings calculator. The printer page renders it only
+// when flags.showInkCostFaq is on; /ways-to-own/ always does, with its own text.
+import ArrowLink from './ArrowLink.astro';
+import TextSection from './TextSection.astro';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  paragraphs: string[];
+}
+const { lang, paragraphs } = Astro.props;
+const r = useTranslations(lang).printer.running;
+---
+
+<TextSection id="running-title" title={r.h2} paragraphs={paragraphs}>
+  <ArrowLink href={`${localizedPath('/', lang)}#earnings`} text={r.link} />
+</TextSection>

@@ -1,0 +1,418 @@
+---
+// "Printed on the nail, not stuck on": the copy and the shared wear-test strip (or the invitation to see
+// the wear-test photos at the demo), beside a cross-section of the layers on a nail. On first view the
+// layers spread apart, then settle. Hovering or focusing a layer's name highlights it. A two-button toggle
+// compares the printed design (flat, between base coat and top coat) with a sticker (a separate film,
+// its edge lifted). With flags.showCloseUpPhoto on, the close-up photo shows under the copy.
+import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import WearTest from '../WearTest.astro';
+import { config } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const p = t.printer.printedOn;
+
+// One band of the cross-section: a gentle arch, the same curve top and bottom (x 40 to 480, apex 30 up).
+const band = (y: number, h: number) => `M40 ${y} Q260 ${y - 60} 480 ${y} L480 ${y + h} Q260 ${y + h - 60} 40 ${y + h} Z`;
+// The arch's centre line at height y (for the thin printed layer and the sticker film).
+const arc = (y: number) => `M40 ${y} Q260 ${y - 60} 480 ${y}`;
+// The sticker film: the same arch up to x 420, then its end lifts away from the nail.
+const lifted = (y: number) => `M40 ${y} Q230 ${y - 51.8} 420 ${y - 14.1}`;
+const tail = (y: number) => `M420 ${y - 14.1} Q452 ${y - 20} 484 ${y - 46}`;
+
+const layers = [
+  { key: 'top', name: p.layers.top },
+  { key: 'print', name: p.layers.print, film: p.layers.film },
+  { key: 'base', name: p.layers.base },
+  { key: 'nail', name: p.layers.nail },
+] as const;
+---
+
+<section id="printed-on" class="section-y printed" aria-labelledby="printed-title" data-reveal-section>
+  <div class="wrap printed-grid">
+    <div class="printed-copy">
+      <h2 id="printed-title" data-motion data-reveal="heading">{p.h2}</h2>
+      <p data-motion data-reveal="fade">{p.text}</p>
+      <WearTest lang={lang} />
+      {config.flags.showCloseUpPhoto && <PhotoPlaceholder caption={p.photo} ratio="4 / 3" />}
+    </div>
+
+    <figure class="layers card" data-layers data-mode="printed" data-note-printed={p.printedNote} data-note-sticker={p.stickerNote}>
+      <svg class="layers-svg" viewBox="0 60 520 228" role="img" aria-labelledby="layers-note">
+        <g class="layer" data-layer="nail" style="--dy: 48">
+          <path class="layer-nail" d={band(190, 40)} />
+        </g>
+        <g class="layer" data-layer="base" style="--dy: 16">
+          <path class="layer-base" d={band(176, 14)} />
+        </g>
+        <g class="layer" data-layer="print" style="--dy: -16">
+          <g class="as-printed">
+            <path class="ink ink-a" d={arc(172)} />
+            <path class="ink ink-b" d={arc(172)} />
+            <path class="ink ink-c" d={arc(172)} />
+          </g>
+          <g class="as-sticker">
+            <path class="film-edge" d={lifted(171)} />
+            <path class="film" d={lifted(171)} />
+            <path class="ink ink-a" d={lifted(171)} />
+            <path class="ink ink-c" d={lifted(171)} />
+          </g>
+        </g>
+        <g class="layer" data-layer="top" style="--dy: -48">
+          <g class="coat">
+            <path class="layer-top" d={band(150, 18)} />
+            <path class="layer-gloss" d="M112 142 Q180 126 250 124" />
+          </g>
+        </g>
+        <!-- The lifted end of the sticker film sits over the top coat. -->
+        <g class="layer as-sticker" data-layer="print" style="--dy: -16">
+          <path class="film-edge" d={tail(171)} />
+          <path class="film" d={tail(171)} />
+        </g>
+      </svg>
+
+      <ol class="layers-key">
+        {
+          layers.map((layer) => (
+            <li class="layers-key-item" tabindex="0" data-key={layer.key}>
+              <span class:list={['layers-swatch', `swatch-${layer.key}`]} aria-hidden="true" />
+              {'film' in layer ? (
+                <>
+                  <span class="as-printed">{layer.name}</span>
+                  <span class="as-sticker">{layer.film}</span>
+                </>
+              ) : (
+                <span>{layer.name}</span>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="layers-foot">
+        <div class="layers-toggle" role="group" aria-label={p.compareLabel}>
+          <span class="layers-thumb" aria-hidden="true"></span>
+          <button type="button" class="layers-option" aria-pressed="true" data-mode-btn="printed">{p.printed}</button>
+          <button type="button" class="layers-option" aria-pressed="false" data-mode-btn="sticker">{p.sticker}</button>
+        </div>
+        <p id="layers-note" class="layers-note" aria-live="polite" data-layers-note>{p.printedNote}</p>
+      </div>
+      <figcaption class="layers-label">{t.nail.label}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  const fig = document.querySelector<HTMLElement>('[data-layers]');
+  if (fig) {
+    const note = fig.querySelector<HTMLElement>('[data-layers-note]')!;
+    const buttons = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-mode-btn]'));
+
+    // Printed / Sticker.
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.modeBtn!;
+        if (fig.dataset.mode === mode) return;
+        fig.dataset.mode = mode;
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        note.textContent = (mode === 'sticker' ? fig.dataset.noteSticker : fig.dataset.notePrinted) ?? '';
+      }),
+    );
+
+    // A layer's name, hovered (with a mouse: a tap would only flash it) or focused, highlights that layer.
+    fig.querySelectorAll<HTMLElement>('[data-key]').forEach((item) => {
+      const on = () => (fig.dataset.focus = item.dataset.key);
+      const off = () => delete fig.dataset.focus;
+      item.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && on());
+      item.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && off());
+      item.addEventListener('focus', on);
+      item.addEventListener('blur', off);
+    });
+
+    // First view: the layers spread apart, hold, then settle (once). Skipped under reduced motion.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          io.disconnect();
+          fig.setAttribute('data-exploded', '');
+          window.setTimeout(() => fig.removeAttribute('data-exploded'), 1500);
+        },
+        { threshold: 0.6 },
+      );
+      io.observe(fig.querySelector('svg')!);
+    }
+  }
+</script>
+
+<style>
+  .printed-grid {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .printed-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 64px;
+    }
+  }
+  .printed-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 34rem;
+  }
+
+  .layers {
+    margin: 0;
+    display: grid;
+    gap: 24px;
+    padding: 24px;
+  }
+  @media (min-width: 1024px) {
+    .layers {
+      padding: 40px;
+    }
+  }
+  .layers-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* The layers (illustration colours, matching the nail illustration). */
+  .layer-nail {
+    fill: #efd8cd;
+    stroke: rgb(14 17 19 / 0.16);
+  }
+  .layer-base {
+    fill: #e6c2b1;
+    stroke: rgb(14 17 19 / 0.12);
+  }
+  .layer-top {
+    fill: rgb(214 236 241 / 0.62);
+    stroke: rgb(14 17 19 / 0.22);
+  }
+  .layer-gloss {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.9;
+  }
+  .ink {
+    fill: none;
+    stroke-width: 8;
+  }
+  .ink-a {
+    stroke: #b3263a;
+    stroke-dasharray: 22 38;
+  }
+  .ink-b {
+    stroke: #5e7a3e;
+    stroke-dasharray: 10 50;
+    stroke-dashoffset: -26;
+  }
+  .ink-c {
+    stroke: #0e1113;
+    stroke-dasharray: 6 54;
+    stroke-dashoffset: -42;
+  }
+  .film,
+  .film-edge {
+    fill: none;
+    stroke-linecap: round;
+  }
+  .film {
+    stroke: #fbfaf7;
+    stroke-width: 7;
+  }
+  .film-edge {
+    stroke: rgb(14 17 19 / 0.4);
+    stroke-width: 9;
+  }
+
+  /* Printed / Sticker: the sticker film sits a little higher (its own layer), and the top coat over it. */
+  .as-sticker,
+  [data-mode='sticker'] .as-printed {
+    display: none;
+  }
+  [data-mode='sticker'] .as-sticker {
+    display: inline;
+  }
+  [data-mode='sticker'] .coat {
+    translate: 0 -6px;
+  }
+
+  /* Exploded: the layers spread apart from the middle by their --dy (SVG units), then settle back. */
+  .layer {
+    translate: 0 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+  [data-exploded] .layer {
+    translate: 0 calc(var(--dy) * 1px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .layer {
+      transition:
+        translate 700ms var(--ease-in-out),
+        opacity 200ms var(--ease-out);
+    }
+    .coat {
+      transition: translate 260ms var(--ease-out);
+    }
+  }
+
+  /* A highlighted layer: the others fade back. */
+  [data-focus] .layer {
+    opacity: 0.25;
+  }
+  [data-focus='nail'] [data-layer='nail'],
+  [data-focus='base'] [data-layer='base'],
+  [data-focus='print'] [data-layer='print'],
+  [data-focus='top'] [data-layer='top'] {
+    opacity: 1;
+  }
+
+  /* The key: one row per layer, top of the stack first. */
+  .layers-key {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+  @media (min-width: 640px) {
+    .layers-key {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .layers-key-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding-inline: 10px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: 1.3;
+    cursor: default;
+    transition: background-color 160ms var(--ease-out);
+  }
+  .layers-key-item:focus-visible {
+    background: var(--color-bone);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .layers-key-item:hover {
+      background: var(--color-bone);
+    }
+  }
+  .layers-key-item:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .layers-swatch {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1px solid rgb(14 17 19 / 0.18);
+  }
+  .swatch-nail {
+    background: #efd8cd;
+  }
+  .swatch-base {
+    background: #e6c2b1;
+  }
+  .swatch-print {
+    background: linear-gradient(90deg, #b3263a 0 40%, #5e7a3e 40% 70%, #0e1113 70%);
+  }
+  .swatch-top {
+    background: rgb(214 236 241);
+  }
+
+  /* The Printed / Sticker toggle: a carbon thumb slides under the pressed button. */
+  .layers-foot {
+    display: grid;
+    gap: 12px;
+  }
+  .layers-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: min(100%, 320px);
+    padding: 4px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-button);
+    background: var(--color-bone);
+  }
+  .layers-thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    inset-inline-start: 4px;
+    width: calc(50% - 4px);
+    border-radius: 10px;
+    background: var(--color-carbon);
+  }
+  [data-mode='sticker'] .layers-thumb {
+    translate: 100% 0;
+  }
+  [data-mode='sticker'] .layers-thumb:dir(rtl) {
+    translate: -100% 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .layers-thumb {
+      transition: translate 260ms var(--ease-out);
+    }
+  }
+  .layers-option {
+    position: relative;
+    z-index: 1;
+    min-height: 44px;
+    padding-inline: 16px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--color-carbon);
+    font: inherit;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    cursor: pointer;
+    transition:
+      color 160ms var(--ease-out),
+      scale 160ms var(--ease-out);
+  }
+  .layers-option[aria-pressed='true'] {
+    color: var(--color-bone);
+  }
+  .layers-option:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .layers-option:active {
+    scale: 0.97;
+  }
+  .layers-note {
+    min-height: 3.2em;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    color: var(--color-stone);
+  }
+  .layers-label {
+    justify-self: center;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-weight: 500;
+    color: var(--color-stone);
+  }
+  .layers-label:lang(en) {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>

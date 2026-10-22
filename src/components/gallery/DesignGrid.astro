@@ -1,0 +1,365 @@
+---
+// The gallery page's designs: style filters, a 2-column (mobile) / 4-column (desktop) grid and a
+// lightbox. Filtering is animated with GSAP Flip when motion is allowed (src/scripts/gallery.ts).
+// Without JS every design shows and the filters are hidden; the tiles stay plain pictures.
+import { Picture, getImage } from 'astro:assets';
+import Icon from '../Icon.astro';
+import ArrowLink from '../ArrowLink.astro';
+import { config } from '../../config';
+import { galleryCategories, galleryTiles, type GalleryCategory } from '../../data/gallery';
+import { fill, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const g = t.galleryPage;
+
+type Filter = 'all' | GalleryCategory;
+// A style gets a filter button only when it has at least one tile; "All" always shows.
+const filters: Filter[] = ['all', ...galleryCategories.filter((c) => galleryTiles.some((tile) => tile.category === c))];
+const countOf = (f: Filter) => (f === 'all' ? galleryTiles.length : galleryTiles.filter((tile) => tile.category === f).length);
+
+// First-strong isolates keep a Latin name inside an Arabic caption (or the reverse) in order.
+const isolate = (s: string) => `⁨${s}⁩`;
+const tiles = await Promise.all(
+  galleryTiles.map(async (tile) => {
+    const credit = tile.image && tile.technician && tile.area ? fill(t.gallery.credit, { technician: isolate(tile.technician), area: isolate(tile.area[lang]) }) : '';
+    // The lightbox shows the photo at its natural size (never upscaled on the server).
+    const full = tile.image ? (await getImage({ src: tile.image, width: tile.image.width, format: 'webp' })).src : '';
+    const label = g.categories[tile.category];
+    return { ...tile, credit, full, caption: credit ? `${label} · ${credit}` : label };
+  }),
+);
+---
+
+<section class="designs" aria-labelledby="designs-title" data-reveal-section>
+  <div class="wrap">
+    <h2 id="designs-title" class="sr-only">{g.gridTitle}</h2>
+
+    <div class="designs-bar">
+      <div class="filters" role="group" aria-label={g.filterLabel} data-filters>
+        {
+          filters.map((f) => (
+            <button type="button" class="filter press" aria-pressed={f === 'all' ? 'true' : 'false'} data-filter={f} data-count={g.count(countOf(f))}>
+              {g.categories[f]}
+            </button>
+          ))
+        }
+      </div>
+      <p class="design-count" aria-live="polite" data-count-status>{g.count(galleryTiles.length)}</p>
+    </div>
+
+    <p class="eyebrow sample-label">{t.gallery.sampleLabel}</p>
+    <ul class="design-grid" data-design-grid>
+      {
+        tiles.map((tile, i) => (
+          <li class="design-tile" data-category={tile.category} data-motion data-reveal="item">
+            <button
+              type="button"
+              class="design-open lift"
+              aria-haspopup="dialog"
+              data-open
+              data-full={tile.full || undefined}
+              data-w={tile.image?.width}
+              data-h={tile.image?.height}
+              data-alt={tile.alt?.[lang]}
+              data-placeholder={tile.image ? undefined : g.placeholders[tile.category]}
+              data-caption={tile.caption}
+            >
+              {tile.image ? (
+                <Picture
+                  src={tile.image}
+                  alt={tile.alt?.[lang] ?? ''}
+                  width={tile.image.width}
+                  height={tile.image.height}
+                  formats={['avif', 'webp']}
+                  loading={i < 4 ? 'eager' : 'lazy'}
+                  class="design-img"
+                />
+              ) : (
+                <span class="placeholder-media design-placeholder">
+                  <span class="placeholder-icon" aria-hidden="true">
+                    <Icon name="camera" size={22} />
+                  </span>
+                  <span class="placeholder-caption">{g.placeholders[tile.category]}</span>
+                </span>
+              )}
+            </button>
+            {tile.credit && <p class="design-credit">{tile.credit}</p>}
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      config.instagramUrl && (
+        <div class="designs-more">
+          <ArrowLink href={config.instagramUrl} text={g.instagram} external />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<dialog class="lightbox" aria-label={g.lightbox.label} data-lightbox data-count-template={g.lightbox.count}>
+  <div class="lightbox-panel" data-lightbox-panel>
+    <div class="lightbox-bar">
+      <p class="lightbox-count" data-lightbox-count></p>
+      <button type="button" class="icon-btn press" aria-label={g.lightbox.close} data-lightbox-close>
+        <Icon name="close" />
+      </button>
+    </div>
+    <figure class="lightbox-figure" data-lightbox-swipe>
+      <div class="lightbox-media" data-lightbox-media></div>
+      <figcaption class="lightbox-caption" aria-live="polite" data-lightbox-caption></figcaption>
+    </figure>
+    <div class="lightbox-nav">
+      <button type="button" class="icon-btn press lightbox-prev" aria-label={g.lightbox.prev} data-lightbox-prev>
+        <Icon name="arrow" />
+      </button>
+      <button type="button" class="icon-btn press" aria-label={g.lightbox.next} data-lightbox-next>
+        <Icon name="arrow" class="flip-rtl" />
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { initGallery } from '../../scripts/gallery';
+  initGallery();
+</script>
+
+<style>
+  .designs {
+    padding-block-end: 72px;
+  }
+  @media (min-width: 1024px) {
+    .designs {
+      padding-block-end: 128px;
+    }
+  }
+
+  .designs-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block-end: 24px;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  /* The filters need JS; without it every design simply shows. */
+  :global(.no-js) .filters {
+    display: none;
+  }
+  .filter {
+    min-height: 44px;
+    padding-inline: 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--color-white);
+    color: var(--color-carbon);
+    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    cursor: pointer;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      scale 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .filter:hover {
+      box-shadow: var(--shadow-card);
+    }
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--color-carbon);
+    color: var(--color-bone);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--shadow-sm);
+  }
+  .design-count {
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+
+  .design-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  @media (min-width: 1024px) {
+    .design-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+    }
+  }
+  .design-open {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+    color: inherit;
+    font: inherit;
+    cursor: zoom-in;
+  }
+  :global(.no-js) .design-open {
+    cursor: default;
+  }
+  .sample-label {
+    margin-block-end: 16px;
+  }
+  /* The button doesn't clip (its hover shadow sits outside it), so the picture rounds its own corners.
+     Photos fill the square frame, centred; never served above their natural size. */
+  .design-open :global(picture) {
+    display: contents;
+  }
+  .design-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+  }
+  .design-placeholder {
+    height: 100%;
+    padding: 16px;
+    border: 0;
+    border-radius: inherit;
+  }
+  .design-placeholder::after {
+    border-radius: 8px;
+  }
+  @media (max-width: 639px) {
+    .design-placeholder {
+      gap: 8px;
+    }
+    .design-placeholder :global(.placeholder-icon) {
+      width: 44px;
+      height: 44px;
+    }
+  }
+  .design-credit {
+    margin-block-start: 8px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .designs-more {
+    margin-block-start: 32px;
+  }
+
+  /* Lightbox: a full-screen bone surface (flat; no scrim or shadow). */
+  .lightbox {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-bone);
+    color: var(--color-carbon);
+    overscroll-behavior: contain;
+  }
+  .lightbox::backdrop {
+    background: var(--color-bone);
+  }
+  :global(html:has(.lightbox[open])) {
+    overflow: hidden;
+  }
+  .lightbox-panel {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    height: 100%;
+    padding: 16px var(--gutter) max(16px, env(safe-area-inset-bottom));
+  }
+  .lightbox-bar,
+  .lightbox-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(100%, 720px);
+    margin-inline: auto;
+  }
+  .lightbox-count {
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .lightbox-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 0;
+    margin: 0;
+    touch-action: pan-y;
+  }
+  .lightbox-media {
+    width: min(100%, 720px, 62dvh);
+    aspect-ratio: 1;
+  }
+  .lightbox-media :global(img),
+  .lightbox-media :global(.lightbox-placeholder) {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-media);
+  }
+  .lightbox-media :global(.lightbox-placeholder) {
+    box-shadow: var(--shadow-media);
+  }
+  .lightbox-media {
+    display: grid;
+    place-items: center;
+  }
+  /* gallery.ts caps each photo at 1.5x its natural size so it never looks blurry. */
+  .lightbox-media :global(img) {
+    object-fit: contain;
+  }
+  .lightbox-caption {
+    font-weight: 500;
+    text-align: center;
+  }
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-white);
+    color: var(--color-carbon);
+    cursor: pointer;
+    transition:
+      border-color 200ms ease,
+      scale 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .icon-btn:hover {
+      border-color: var(--color-carbon);
+    }
+  }
+  /* "Previous" points back against the reading direction. */
+  .lightbox-prev :global(svg) {
+    transform: scaleX(-1);
+  }
+  .lightbox-prev :global(svg):dir(rtl) {
+    transform: none;
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+// The gallery page, shared by /gallery/ (English) and /ar/gallery/ (Arabic).
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import DesignGrid from '../components/gallery/DesignGrid.astro';
+import TextSection from '../components/TextSection.astro';
+import WearTest from '../components/WearTest.astro';
+import DemoForm from '../components/DemoForm.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const g = useTranslations(lang).galleryPage;
+---
+
+<Base lang={lang} title={g.meta.title} description={g.meta.description}>
+  <PageHero title={g.h1} subline={g.subline} />
+  <DesignGrid lang={lang} />
+  <TextSection id="wear-title" title={g.wearTitle}>
+    <WearTest lang={lang} />
+  </TextSection>
+  <DemoForm lang={lang} pageName="gallery" />
+</Base>

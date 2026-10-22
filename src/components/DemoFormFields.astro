@@ -1,0 +1,273 @@
+---
+// The demo-booking form itself (fields, honeypot, buttons, notes) and its script. Styled for a
+// carbon background. Used inside the homepage-style demo section (DemoForm) and on /book-a-demo/.
+import Icon from './Icon.astro';
+import { config, whatsappLink } from '../config';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Sent as `page` with the form, so leads show which page they came from. */
+  pageName?: string;
+  /** Scroll-reveal the fields (motion.ts). Off when the form is above the fold and the page reveals it with CSS on load. */
+  reveal?: boolean;
+}
+const { lang, pageName = 'home', reveal = true } = Astro.props;
+const motion = reveal ? '' : undefined;
+const t = useTranslations(lang);
+const d = t.demo;
+
+const settings = {
+  lang,
+  page: pageName,
+  endpoint: config.formEndpoint,
+  timeoutMs: config.formTimeoutMs,
+  whatsappNumber: config.whatsappNumber,
+  thankYouPath: localizedPath('/thank-you/', lang),
+  errors: d.errors,
+  sending: d.sending,
+  submit: d.submit,
+  fallbackStatus: d.fallbackStatus,
+  fallbackMessage: d.fallbackMessage,
+  genericMessage: t.whatsapp.floatMessage,
+  areaLabels: Object.fromEntries(t.governorates.map((g) => [g.value, g.label])),
+};
+
+const errorId = (f: string) => `demo-${f}-error`;
+---
+
+<form class="demo-form" data-demo-form data-settings={JSON.stringify(settings)} novalidate>
+  <div class="field" data-motion={motion}>
+    <label for="demo-name">{d.nameLabel}</label>
+    <input id="demo-name" name="name" type="text" autocomplete="name" spellcheck="false" required maxlength="80" aria-describedby={errorId('name')} />
+    <p id={errorId('name')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-salon">{d.salonLabel}</label>
+    <input id="demo-salon" name="salon" type="text" autocomplete="organization" spellcheck="false" required maxlength="120" aria-describedby={errorId('salon')} />
+    <p id={errorId('salon')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-area">{d.areaLabel}</label>
+    <div class="select-wrap">
+      <select id="demo-area" name="area" required autocomplete="address-level1" aria-describedby={errorId('area')}>
+        <option value="" selected disabled>{d.areaPlaceholder}</option>
+        {t.governorates.map((g) => <option value={g.value}>{g.label}</option>)}
+      </select>
+      <Icon name="chevron" size={20} class="select-icon" />
+    </div>
+    <p id={errorId('area')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <div class="field" data-motion={motion}>
+    <label for="demo-whatsapp">{d.whatsappLabel}</label>
+    <p id="demo-whatsapp-hint" class="field-hint">{d.whatsappHint}</p>
+    <div class="phone-group" dir="ltr">
+      <span class="phone-prefix" aria-hidden="true">+965</span>
+      <input
+        id="demo-whatsapp"
+        name="whatsapp"
+        type="tel"
+        inputmode="numeric"
+        autocomplete="tel-national"
+        required
+        maxlength="16"
+        aria-describedby={`demo-whatsapp-hint ${errorId('whatsapp')}`}
+      />
+    </div>
+    <p id={errorId('whatsapp')} class="field-error" aria-live="polite"></p>
+  </div>
+
+  <!-- Honeypot: hidden from people and screen readers. Bots that fill it are dropped. -->
+  <div class="hp" aria-hidden="true">
+    <label for="demo-website">{d.honeypotLabel}</label>
+    <input id="demo-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="demo-actions" data-motion={motion}>
+    <button type="submit" class="btn btn-primary" data-submit>
+      <span data-submit-label>{d.submit}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+      <span class="btn-spinner" aria-hidden="true"></span>
+    </button>
+    <a
+      href={whatsappLink(t.whatsapp.floatMessage)}
+      class="btn btn-secondary"
+      target="_blank"
+      rel="noopener"
+      data-demo-whatsapp
+      data-track="whatsapp_click"
+      data-track-location="demo_form"
+    >
+      <Icon name="whatsapp" size={20} />
+      <span>{d.whatsappAlt}</span>
+    </a>
+  </div>
+
+  <p class="form-status" role="status" aria-live="polite" data-status></p>
+
+  <div class="demo-notes" data-motion={motion}>
+    <p>{d.replyTime}</p>
+    <p><a href={localizedPath('/privacy/', lang)} class="privacy-link">{d.privacy}</a></p>
+  </div>
+</form>
+
+<script>
+  import { initDemoForm } from '../scripts/demo-form';
+  document.querySelectorAll<HTMLFormElement>('[data-demo-form]').forEach(initDemoForm);
+</script>
+
+<style>
+  .demo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 560px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  /* Sizes come from custom properties so the full-width demo band can scale them up (DemoForm.astro);
+     the defaults are the compact sizes used on /book-a-demo/. */
+  .field label {
+    font-weight: 500;
+    font-size: calc(var(--form-label, var(--fs-body)) * var(--script-scale));
+  }
+  .field-hint {
+    margin-block-start: -4px;
+    color: var(--color-mist);
+    font-size: calc(var(--form-hint, var(--fs-small)) * var(--script-scale));
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    min-height: var(--field-h, 48px);
+    padding-inline: var(--field-pad, 16px);
+    border: 2px solid var(--color-white);
+    border-radius: var(--radius-input);
+    background: var(--color-white);
+    color: var(--color-carbon);
+    font: inherit;
+    font-size: calc(var(--field-text, var(--fs-body)) * var(--script-scale));
+  }
+  .field input[aria-invalid='true'],
+  .field select[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+  .select-wrap {
+    position: relative;
+  }
+  .field select {
+    appearance: none;
+    padding-inline-end: calc(var(--field-pad, 16px) + 32px);
+    cursor: pointer;
+  }
+  .select-wrap :global(.select-icon) {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: var(--field-pad, 16px);
+    translate: 0 -50%;
+    color: var(--color-carbon);
+    pointer-events: none;
+  }
+  .phone-group {
+    display: flex;
+    align-items: stretch;
+  }
+  .phone-prefix {
+    display: grid;
+    place-items: center;
+    padding-inline: var(--field-pad, 16px);
+    font-size: calc(var(--field-text, var(--fs-body)) * var(--script-scale));
+    border-radius: var(--radius-input) 0 0 var(--radius-input);
+    background: var(--color-bone);
+    color: var(--color-carbon);
+    font-weight: 500;
+  }
+  .phone-group input {
+    border-radius: 0 var(--radius-input) var(--radius-input) 0;
+    text-align: left;
+  }
+
+  /* Error red only passes contrast on white, so messages sit in a small white chip. */
+  .field-error:empty {
+    display: none;
+  }
+  /* Errors fade in and drop 4px. No shaking. */
+  @media (prefers-reduced-motion: no-preference) {
+    .field-error:not(:empty) {
+      animation: error-in 250ms var(--ease-power3) both;
+    }
+  }
+  @keyframes error-in {
+    from {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  .field-error {
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: var(--color-white);
+    color: var(--color-error);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+
+  .hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    inset-inline-start: -10000px;
+  }
+
+  /* Submit spans the form; the WhatsApp alternative keeps its natural width. */
+  .demo-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-block-start: 8px;
+  }
+  .demo-actions .btn {
+    --btn-h: var(--form-btn-h, 52px);
+  }
+  .demo-actions .btn-primary {
+    width: 100%;
+  }
+  /* In the full-width band both buttons span the form column as a matched pair. */
+  .demo-actions .btn-secondary {
+    width: var(--form-secondary-w, auto);
+  }
+  .form-status:empty {
+    display: none;
+  }
+  .form-status {
+    font-weight: 500;
+    color: var(--color-mist);
+  }
+  .privacy-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .privacy-link:hover {
+    text-decoration-thickness: 2px;
+  }
+  .demo-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: calc(var(--form-notes, var(--fs-small)) * var(--script-scale));
+  }
+</style>

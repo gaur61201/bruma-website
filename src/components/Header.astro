@@ -1,0 +1,387 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+// Carbon letters: the wordmark for light backgrounds.
+import wordmarkOnLight from '../assets/brand/bruma-air-wordmark-light.png';
+
+interface Props {
+  lang: Lang;
+  altHref?: string;
+}
+const { lang, altHref } = Astro.props;
+const t = useTranslations(lang);
+const home = localizedPath('/', lang);
+const page = (path: string, label: string) => {
+  const href = localizedPath(path, lang);
+  return { href, label, current: Astro.url.pathname === href };
+};
+
+const links = [
+  page('/printer/', t.nav.printer),
+  page('/gallery/', t.nav.gallery),
+  page('/ways-to-own/', t.nav.waysToOwn),
+  page('/hygiene/', t.nav.hygiene),
+];
+const demo = page('/book-a-demo/', t.nav.bookDemo);
+---
+
+<header class="site-header" data-header>
+  <!-- The bar is drawn by these layers so compacting uses transforms only: the header box itself
+       stays 72px tall, so nothing below it moves. -->
+  <span class="header-bg" aria-hidden="true"></span>
+  <span class="header-rule" aria-hidden="true"></span>
+  <div class="wrap header-inner">
+    <a href={home} class="logo-link">
+      <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} loading="eager" fetchpriority="high" class="logo" />
+    </a>
+
+    <nav aria-label={t.nav.label} class="desktop-nav">
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} class="slide-underline caps" aria-current={l.current ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <LangSwitch lang={lang} altHref={altHref} />
+      <a href={demo.href} class="btn btn-primary btn-small desktop-only" aria-current={demo.current ? 'page' : undefined}>{demo.label}</a>
+      <button type="button" class="menu-button press" aria-expanded="false" aria-controls="mobile-menu" aria-label={t.nav.menuOpen} data-menu-open>
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" class="mobile-menu" aria-label={t.nav.menuTitle} data-menu>
+  <div class="wrap menu-top">
+    <a href={home} class="logo-link" data-menu-link>
+      <Image src={wordmarkOnLight} alt={t.nav.homeLabel} height={40} densities={[1, 2]} format="webp" quality={90} class="logo" />
+    </a>
+    <button type="button" class="menu-button press" aria-label={t.nav.menuClose} data-menu-close>
+      <Icon name="close" />
+    </button>
+  </div>
+  <nav aria-label={t.nav.label} class="wrap menu-nav">
+    <ul>
+      {
+        links.map((l, i) => (
+          <li style={`--i:${i}`}>
+            <a href={l.href} class="caps" data-menu-link aria-current={l.current ? 'page' : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href={demo.href} class="btn btn-primary menu-cta" data-menu-link aria-current={demo.current ? 'page' : undefined} style={`--i:${links.length}`}>
+      <span>{demo.label}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
+  </nav>
+</dialog>
+
+<script>
+  // Sticky header: transparent at the top; once the page scrolls it compacts (72 → 60px) and the bone
+  // background fades in. The styles live in CSS; this only flips the state.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const sentinel = document.querySelector('[data-scroll-sentinel]');
+  if (header && sentinel && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      header.toggleAttribute('data-scrolled', !entry.isIntersecting);
+    }).observe(sentinel);
+  }
+
+  // Mobile menu: a modal <dialog> (Esc closes it natively); Tab is kept inside while open.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  if (dialog && openBtn) {
+    const focusables = () =>
+      Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter((el) => el.offsetParent !== null);
+
+    openBtn.addEventListener('click', () => {
+      dialog.showModal();
+      openBtn.setAttribute('aria-expanded', 'true');
+      dialog.querySelector<HTMLElement>('[data-menu-close]')?.focus();
+    });
+    dialog.addEventListener('close', () => openBtn.setAttribute('aria-expanded', 'false'));
+    dialog.querySelector('[data-menu-close]')?.addEventListener('click', () => dialog.close());
+    dialog.querySelectorAll('[data-menu-link]').forEach((a) => a.addEventListener('click', () => dialog.close()));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+    // Close the menu if the viewport grows to desktop while it's open.
+    matchMedia('(min-width: 1024px)').addEventListener('change', (mq) => {
+      if (mq.matches && dialog.open) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  /* 72px box; when compact the visible bar is 60px (bg scaled, rule and content moved up). */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: 72px;
+    pointer-events: none;
+  }
+  .header-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--color-bone);
+    opacity: 0;
+    transform-origin: center top;
+  }
+  .header-rule {
+    position: absolute;
+    inset-inline: 0;
+    top: 71px;
+    height: 1px;
+    background: var(--color-line);
+    opacity: 0;
+  }
+  .header-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 72px;
+    pointer-events: auto;
+  }
+  .site-header[data-scrolled] .header-bg {
+    opacity: 1;
+    transform: scaleY(0.8333);
+  }
+  .site-header[data-scrolled] .header-rule {
+    opacity: 1;
+    transform: translateY(-12px);
+  }
+  .site-header[data-scrolled] .header-inner {
+    transform: translateY(-6px);
+  }
+  .site-header[data-scrolled] .header-inner .logo {
+    transform: scale(0.9);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .header-bg,
+    .header-rule,
+    .header-inner,
+    .header-inner .logo {
+      transition:
+        opacity 250ms var(--ease-out),
+        transform 250ms var(--ease-out);
+    }
+  }
+
+  .logo-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    flex-shrink: 0;
+    transition: opacity 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .logo-link:hover {
+      opacity: 0.75;
+    }
+    .menu-nav ul a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 6px;
+    }
+  }
+  .logo {
+    height: 36px;
+    width: auto;
+    transform-origin: left center;
+    /* The logo file has a transparent margin; pull it back so the letters align with the gutter. */
+    margin-inline-start: -7px;
+  }
+  .logo:dir(rtl) {
+    transform-origin: right center;
+  }
+  @media (min-width: 1024px) {
+    .logo {
+      height: 40px;
+      margin-inline-start: -8px;
+    }
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+  .desktop-nav ul {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .desktop-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 12px;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    text-decoration: none;
+    text-underline-offset: 6px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .desktop-only {
+    display: none;
+  }
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-inline-end: -12px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-carbon);
+    cursor: pointer;
+  }
+  .menu-button {
+    transition: background-color 200ms ease, scale 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .menu-button:hover {
+      background: var(--color-white);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-nav {
+      display: block;
+    }
+    .desktop-only {
+      display: inline-flex;
+    }
+    .site-header .menu-button {
+      display: none;
+    }
+    .header-actions {
+      gap: 16px;
+    }
+  }
+
+  /* Full-screen bone panel. */
+  .mobile-menu {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-bone) var(--grain);
+    color: var(--color-carbon);
+    overscroll-behavior: contain;
+  }
+  .mobile-menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Transparent, so the page stays visible while the bone panel slides over it. */
+  .mobile-menu::backdrop {
+    background: transparent;
+  }
+  /* The panel slides in from the inline-end edge (iOS-like drawer curve), then the links stagger in
+     0.05s apart. */
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-menu[open] {
+      animation: menu-in 380ms var(--ease-drawer);
+    }
+    .mobile-menu[open]:dir(rtl) {
+      animation-name: menu-in-rtl;
+    }
+    .mobile-menu[open] .menu-nav li,
+    .mobile-menu[open] .menu-cta {
+      animation: menu-item 320ms var(--ease-out) both;
+      animation-delay: calc(0.12s + var(--i) * 0.05s);
+    }
+  }
+  @keyframes menu-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes menu-in-rtl {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes menu-item {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  .menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 72px;
+  }
+  .menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 24px 48px;
+  }
+  .menu-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu-nav li + li {
+    border-top: 1px solid var(--color-line);
+  }
+  .menu-nav ul a {
+    display: flex;
+    align-items: center;
+    min-height: 64px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+    text-decoration: none;
+  }
+  .menu-nav ul a:lang(ar) {
+    font-family: var(--font-body);
+  }
+  .menu-cta {
+    align-self: flex-start;
+  }
+  :global(html:has(dialog[open])) {
+    overflow: hidden;
+  }
+</style>

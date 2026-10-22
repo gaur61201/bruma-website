@@ -1,0 +1,113 @@
+---
+// Printer page hero (bone): the copy and buttons, beside the "Try it" demo (PrinterTry). The copy uses the
+// same load sequence as the homepage hero: CSS only, done by 1.2s.
+import Icon from '../Icon.astro';
+import HeroHeading from '../HeroHeading.astro';
+import PrinterTry from './PrinterTry.astro';
+import { boxContents, visiblePrinterSpecs } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const h = t.printer.hero;
+// The specifications section renders only when it has rows or box contents.
+const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
+---
+
+<section class="p-hero" aria-labelledby="printer-title">
+  <div class="wrap p-hero-grid">
+    <div class="p-hero-copy">
+      <p class="eyebrow hero-fade">{h.eyebrow}</p>
+      <HeroHeading id="printer-title" text={h.h1} />
+      <p class="p-hero-sub hero-rise" style="--i:0">{h.subline}</p>
+      <div class="p-hero-actions">
+        <a href="#demo" class="btn btn-primary hero-rise" style="--i:1">
+          <span>{t.hero.primaryCta}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+        {
+          hasSpecs && (
+            <a href="#specs" class="text-link arrow-link hero-rise" style="--i:2">
+              <span>{h.specsLink}</span>
+              <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+            </a>
+          )
+        }
+      </div>
+    </div>
+    <div class="p-hero-media hero-rise" style="--i:2">
+      <PrinterTry lang={lang} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .p-hero {
+    padding-block: 24px 56px;
+  }
+  @media (min-width: 1024px) {
+    .p-hero {
+      padding-block: 48px 96px;
+    }
+  }
+  .p-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .p-hero-grid {
+      grid-template-columns: 7fr 5fr;
+      gap: 64px;
+    }
+  }
+  .p-hero-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .p-hero-copy :global(h1) {
+    max-width: 12em;
+  }
+  .p-hero-copy :global(h1:lang(ar)) {
+    max-width: 14em;
+  }
+  .p-hero-sub {
+    max-width: 32rem;
+  }
+  .p-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-block-start: 8px;
+  }
+  .p-hero-actions .btn {
+    width: 100%;
+  }
+  @media (min-width: 640px) {
+    .p-hero-actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 24px;
+    }
+    .p-hero-actions .btn {
+      width: auto;
+    }
+  }
+  .p-hero-media {
+    width: 100%;
+    max-width: 480px;
+    justify-self: center;
+  }
+  @media (min-width: 1024px) {
+    .p-hero-media {
+      max-width: none;
+    }
+  }
+</style>

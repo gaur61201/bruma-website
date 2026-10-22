@@ -1,0 +1,45 @@
+---
+// The warranty terms, shared by /warranty/ (English) and /ar/warranty/ (Arabic). Plain language.
+// TODO lawyer review: the whole page (copy in src/i18n).
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import LegalUpdated from '../components/LegalUpdated.astro';
+import TextSection from '../components/TextSection.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { whatsappLink } from '../config';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const w = useTranslations(lang).warrantyPage;
+---
+
+<Base lang={lang} title={w.meta.title} description={w.meta.description}>
+  <PageHero title={w.h1} subline={w.subline}>
+    <LegalUpdated lang={lang} />
+  </PageHero>
+  <TextSection id="length-title" title={w.length.h2} paragraphs={[w.length.text]} />
+  <TextSection id="covered-title" title={w.covered.h2} paragraphs={[w.covered.text]} />
+  <TextSection id="not-covered-title" title={w.notCovered.h2} list={w.notCovered.items} />
+  <TextSection id="loaner-title" title={w.loaner.h2} paragraphs={[w.loaner.text]} />
+  <TextSection id="claim-title" title={w.claim.h2} paragraphs={w.claim.steps}>
+    <a
+      href={whatsappLink(w.claim.message)}
+      class="btn btn-secondary"
+      target="_blank"
+      rel="noopener"
+      data-track="whatsapp_click"
+      data-track-location="warranty_claim"
+      data-motion
+      data-reveal="fade"
+    >
+      <Icon name="whatsapp" size={20} />
+      <span>{w.claim.button}</span>
+    </a>
+  </TextSection>
+  <TextSection id="monthly-title" title={w.monthly.h2} paragraphs={[w.monthly.text]} />
+  <CtaBand lang={lang} />
+</Base>

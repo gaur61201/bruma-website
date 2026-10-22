@@ -1,0 +1,35 @@
+---
+// The homepage, shared by / (English) and /ar/ (Arabic).
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import ProofStrip from '../components/home/ProofStrip.astro';
+import GalleryPreview from '../components/home/GalleryPreview.astro';
+import HowItWorks from '../components/home/HowItWorks.astro';
+import EarningsCalculator from '../components/home/EarningsCalculator.astro';
+import Included from '../components/home/Included.astro';
+import WaysToOwn from '../components/home/WaysToOwn.astro';
+import SalonStories from '../components/home/SalonStories.astro';
+import Faq from '../components/Faq.astro';
+import DemoForm from '../components/DemoForm.astro';
+import { faqItems, faqSchema } from '../components/home/faq-items';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<Base lang={lang} title={t.meta.home.title} description={t.meta.home.description} schema={[faqSchema(lang, faqItems(lang))]}>
+  <Hero lang={lang} />
+  <ProofStrip lang={lang} />
+  <GalleryPreview lang={lang} />
+  <HowItWorks lang={lang} />
+  <EarningsCalculator lang={lang} />
+  <Included lang={lang} />
+  <WaysToOwn lang={lang} />
+  <SalonStories lang={lang} />
+  <Faq title={t.faq.h2} items={faqItems(lang)} />
+  <DemoForm lang={lang} />
+</Base>

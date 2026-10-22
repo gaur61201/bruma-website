@@ -1,0 +1,112 @@
+---
+// Native <details> FAQ, shared by every page. Items come from src/components/home/faq-items.ts.
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  items: { q: string; a: string }[];
+  /** Optional id on the section, for in-page links. */
+  anchor?: string;
+}
+const { title, items, anchor } = Astro.props;
+---
+<!-- Each question has an id (#faq-1, #faq-2, …): opening one puts it in the URL, and a link to it opens it. -->
+
+<section id={anchor} class="section-y faq" aria-labelledby="faq-title">
+  <div class="wrap faq-grid">
+    <h2 id="faq-title" data-motion>{title}</h2>
+    <div class="faq-list">
+      {
+        items.map((item, i) => (
+          <details name="faq" id={`faq-${i + 1}`} data-motion>
+            <summary>
+              <span>{item.q}</span>
+              <Icon name="chevron" size={24} class="faq-icon" />
+            </summary>
+            <div class="faq-answer">
+              <p>{item.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const list = document.querySelector<HTMLElement>('.faq-list');
+  if (list) {
+    const open = () => {
+      const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+      if (target instanceof HTMLDetailsElement && list.contains(target)) target.open = true;
+    };
+    open();
+    window.addEventListener('hashchange', open);
+    list.querySelectorAll('details').forEach((d) =>
+      d.addEventListener('toggle', () => {
+        if (d.open) history.replaceState(history.state, '', `#${d.id}`);
+        else if (location.hash === `#${d.id}`) history.replaceState(history.state, '', location.pathname + location.search);
+      }),
+    );
+  }
+</script>
+
+<style>
+  .faq-grid {
+    display: grid;
+    gap: 32px;
+  }
+  @media (min-width: 1024px) {
+    .faq-grid {
+      grid-template-columns: 5fr 7fr;
+      gap: 64px;
+      align-items: start;
+    }
+  }
+  details {
+    border-top: 1px solid var(--color-line);
+  }
+  details:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 64px;
+    padding-block: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover span {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+  }
+  :global(.faq-icon) {
+    flex-shrink: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.faq-icon) {
+      transition: rotate 250ms var(--ease-out);
+    }
+  }
+  /* The chevron turns 180° while open (and turns back as soon as closing starts). */
+  details[open]:not(.is-closing) :global(.faq-icon) {
+    rotate: 180deg;
+  }
+  .faq-answer {
+    overflow: hidden;
+  }
+  details p {
+    padding-block-end: 24px;
+    max-width: 36rem;
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+// The monthly plan and paying upfront, compared in a real table: plan names as column headers,
+// features as row headers. It mirrors in Arabic with the page direction; the saving row shows only
+// while flags.showUpfrontSaving is on.
+import { config } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+const cmp = t.waysPage.compare;
+const rows = Object.values(cmp.rows);
+const showSaving = config.flags.showUpfrontSaving;
+---
+
+<div class="card compare-card" data-motion data-reveal="item">
+  <table class="compare">
+    <caption class="sr-only">{cmp.caption}</caption>
+    <thead>
+      <tr>
+        <td></td>
+        <th scope="col">{t.ways.monthly.title}</th>
+        <th scope="col">{t.ways.upfront.title}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>{row.monthly}</td>
+            <td>{row.upfront}</td>
+          </tr>
+        ))
+      }
+      {
+        showSaving && (
+          <tr>
+            <th scope="row">{cmp.saving.label}</th>
+            <td>
+              <span aria-hidden="true">—</span>
+              <span class="sr-only">{cmp.saving.none}</span>
+            </td>
+            <td>
+              <span class="save-pill">{t.upfrontSaving.badge}</span>
+            </td>
+          </tr>
+        )
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .compare-card {
+    width: 100%;
+    max-width: 880px;
+    padding-inline: 16px;
+  }
+  @media (min-width: 768px) {
+    .compare-card {
+      padding-inline: 32px;
+    }
+  }
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .compare th,
+  .compare td {
+    padding-block: 16px;
+    padding-inline-end: 12px;
+    text-align: start;
+    vertical-align: top;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: var(--body-leading);
+    overflow-wrap: anywhere;
+  }
+  @media (min-width: 768px) {
+    .compare th,
+    .compare td {
+      padding-inline-end: 24px;
+      font-size: calc(var(--fs-body) * var(--script-scale));
+    }
+  }
+  .compare th:last-child,
+  .compare td:last-child {
+    padding-inline-end: 0;
+  }
+  .compare tbody tr {
+    border-top: 1px solid var(--color-line);
+  }
+  /* Plan names: the column headers. */
+  .compare thead th {
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  /* Feature names: the row headers, quieter than the values. */
+  .compare tbody th {
+    width: 30%;
+    font-weight: 400;
+    color: var(--color-stone);
+  }
+  .compare thead td {
+    width: 30%;
+  }
+  /* Kept on one line in the narrow mobile column. */
+  .compare .save-pill {
+    padding-inline: 8px;
+  }
+</style>

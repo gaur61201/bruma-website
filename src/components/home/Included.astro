@@ -1,0 +1,298 @@
+---
+// "What's included": a sticky intro column (eyebrow, H2, intro, ticks, demo button, WhatsApp link) beside
+// a bento grid. The grid leads with a carbon card for the warranty and the loaner printer, then four
+// white cards: delivery, technicians trained, the design library (three sample-design thumbnails linking
+// to /gallery/) and ink refills. Every figure comes from src/config.ts. On mobile the intro comes first
+// and the cards stack, carbon card first. motion.ts staggers the cards in and counts the figures up once.
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { config, whatsappLink } from '../../config';
+import { galleryTiles } from '../../data/gallery';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const inc = t.included;
+// sample-01, sample-02 and sample-05 (decorative: the link beside them says what they are).
+const thumbs = [galleryTiles[0], galleryTiles[1], galleryTiles[4]].map((tile) => tile.image).filter((img) => img !== undefined);
+const halves = [
+  { n: config.warrantyMonths, unit: inc.warranty.unit(config.warrantyMonths), title: inc.warranty.title, text: inc.warranty.text },
+  { n: config.loanerWithinHours, unit: inc.loaner.unit(config.loanerWithinHours), title: inc.loaner.title, text: inc.loaner.text },
+];
+---
+
+<section class="section-y included" aria-labelledby="included-title">
+  <div class="wrap included-layout">
+    <div class="included-head">
+      <p class="eyebrow">{inc.eyebrow}</p>
+      <h2 id="included-title" data-motion>{inc.h2}</h2>
+      <p class="included-intro" data-motion>{inc.intro}</p>
+      <ul class="included-ticks" data-motion>
+        {
+          inc.ticks.map((tick) => (
+            <li>
+              <Icon name="check" size={20} />
+              <span>{tick}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="included-actions" data-motion>
+        <a href="#demo" class="btn btn-primary">
+          <span>{inc.cta}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+        <a
+          href={whatsappLink(inc.whatsappMessage)}
+          class="text-link arrow-link"
+          target="_blank"
+          rel="noopener"
+          data-track="whatsapp_click"
+          data-track-location="included"
+        >
+          <span>{inc.whatsapp}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+      </div>
+    </div>
+
+    <ul class="bento">
+      <li class="on-carbon bento-card bento-carbon lift" data-motion>
+        {
+          halves.map((half) => (
+            <div class="bento-half">
+              <p class="bento-figure">
+                <span class="bento-num ltr" data-count={half.n}>
+                  {half.n}
+                </span>
+                <span class="bento-unit">{half.unit}</span>
+              </p>
+              <h3 class="bento-title">{half.title}</h3>
+              <p>{half.text}</p>
+            </div>
+          ))
+        }
+      </li>
+
+      <li class="card bento-card lift" data-motion>
+        <span class="icon-chip bento-chip" aria-hidden="true"><Icon name="truck" size={24} /></span>
+        <h3 class="bento-title">{inc.delivery.title}</h3>
+        <p>{inc.delivery.text}</p>
+      </li>
+
+      <li class="card bento-card lift" data-motion>
+        <p class="bento-figure">
+          <span class="bento-num ltr" data-count={config.techniciansTrained}>
+            {config.techniciansTrained}
+          </span>
+        </p>
+        <h3 class="bento-title">{inc.technicians.title}</h3>
+        <p>{inc.technicians.text}</p>
+      </li>
+
+      <li class="card bento-card lift" data-motion>
+        <span class="icon-chip bento-chip" aria-hidden="true"><Icon name="library" size={24} /></span>
+        <h3 class="bento-title">{inc.library.title}</h3>
+        <p>{inc.library.text}</p>
+        <div class="bento-thumbs" aria-hidden="true">
+          {thumbs.map((img) => <Image src={img} alt="" width={56} height={56} densities={[1, 2]} fit="cover" loading="lazy" class="bento-thumb" />)}
+        </div>
+        <a href={localizedPath('/gallery/', lang)} class="text-link arrow-link bento-link">
+          <span>{inc.library.link}</span>
+          <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+        </a>
+      </li>
+
+      <li class="card bento-card lift" data-motion>
+        <span class="icon-chip bento-chip" aria-hidden="true"><Icon name="refill" size={24} /></span>
+        <h3 class="bento-title">{inc.refills.title}</h3>
+        <p>{inc.refills.text}</p>
+        <span class="bento-pill">{inc.refills.pill}</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .included-layout {
+    display: grid;
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .included-layout {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: 64px;
+      align-items: start;
+    }
+    .included-head {
+      position: sticky;
+      top: 112px;
+    }
+  }
+
+  /* Intro column. */
+  .included-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .included-intro {
+    max-width: 30rem;
+  }
+  .included-ticks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .included-ticks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-weight: 500;
+  }
+  .included-ticks :global(svg) {
+    flex-shrink: 0;
+    margin-block-start: 3px;
+  }
+  .included-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+
+  /* Bento: one column on phones, two from 640px; the carbon card spans both and comes first. */
+  .bento {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .bento {
+      gap: 24px;
+    }
+  }
+  .bento-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    padding: 28px;
+  }
+  @media (min-width: 1024px) {
+    .bento-card {
+      padding: 32px;
+    }
+  }
+  .bento-chip {
+    width: 48px;
+    height: 48px;
+    margin-block-end: 8px;
+  }
+  .bento-title {
+    margin-block-start: 8px;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+
+  /* Carbon card: warranty and loaner side by side (stacked on phones), figures in mist. */
+  .bento-carbon {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 32px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  @media (min-width: 640px) {
+    .bento-carbon {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 40px;
+    }
+    .bento-half + .bento-half {
+      padding-inline-start: 40px;
+      border-inline-start: 1px solid rgb(243 239 232 / 0.16);
+    }
+  }
+  .bento-half {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  /* Big figures: Unbounded (Readex Pro in Arabic), mist on carbon, carbon on white; the unit is smaller. */
+  .bento-figure {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.35em;
+    line-height: 1;
+  }
+  .bento-num {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(clamp(3rem, 2.25rem + 2.4vw, 4.5rem) * var(--script-scale));
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+  .bento-num:lang(ar) {
+    font-family: var(--font-body);
+  }
+  .bento-carbon .bento-num {
+    color: var(--color-mist);
+  }
+  .bento-unit {
+    font-weight: 500;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+  .bento-carbon .bento-unit {
+    color: var(--color-mist);
+  }
+
+  /* Design library thumbnails: three small rounded sample designs. */
+  .bento-thumbs {
+    display: flex;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+  .bento-thumbs :global(.bento-thumb) {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: var(--shadow-sm);
+  }
+  .bento-link {
+    margin-block-start: 4px;
+  }
+
+  /* "First cartridge in the box": carbon text on mist. */
+  .bento-pill {
+    display: inline-flex;
+    margin-block-start: 8px;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--color-mist);
+    color: var(--color-carbon);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: 1.5;
+  }
+</style>

@@ -1,0 +1,33 @@
+---
+// The privacy policy, shared by /privacy/ (English) and /ar/privacy/ (Arabic). Plain language.
+// TODO review: the whole page (copy in src/i18n).
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import LegalUpdated from '../components/LegalUpdated.astro';
+import TextSection from '../components/TextSection.astro';
+import ContactList from '../components/ContactList.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const p = useTranslations(lang).privacyPage;
+---
+
+<Base lang={lang} title={p.meta.title} description={p.meta.description}>
+  <PageHero title={p.h1} subline={p.subline}>
+    <LegalUpdated lang={lang} />
+  </PageHero>
+  <TextSection id="collect-title" title={p.collect.h2} list={p.collect.items} />
+  <TextSection id="why-title" title={p.why.h2} paragraphs={[p.why.text]} />
+  <TextSection id="who-title" title={p.who.h2} paragraphs={[p.who.text]} />
+  <TextSection id="keep-title" title={p.keep.h2} paragraphs={[p.keep.text]} />
+  <TextSection id="choices-title" title={p.choices.h2} paragraphs={[p.choices.text]} />
+  <TextSection id="cookies-title" title={p.cookies.h2} paragraphs={[p.cookies.text]} />
+  <TextSection id="contact-title" title={p.contact.h2}>
+    <ContactList lang={lang} trackLocation="privacy" />
+  </TextSection>
+  <CtaBand lang={lang} />
+</Base>

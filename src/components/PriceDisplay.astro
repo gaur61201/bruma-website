@@ -1,0 +1,54 @@
+---
+// A price line with its number set as a display numeral ("From KWD [100] a month"). The text is
+// split around its first number; a line without a number ("Price at your demo") renders as plain
+// text. Western digits in both languages; the number never mirrors.
+interface Props {
+  text: string;
+  class?: string;
+  /** Element to render: a <p> by default. */
+  as?: 'p' | 'div';
+}
+const { text, class: className, as: Tag = 'p' } = Astro.props;
+const m = text.match(/\d[\d,.]*/);
+const parts = m && m.index !== undefined ? { before: text.slice(0, m.index).trim(), num: m[0], after: text.slice(m.index + m[0].length).trim() } : null;
+---
+
+{
+  parts ? (
+    <Tag class:list={['price-display', className]}>
+      {parts.before && <span class="price-word">{parts.before}</span>}
+      <span class="price-num ltr">{parts.num}</span>
+      {parts.after && <span class="price-word">{parts.after}</span>}
+    </Tag>
+  ) : (
+    <Tag class:list={['price-display', 'price-display-text', className]}>{text}</Tag>
+  )
+}
+
+<style>
+  .price-display {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.4em;
+    font-weight: 500;
+    font-size: calc(var(--fs-body) * var(--script-scale));
+    line-height: 1;
+  }
+  .price-num {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(var(--fs-display) * var(--script-scale));
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .price-num:lang(ar) {
+    font-family: var(--font-body);
+  }
+  /* No number to show: the line reads as a quieter statement, not a second title. */
+  .price-display-text {
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+    line-height: var(--heading-leading);
+  }
+</style>

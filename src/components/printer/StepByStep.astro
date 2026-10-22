@@ -1,0 +1,297 @@
+---
+// "Step by step" as a scroll story. Desktop: the nail illustration sticks beside the four steps and changes
+// stage as each step reaches the middle of the screen: Prep (the base coat fills in), Choose (three design
+// swatches fan out and one is picked: an outline preview), Print (the print-head sweep), Seal (the gloss
+// sweep). The active step is full strength, the others drop to 40%. Moving on plays the change once;
+// scrolling back sets the earlier stage at once. Mobile: no sticky column; each step shows its own small
+// nail at its stage. With flags.showStepPhotos on, each step gets its photo (a labelled placeholder until
+// the real photos exist).
+import NailIllustration, { type NailDesign, type NailStage } from '../NailIllustration.astro';
+import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import { config } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = useTranslations(lang).printer.steps;
+const DESIGN: NailDesign = 'cherries';
+const swatches: NailDesign[] = ['french', 'cherries', 'flowers'];
+const stages: NailStage[] = ['base', 'choose', 'printed', 'sealed'];
+const showPhotos = config.flags.showStepPhotos;
+---
+
+<section id="how-it-works" class="section-y story" aria-labelledby="story-title" data-reveal-section data-story>
+  <div class="wrap">
+    <h2 id="story-title" data-motion data-reveal="heading">{s.h2}</h2>
+
+    <div class="story-grid">
+      <!-- Desktop: the sticky nail and its design swatches (decorative: the steps carry the meaning). -->
+      <div class="story-visual" aria-hidden="true">
+        <div class="story-stage card" data-story-stage data-active="-1">
+          <ul class="story-swatches">
+            {
+              swatches.map((design) => (
+                <li class:list={['story-swatch', { 'is-picked': design === DESIGN }]}>
+                  <NailIllustration lang={lang} design={design} stage="printed" label={false} />
+                </li>
+              ))
+            }
+          </ul>
+          <NailIllustration lang={lang} design={DESIGN} stage="sealed" class="story-nail" />
+        </div>
+      </div>
+
+      <ol class="story-steps">
+        {
+          s.items.map((step, i) => (
+            <li class="story-step" data-story-step={i}>
+              <span class="story-num ltr" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div class="story-copy">
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
+              <div class="story-inline" aria-hidden="true">
+                <NailIllustration lang={lang} design={DESIGN} stage={stages[i]} />
+              </div>
+              {showPhotos && (
+                <div class="story-photo">
+                  <PhotoPlaceholder caption={step.photo} ratio="4 / 3" />
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+    <p class="story-footnote" data-motion data-reveal="fade">{s.footnote}</p>
+  </div>
+</section>
+
+<script>
+  import { animateCoat, animatePrint, animateSeal, setStage, type NailStage } from '../../scripts/nail';
+
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  const stage = root?.querySelector<HTMLElement>('[data-story-stage]');
+  const svg = stage?.querySelector<SVGSVGElement>('.story-nail [data-nail]');
+  const desktop = matchMedia('(min-width: 1024px)');
+  if (root && stage && svg && 'IntersectionObserver' in window) {
+    const steps = Array.from(root.querySelectorAll<HTMLElement>('[data-story-step]'));
+    const STAGES: NailStage[] = ['base', 'choose', 'printed', 'sealed'];
+    let active = -1;
+    let furthest = -1; // the furthest step already played: going back, or replaying, sets the stage at once
+
+    const show = (i: number) => {
+      if (i === active) return;
+      const forward = i > furthest;
+      active = i;
+      stage.dataset.active = String(i);
+      steps.forEach((step, n) => step.toggleAttribute('data-current', n === i));
+      if (i < 0) return setStage(svg, 'bare');
+      if (!forward) return setStage(svg, STAGES[i]);
+      furthest = i;
+      if (i === 0) animateCoat(svg);
+      else if (i === 1) setStage(svg, 'choose');
+      else if (i === 2) animatePrint(svg);
+      else animateSeal(svg);
+    };
+
+    // Desktop only: the step crossing the middle of the screen is the active one.
+    const visible = new Set<number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const i = Number((e.target as HTMLElement).dataset.storyStep);
+          if (e.isIntersecting) visible.add(i);
+          else visible.delete(i);
+        });
+        if (visible.size) show(Math.max(...visible));
+        else if (steps[0].getBoundingClientRect().top > window.innerHeight / 2) show(-1);
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    const start = () => {
+      if (!desktop.matches) return;
+      root.setAttribute('data-story-live', '');
+      setStage(svg, 'bare');
+      steps.forEach((step) => io.observe(step));
+    };
+    start();
+    desktop.addEventListener('change', () => {
+      if (desktop.matches) start();
+      else {
+        io.disconnect();
+        root.removeAttribute('data-story-live');
+        steps.forEach((step) => step.removeAttribute('data-current'));
+        setStage(svg, 'sealed');
+      }
+    });
+  }
+</script>
+
+<style>
+  .story-grid {
+    margin-block-start: 32px;
+  }
+  .story-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 40px;
+  }
+  .story-step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px 20px;
+    align-items: start;
+  }
+  .story-num {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-carbon);
+    color: var(--color-bone);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(var(--fs-body) * var(--script-scale));
+  }
+  .story-num:lang(ar) {
+    font-family: var(--font-body);
+  }
+  .story-copy {
+    display: grid;
+    gap: 8px;
+    padding-block-start: 8px;
+    max-width: 32rem;
+  }
+  .story-copy h3 {
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+  .story-footnote {
+    margin-block-start: 40px;
+    font-weight: 500;
+  }
+  .story-photo {
+    grid-column: 1 / -1;
+  }
+
+  /* Mobile: each step shows its own small nail, at its stage, beside the copy. */
+  .story-visual {
+    display: none;
+  }
+  .story-inline {
+    grid-column: 2;
+    width: fit-content;
+    padding: 16px 20px 12px;
+    border-radius: var(--radius-card);
+    background: var(--color-white);
+    box-shadow: var(--shadow-card);
+  }
+  .story-inline :global(.nail-svg) {
+    width: 64px;
+  }
+
+  /* Desktop: the sticky nail beside the steps; well under one viewport per step. */
+  @media (min-width: 1024px) {
+    .story-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 64px;
+      margin-block-start: 48px;
+    }
+    .story-visual {
+      display: block;
+    }
+    .story-stage {
+      position: sticky;
+      top: calc(117px + 6vh);
+      display: grid;
+      place-items: center;
+      padding: 48px 32px 32px;
+    }
+    .story-stage :global(.story-nail) {
+      width: min(100%, 200px);
+    }
+    .story-inline {
+      display: none;
+    }
+    .story-steps {
+      gap: 0;
+    }
+    /* Short enough that the steps before and after stay in view, dimmed. */
+    .story-step {
+      min-height: 42vh;
+      align-content: center;
+    }
+    /* Once the story is live, the step in view is full strength and the others recede. */
+    [data-story-live] .story-step {
+      opacity: 0.4;
+      transition: opacity 300ms var(--ease-out);
+    }
+    [data-story-live] .story-step[data-current] {
+      opacity: 1;
+    }
+  }
+
+  /* Choose: three swatches fan out beside the nail; the picked one is ringed. */
+  .story-swatches {
+    position: absolute;
+    inset-block-start: 40px;
+    inset-inline-end: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .story-swatch {
+    width: 44px;
+    padding: 6px 6px 4px;
+    border-radius: 12px;
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  .story-swatch.is-picked {
+    outline: 2px solid var(--color-carbon);
+    outline-offset: 2px;
+  }
+  [data-active='1'] .story-swatches {
+    opacity: 1;
+  }
+  [data-active='1'] .story-swatch:nth-child(1) {
+    rotate: -8deg;
+  }
+  [data-active='1'] .story-swatch:nth-child(3) {
+    rotate: 8deg;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .story-swatches {
+      transition: opacity 260ms var(--ease-out);
+    }
+    .story-swatch {
+      translate: 0 -16px;
+      transition:
+        translate 420ms var(--ease-out),
+        rotate 420ms var(--ease-out);
+    }
+    .story-swatch:nth-child(2) {
+      transition-delay: 40ms;
+    }
+    .story-swatch:nth-child(3) {
+      transition-delay: 80ms;
+    }
+    [data-active='1'] .story-swatch {
+      translate: 0 0;
+    }
+  }
+</style>

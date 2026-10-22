@@ -1,0 +1,40 @@
+---
+// A slim carbon band at the end of the warranty and privacy pages, sending readers to /book-a-demo/.
+import Icon from './Icon.astro';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = useTranslations(lang).ctaBand;
+---
+
+<section class="on-carbon cta-band" aria-labelledby="cta-band-title">
+  <div class="wrap cta-band-inner">
+    <h2 id="cta-band-title" class="cta-band-text">{c.text}</h2>
+    <a href={localizedPath('/book-a-demo/', lang)} class="btn btn-primary">
+      <span>{c.button}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
+  </div>
+</section>
+
+<style>
+  /* Runs straight into the (carbon) footer: one bone hairline at content width is the seam. */
+  .cta-band {
+    padding-block-start: clamp(48px, 40.4px + 2.03vw, 66px);
+  }
+  .cta-band-inner {
+    padding-block-end: clamp(48px, 40.4px + 2.03vw, 66px);
+    border-bottom: 1px solid rgb(243 239 232 / 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+  }
+  .cta-band-text {
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+</style>

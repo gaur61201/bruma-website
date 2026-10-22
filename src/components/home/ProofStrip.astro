@@ -1,0 +1,106 @@
+---
+import Icon, { type IconName } from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+const icons: IconName[] = ['timer', 'shield', 'pin'];
+
+// Split out the first number in each item so it can count up from 0 when the strip comes into view.
+const parts = (text: string) => {
+  const m = text.match(/\d+/);
+  if (!m || m.index === undefined) return { before: text, count: null, after: '' };
+  return { before: text.slice(0, m.index), count: m[0], after: text.slice(m.index + m[0].length) };
+};
+---
+
+<section class="proof" aria-label={t.proof.label}>
+  <ul class="wrap proof-list">
+    {
+      t.proof.items.map((item, i) => {
+        const p = parts(item);
+        return (
+          <li data-motion>
+            <span class="icon-chip proof-icon">
+              <Icon name={icons[i]} size={24} />
+            </span>
+            <span>
+              {p.before}
+              {p.count && (
+                <span class="count ltr" data-count={p.count}>
+                  {p.count}
+                </span>
+              )}
+              {p.after}
+            </span>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  /* A white card that floats up over the bottom of the hero media. */
+  .proof {
+    position: relative;
+    z-index: 2;
+    margin-block-start: -40px;
+  }
+  @media (min-width: 1024px) {
+    .proof {
+      margin-block-start: -72px;
+    }
+  }
+  .proof-list {
+    list-style: none;
+    margin-block: 0;
+    padding: 8px 20px;
+    display: grid;
+    background: var(--color-white);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card-hover);
+  }
+  .proof-list li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .proof-list li + li {
+    border-top: 1px solid var(--color-line);
+  }
+  /* The number in each fact is set in the heading face, a step up. While it counts up, motion.ts
+     holds its box at the final number's width, so the words around it never move. */
+  .count {
+    display: inline-block;
+    text-align: end;
+    font-family: var(--font-heading);
+    font-size: 1.35em;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .count:lang(ar) {
+    font-family: var(--font-body);
+  }
+  @media (min-width: 768px) {
+    .proof-list {
+      grid-template-columns: repeat(3, 1fr);
+      padding: 8px 8px;
+    }
+    .proof-list li {
+      padding-block: 24px;
+      padding-inline: 24px;
+    }
+    .proof-list li + li {
+      border-top: 0;
+      border-inline-start: 1px solid var(--color-line);
+    }
+  }
+</style>

@@ -1,0 +1,152 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import { config, phoneHref, whatsappLink } from '../config';
+import { localizedPath, useTranslations, type Lang } from '../i18n';
+// Bone letters: the wordmark for carbon backgrounds.
+import wordmarkOnDark from '../assets/brand/bruma-air-wordmark-dark.png';
+
+interface Props {
+  lang: Lang;
+  altHref?: string;
+}
+const { lang, altHref } = Astro.props;
+const t = useTranslations(lang);
+const page = (path: string, label: string) => ({ href: localizedPath(path, lang), label });
+
+const links = [
+  page('/printer/', t.nav.printer),
+  page('/gallery/', t.nav.gallery),
+  page('/ways-to-own/', t.nav.waysToOwn),
+  page('/hygiene/', t.nav.hygiene),
+  page('/book-a-demo/', t.nav.bookDemo),
+  page('/warranty/', t.footer.warranty),
+  page('/privacy/', t.footer.privacy),
+];
+---
+
+<footer class="on-carbon site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <Image src={wordmarkOnDark} alt="BRUMA" height={40} densities={[1, 2]} format="webp" quality={90} class="footer-logo" />
+      <p>{t.footer.tagline}</p>
+    </div>
+
+    <nav aria-labelledby="footer-sections">
+      <h2 id="footer-sections" class="footer-heading caps">{t.footer.sectionsHeading}</h2>
+      <ul class="footer-list">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="footer-heading caps">{t.footer.contactHeading}</h2>
+      <ul class="footer-list">
+        <li>
+          <a href={whatsappLink(t.whatsapp.floatMessage)} target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="footer">
+            <Icon name="whatsapp" size={20} />
+            <span>{t.footer.whatsapp}</span>
+          </a>
+        </li>
+        <li>
+          <a href={phoneHref}>
+            <Icon name="phone" size={20} />
+            <span class="sr-only">{t.footer.phone}: </span><span class="ltr phone">{config.phoneDisplay}</span>
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${config.email}`}>
+            <Icon name="mail" size={20} />
+            <span class="sr-only">{t.footer.email}: </span><span class="ltr">{config.email}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <LangSwitch lang={lang} altHref={altHref} />
+    <p class="ltr">{t.footer.copyright}</p>
+  </div>
+</footer>
+
+<style>
+  /* The top padding matches the space above the hairline in the demo and CTA bands, so the seam sits
+     in the middle of one continuous dark block. */
+  .site-footer {
+    padding-block: clamp(64px, 46.6px + 4.64vw, 106px) 96px;
+  }
+  .footer-grid {
+    display: grid;
+    gap: 40px;
+  }
+  /* Columns may shrink below their content, so a long email wraps instead of widening the page. */
+  .footer-grid > * {
+    min-width: 0;
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+    }
+  }
+  .footer-logo {
+    height: 36px;
+    width: auto;
+    margin-inline-start: -7px;
+    margin-block-end: 16px;
+  }
+  .footer-brand p {
+    max-width: 22rem;
+  }
+  .footer-heading {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: var(--body-leading);
+    color: var(--color-mist);
+    margin-block-end: 8px;
+  }
+  .footer-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    max-width: 100%;
+    text-decoration: none;
+  }
+  .footer-list a :global(svg) {
+    flex-shrink: 0;
+  }
+  .footer-list .ltr {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .footer-list a:hover span:not(.sr-only) {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block-start: 48px;
+    padding-block-start: 24px;
+    border-top: 1px solid var(--color-line);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

@@ -1,0 +1,18 @@
+---
+// A deep-teal text link with a trailing arrow that points in the reading direction.
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  text: string;
+  class?: string;
+  /** Opens in a new tab (links that leave the site). */
+  external?: boolean;
+}
+const { href, text, class: className, external = false } = Astro.props;
+---
+
+<a href={href} class:list={['text-link', 'arrow-link', className]} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+  <span>{text}</span>
+  <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+</a>

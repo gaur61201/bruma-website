@@ -1,0 +1,37 @@
+---
+// The printer page, shared by /printer/ (English) and /ar/printer/ (Arabic).
+import Base from '../layouts/Base.astro';
+import PrinterHero from '../components/printer/PrinterHero.astro';
+import SectionNav from '../components/printer/SectionNav.astro';
+import WhySalons from '../components/printer/WhySalons.astro';
+import StepByStep from '../components/printer/StepByStep.astro';
+import PrintedOn from '../components/printer/PrintedOn.astro';
+import Specs from '../components/printer/Specs.astro';
+import TrainingSupport from '../components/printer/TrainingSupport.astro';
+import RunningCosts from '../components/RunningCosts.astro';
+import Faq from '../components/Faq.astro';
+import DemoForm from '../components/DemoForm.astro';
+import { faqSchema, printerFaqItems } from '../components/home/faq-items';
+import { config } from '../config';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const faq = printerFaqItems(lang);
+---
+
+<Base lang={lang} title={t.printer.meta.title} description={t.printer.meta.description} schema={[faqSchema(lang, faq)]}>
+  <PrinterHero lang={lang} />
+  <SectionNav lang={lang} />
+  <WhySalons lang={lang} />
+  <StepByStep lang={lang} />
+  <PrintedOn lang={lang} />
+  <Specs lang={lang} />
+  <TrainingSupport lang={lang} />
+  {config.flags.showInkCostFaq && <RunningCosts lang={lang} paragraphs={[t.printer.running.text]} />}
+  <Faq title={t.printer.faq.h2} items={faq} anchor="faq" />
+  <DemoForm lang={lang} pageName="printer" />
+</Base>

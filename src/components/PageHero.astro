@@ -1,0 +1,48 @@
+---
+// Hero for the inner pages (flat bone): the H1 with the CSS-first line reveal, an optional subline,
+// and an optional slot (a date line, actions). Same load sequence as the homepage, done by 1.2s.
+import HeroHeading from './HeroHeading.astro';
+
+interface Props {
+  title: string;
+  subline?: string;
+}
+const { title, subline } = Astro.props;
+---
+
+<section class="page-hero" aria-labelledby="page-title">
+  <div class="wrap page-hero-inner">
+    <HeroHeading id="page-title" text={title} />
+    {
+      subline && (
+        <p class="page-hero-sub hero-rise" style="--i:0">
+          {subline}
+        </p>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    padding-block: 32px 48px;
+  }
+  @media (min-width: 1024px) {
+    .page-hero {
+      padding-block: 64px 80px;
+    }
+  }
+  .page-hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .page-hero-inner :global(h1) {
+    max-width: 14em;
+  }
+  .page-hero-sub {
+    max-width: 36rem;
+  }
+</style>

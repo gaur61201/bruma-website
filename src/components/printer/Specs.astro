@@ -1,0 +1,387 @@
+---
+// Specifications (#specs): "Will it fit?". The printer page's one extra carbon band. Beside the spec
+// table, a bone line drawing of a plain box at the printer's size (config.printerSizeCm) with dimension
+// lines and a desk edge: generic on purpose, not the product's shape. The lines draw in on first view;
+// hovering or focusing the Size row highlights the dimension lines. "What's in the box" is a row of icon
+// chips from boxContents. The band holds the page's one product-photo placeholder.
+import Icon from '../Icon.astro';
+import PhotoPlaceholder from '../PhotoPlaceholder.astro';
+import { boxContents, config, visiblePrinterSpecs } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const sp = t.printer.specs;
+const rows = visiblePrinterSpecs();
+
+// The drawing: an isometric box, w × d × h cm, scaled so the box is at most about 300 units tall and
+// 220 wide (so the labels keep a readable size whatever the box's proportions).
+type P = [number, number];
+const { width: w, depth: d, height: h } = config.printerSizeCm;
+const c30 = Math.cos(Math.PI / 6);
+const s = Math.min(300 / (h + (w + d) / 2), 220 / ((w + d) * c30));
+const add = (...ps: P[]): P => ps.reduce<P>((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+const mul = (p: P, k: number): P => [p[0] * k, p[1] * k];
+const W: P = [w * s * c30, (-w * s) / 2];
+const D: P = [-d * s * c30, (-d * s) / 2];
+const H: P = [0, -h * s];
+const uW = mul(W, 1 / Math.hypot(...W));
+const uD = mul(D, 1 / Math.hypot(...D));
+const F: P = [0, 0];
+const FW = add(F, W);
+const FD = add(F, D);
+const TF = add(F, H);
+const TFW = add(FW, H);
+const TFD = add(FD, H);
+const TFWD = add(FW, D, H);
+
+const line = (a: P, b: P) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
+const edges = [line(F, FW), line(F, FD), line(F, TF), line(FW, TFW), line(FD, TFD), line(TF, TFW), line(TFW, TFWD), line(TFWD, TFD), line(TFD, TF)];
+
+// A dimension line `gap` units out from edge a→b (towards `out`), with extension lines and its label.
+const GAP = 26;
+const dim = (a: P, b: P, out: P, value: number, anchor: 'middle' | 'start') => {
+  const a2 = add(a, mul(out, GAP));
+  const b2 = add(b, mul(out, GAP));
+  const mid = mul(add(a2, b2), 0.5);
+  const at = add(mid, mul(out, anchor === 'start' ? 14 : 36));
+  return {
+    path: line(a2, b2),
+    ext: [line(add(a, mul(out, 6)), add(a, mul(out, GAP + 6))), line(add(b, mul(out, 6)), add(b, mul(out, GAP + 6)))],
+    ends: [a2, b2],
+    label: { x: at[0], y: at[1], text: `${value} ${sp.cm}`, anchor },
+  };
+};
+const dims = [
+  dim(F, FW, mul(uD, -1), w, 'middle'),
+  dim(F, FD, mul(uW, -1), d, 'middle'),
+  dim(FW, TFW, uW, h, 'start'),
+];
+// The desk's front edge, in front of the box and parallel to its width.
+const deskAt = add(F, mul(uD, -(GAP + 68)));
+const desk = line(add(deskAt, mul(uW, -70)), add(deskAt, mul(uW, Math.hypot(...W) + 90)));
+
+// The viewBox: everything above, plus room for the labels.
+const pts: P[] = [FD, TFWD, TFW, add(deskAt, mul(uW, -70)), add(deskAt, mul(uW, Math.hypot(...W) + 90)), ...dims.flatMap((x) => x.ends)];
+const minX = Math.min(...pts.map((p) => p[0]), ...dims.map((x) => x.label.x - 40)) - 8;
+const maxX = Math.max(...pts.map((p) => p[0]), ...dims.map((x) => x.label.x + (x.label.anchor === 'start' ? 64 : 40))) + 8;
+const minY = Math.min(...pts.map((p) => p[1])) - 8;
+const maxY = Math.max(...pts.map((p) => p[1]), ...dims.map((x) => x.label.y + 12)) + 8;
+const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).join(' ');
+// Drawn at 1.1px per unit at most, so the labels are the same size for any box.
+const drawingWidth = `min(100%, ${Math.round((maxX - minX) * 1.1)}px)`;
+---
+
+{(rows.length > 0 || boxContents.length > 0) && (
+
+<section id="specs" class="on-carbon section-y specs" aria-labelledby="specs-title" data-reveal-section data-specs>
+  <div class="wrap specs-grid">
+    <div class="specs-visual">
+      <p class="eyebrow" data-motion data-reveal="fade">{sp.h2}</p>
+      <h2 id="specs-title" data-motion data-reveal="heading">{sp.fitTitle}</h2>
+      <figure class="fit">
+        <svg class="fit-svg" viewBox={viewBox} style={`width: ${drawingWidth}`} role="img" aria-label={sp.drawingAlt} data-fit>
+          <path class="fit-desk" d={desk} pathLength="1" style="--d: 0ms" />
+          {edges.map((e, i) => <path class="fit-edge" d={e} pathLength="1" style={`--d: ${i * 70}ms`} />)}
+          {
+            dims.map((x, i) => (
+              <g class="fit-dim">
+                {x.ext.map((e) => <path class="fit-ext" d={e} pathLength="1" style={`--d: ${700 + i * 120}ms`} />)}
+                <path class="fit-dim-line" d={x.path} pathLength="1" style={`--d: ${780 + i * 120}ms`} />
+                {x.ends.map(([cx, cy]) => <circle class="fit-dim-end" cx={cx.toFixed(1)} cy={cy.toFixed(1)} r="2.5" style={`--d: ${1100 + i * 120}ms`} />)}
+                <text class="fit-label" x={x.label.x.toFixed(1)} y={x.label.y.toFixed(1)} text-anchor={x.label.anchor} dominant-baseline="middle" style={`--d: ${1100 + i * 120}ms`}>
+                  {x.label.text}
+                </text>
+              </g>
+            ))
+          }
+        </svg>
+        <figcaption class="fit-caption">{sp.drawingCaption}</figcaption>
+      </figure>
+    </div>
+
+    <div class="specs-data">
+      {rows.length > 0 && (<>
+      <div class="specs-card" data-motion data-reveal="item">
+        <table class="specs-table">
+          <caption class="sr-only">{sp.caption}</caption>
+          <tbody>
+            {
+              rows.map((row) =>
+                row.label === 'size' ? (
+                  <tr class="specs-size" tabindex="0" data-size-row>
+                    <th scope="row">{sp.labels[row.label]}</th>
+                    <td>{row.value[lang]}</td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <th scope="row">{sp.labels[row.label]}</th>
+                    <td>{row.value[lang]}</td>
+                  </tr>
+                ),
+              )
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="specs-note" data-motion data-reveal="fade">{sp.note}</p>
+      </>)}
+      {boxContents.length > 0 && (<>
+      <h3 id="box-title" class:list={['box-title', { 'box-title-first': rows.length === 0 }]} data-motion data-reveal="fade">{sp.boxTitle}</h3>
+      <ul class="box-chips" aria-labelledby="box-title" data-motion data-reveal="item">
+        {
+          boxContents.map((b) => (
+            <li class="box-chip">
+              <Icon name={b.icon} size={18} />
+              <span>{b.item[lang]}</span>
+            </li>
+          ))
+        }
+      </ul>
+      </>)}
+    </div>
+
+    <div class="specs-photo">
+      <PhotoPlaceholder caption={t.printer.hero.mediaCaption} ratio="4 / 3" />
+    </div>
+  </div>
+</section>
+)}
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-specs]');
+  const svg = root?.querySelector<SVGSVGElement>('[data-fit]');
+  if (root && svg) {
+    // The Size row, hovered (with a mouse: a tap would only flash it) or focused, highlights the dimension lines.
+    const row = root.querySelector<HTMLElement>('[data-size-row]');
+    if (row) {
+      const on = () => root.setAttribute('data-size-hl', '');
+      const off = () => root.removeAttribute('data-size-hl');
+      row.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && on());
+      row.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && off());
+      row.addEventListener('focus', on);
+      row.addEventListener('blur', off);
+    }
+    // The lines draw in once, on first view (drawn from the start under reduced motion).
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+      svg.dataset.draw = 'ready';
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          io.disconnect();
+          svg.dataset.draw = 'on';
+        },
+        { threshold: 0.4 },
+      );
+      io.observe(svg);
+    }
+  }
+</script>
+
+<style>
+  /* Mobile: heading and drawing, the table and the box, then the photo. Desktop: drawing and photo on
+     the inline-start side, the table beside them. */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .specs-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-areas:
+        'visual data'
+        'photo data';
+      gap: 48px 64px;
+      align-items: start;
+    }
+    .specs-visual {
+      grid-area: visual;
+    }
+    .specs-data {
+      grid-area: data;
+    }
+    .specs-photo {
+      grid-area: photo;
+    }
+  }
+  .specs-visual {
+    display: grid;
+    gap: 8px;
+  }
+  /* On carbon the eyebrow is bone at 70% (the stone default is for bone backgrounds). */
+  .specs-visual .eyebrow {
+    color: rgb(243 239 232 / 0.7);
+  }
+
+  /* The drawing: bone lines on carbon. */
+  .fit {
+    margin: 24px 0 0;
+    display: grid;
+    gap: 12px;
+  }
+  .fit-svg {
+    display: block;
+    height: auto;
+    overflow: visible;
+    direction: ltr;
+  }
+  .fit-svg path {
+    fill: none;
+    stroke-linecap: round;
+  }
+  .fit-edge {
+    stroke: var(--color-bone);
+    stroke-width: 1.75;
+  }
+  .fit-desk {
+    stroke: rgb(243 239 232 / 0.4);
+    stroke-width: 1.25;
+  }
+  .fit-ext {
+    stroke: rgb(243 239 232 / 0.35);
+    stroke-width: 1;
+  }
+  .fit-dim-line {
+    stroke: rgb(243 239 232 / 0.75);
+    stroke-width: 1.25;
+  }
+  .fit-dim-end {
+    fill: rgb(243 239 232 / 0.75);
+  }
+  .fit-label {
+    fill: var(--color-bone);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 15px;
+  }
+  .fit-dim-line,
+  .fit-dim-end,
+  .fit-label {
+    transition:
+      stroke 200ms var(--ease-out),
+      fill 200ms var(--ease-out),
+      stroke-width 200ms var(--ease-out);
+  }
+  /* The Size row highlights the dimension lines in mist. */
+  [data-size-hl] .fit-dim-line {
+    stroke: var(--color-mist);
+    stroke-width: 2.25;
+  }
+  [data-size-hl] .fit-dim-end,
+  [data-size-hl] .fit-label {
+    fill: var(--color-mist);
+  }
+  .fit-caption {
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    color: rgb(243 239 232 / 0.7);
+  }
+
+  /* Draw-in (set by the script only when motion is allowed). */
+  [data-draw='ready'] path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  [data-draw='ready'] .fit-dim-end,
+  [data-draw='ready'] .fit-label {
+    opacity: 0;
+  }
+  [data-draw='on'] path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset 700ms var(--ease-out) var(--d),
+      stroke 200ms var(--ease-out),
+      stroke-width 200ms var(--ease-out);
+  }
+  [data-draw='on'] .fit-dim-end,
+  [data-draw='on'] .fit-label {
+    transition:
+      opacity 300ms var(--ease-out) var(--d),
+      fill 200ms var(--ease-out);
+  }
+
+  /* The spec table. Rules on carbon: bone at low strength. */
+  .specs-card {
+    border-block: 1px solid rgb(243 239 232 / 0.16);
+  }
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* columns from the th width, so long values wrap at large text sizes */
+  }
+  .specs-table tr + tr {
+    border-top: 1px solid rgb(243 239 232 / 0.16);
+  }
+  .specs-table th,
+  .specs-table td {
+    padding-block: 20px;
+    text-align: start;
+    vertical-align: top;
+  }
+  .specs-table th {
+    width: 40%;
+    padding-inline-end: 16px;
+    font-weight: 500;
+    color: var(--color-mist);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    line-height: var(--body-leading);
+  }
+  .specs-table td {
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  .specs-size {
+    transition: background-color 200ms var(--ease-out);
+  }
+  .specs-size:focus-visible {
+    background: rgb(159 224 234 / 0.08);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .specs-size:hover {
+      background: rgb(159 224 234 / 0.08);
+    }
+  }
+  .specs-size:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .specs-note {
+    margin-block-start: 16px;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+
+  /* What's in the box: small icon chips. */
+  .box-title {
+    margin-block: 48px 16px;
+  }
+  .box-title-first {
+    margin-block-start: 0;
+  }
+  .box-chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .box-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding-inline: 14px 16px;
+    border: 1px solid rgb(243 239 232 / 0.22);
+    border-radius: var(--radius-button);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .box-chip :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-mist);
+  }
+</style>

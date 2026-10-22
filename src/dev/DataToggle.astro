@@ -1,0 +1,30 @@
+---
+// Dev-only "Demo data / Worst case / Empty" switch for the break-ui pass (rendered by Base.astro only
+// under `astro dev`). Plain chrome, inline styles, so nothing of it reaches the production CSS.
+// Astro strips the query string from static pages, so the active state comes from the fixture switch.
+const current = (globalThis as { __brumaFixture?: string }).__brumaFixture ?? '';
+const states = [
+  { value: '', label: 'Demo data' },
+  { value: 'worst', label: 'Worst case' },
+  { value: 'empty', label: 'Empty' },
+];
+const path = Astro.url.pathname;
+---
+
+<nav
+  aria-label="Stress-test data"
+  dir="ltr"
+  style="position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:9999;display:flex;gap:2px;padding:3px;border-radius:999px;background:#d4d4d4;font:500 12px/1 system-ui,sans-serif;"
+>
+  {
+    states.map((s) => (
+      <a
+        href={s.value ? `${path}?data=${s.value}` : path}
+        aria-current={s.value === current ? 'true' : undefined}
+        style={`padding:7px 12px;border-radius:999px;text-decoration:none;color:#111;${s.value === current ? 'background:#fff;' : ''}`}
+      >
+        {s.label}
+      </a>
+    ))
+  }
+</nav>

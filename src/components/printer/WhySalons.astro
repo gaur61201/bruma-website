@@ -1,0 +1,151 @@
+---
+// "Why salons add it" (#overview): three cards. "Faster than painting by hand" is the featured one:
+// carbon, with the print time as a big mist figure that counts up once on first view (the card's
+// sentence carries the same number for screen readers). The other two are white cards with a 24px
+// icon in a 48px disc.
+import Icon, { type IconName } from '../Icon.astro';
+import { config } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const w = useTranslations(Astro.props.lang).printer.why;
+const FEATURED = 2; // "Faster than painting by hand"
+const seconds = config.printSecondsPerNail;
+---
+
+<section id="overview" class="section-y why" aria-labelledby="why-title" data-reveal-section>
+  <div class="wrap">
+    <h2 id="why-title" data-motion data-reveal="heading">{w.h2}</h2>
+    <ul class="why-grid">
+      {
+        w.cards.map((card, i) =>
+          i === FEATURED ? (
+            <li class="why-card why-featured on-carbon" data-motion data-reveal="item">
+              <p class="why-figure" aria-hidden="true">
+                <span class="why-figure-num" data-why-count={seconds}>
+                  {seconds}
+                </span>
+                <span class="why-figure-unit">{w.figureUnit}</span>
+              </p>
+              <h3 class="why-title">{card.title}</h3>
+              <p>{card.text}</p>
+            </li>
+          ) : (
+            <li class="why-card card" data-motion data-reveal="item">
+              <span class="why-icon" aria-hidden="true">
+                <Icon name={card.icon as IconName} size={24} />
+              </span>
+              <h3 class="why-title">{card.title}</h3>
+              <p>{card.text}</p>
+            </li>
+          ),
+        )
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  // Count the featured figure up from 0, once, when it comes into view (not under reduced motion).
+  const num = document.querySelector<HTMLElement>('[data-why-count]');
+  if (num && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const to = Number(num.dataset.whyCount);
+    num.style.minWidth = `${num.getBoundingClientRect().width}px`; // hold the width so nothing shifts
+    num.textContent = '0';
+    const io = new IntersectionObserver(
+      async (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        try {
+          const { gsap } = await import('gsap');
+          const o = { v: 0 };
+          gsap.to(o, { v: to, duration: 1.1, delay: 0.2, ease: 'expo.out', onUpdate: () => void (num.textContent = String(Math.round(o.v))) });
+        } catch {
+          num.textContent = String(to);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(num);
+  }
+</script>
+
+<style>
+  .why-grid {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 1024px) {
+    .why-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+  }
+  .why-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 28px;
+  }
+  @media (min-width: 1024px) {
+    .why-card {
+      padding: 32px;
+    }
+  }
+  .why-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-bone);
+    color: var(--color-carbon);
+  }
+  .why-title {
+    margin-block-start: 16px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+    line-height: var(--heading-leading);
+  }
+  .why-title:lang(ar) {
+    font-family: var(--font-body);
+  }
+
+  /* The featured card: carbon, the figure in mist. */
+  .why-featured {
+    border-radius: var(--radius-card);
+    background: var(--color-carbon) var(--grain);
+    box-shadow: var(--shadow-card);
+  }
+  .why-figure {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--color-mist);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .why-figure-num {
+    display: inline-block;
+    font-size: var(--fs-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .why-figure-unit {
+    font-size: calc(var(--fs-display) * 0.5);
+  }
+  .why-figure-unit:lang(ar) {
+    font-family: var(--font-body);
+  }
+  .why-featured .why-title {
+    margin-block-start: 12px;
+  }
+</style>

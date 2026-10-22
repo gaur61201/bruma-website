@@ -1,0 +1,49 @@
+---
+// Homepage: "Two ways to own it", the shared plan cards with a demo button and a link to the full
+// comparison on /ways-to-own/.
+import Icon from '../Icon.astro';
+import ArrowLink from '../ArrowLink.astro';
+import PlanCards from '../PlanCards.astro';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<!-- The homepage's one extra carbon band: it breaks the long run of bone between the calculator and the demo. -->
+<section id="ways-to-own" class="on-carbon section-y ways" aria-labelledby="ways-title">
+  <div class="wrap">
+    <h2 id="ways-title" data-motion>{t.ways.h2}</h2>
+    <div class="ways-cards">
+      <PlanCards lang={lang} />
+    </div>
+    <div class="ways-cta" data-motion>
+      <a href="#demo" class="btn btn-primary">
+        <span>{t.ways.cta}</span>
+        <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+      </a>
+      <ArrowLink href={localizedPath('/ways-to-own/', lang)} text={t.ways.compareLink} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ways-cards {
+    margin-block-start: 32px;
+  }
+  @media (min-width: 1024px) {
+    .ways-cards {
+      margin-block-start: 56px;
+    }
+  }
+  .ways-cta {
+    margin-block-start: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+</style>

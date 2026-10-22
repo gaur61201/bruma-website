@@ -1,0 +1,116 @@
+---
+// The hero video. To add the real one, drop these in and rebuild:
+//   public/media/hero.mp4                         muted, looping MP4, 2MB or less, 4:5
+//   src/assets/media/hero-poster.(jpg|png|webp)   first frame, used as the poster
+// Until the MP4 exists, a labelled placeholder renders instead.
+import fs from 'node:fs';
+import path from 'node:path';
+import { getImage } from 'astro:assets';
+import Icon from '../Icon.astro';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const t = useTranslations(Astro.props.lang);
+
+const VIDEO = 'media/hero.mp4';
+const hasVideo = fs.existsSync(path.join(process.cwd(), 'public', VIDEO));
+const posters = import.meta.glob<{ default: ImageMetadata }>('../../assets/media/hero-poster.{jpg,jpeg,png,webp}', { eager: true });
+const posterSrc = Object.values(posters)[0]?.default;
+const poster = posterSrc ? await getImage({ src: posterSrc, width: 800, height: 1000, fit: 'cover', format: 'webp' }) : undefined;
+---
+
+{
+  hasVideo ? (
+    <figure class="hero-media-frame" data-hero-video-wrap>
+      <video
+        class="hero-video"
+        width="800"
+        height="1000"
+        muted
+        loop
+        playsinline
+        preload="none"
+        poster={poster?.src}
+        aria-label={t.hero.videoLabel}
+        data-hero-video
+      >
+        <source src={`/${VIDEO}`} type="video/mp4" />
+      </video>
+      <button type="button" class="video-toggle press" data-video-toggle data-label-pause={t.hero.pauseVideo} data-label-play={t.hero.playVideo} aria-label={t.hero.playVideo}>
+        <span data-icon-pause hidden><Icon name="pause" size={20} /></span>
+        <span data-icon-play><Icon name="play" size={20} /></span>
+      </button>
+    </figure>
+  ) : (
+    <figure class="hero-media-frame placeholder-media">
+      <span class="placeholder-icon" aria-hidden="true"><Icon name="play" size={24} /></span>
+      <figcaption>{t.hero.mediaCaption}</figcaption>
+    </figure>
+  )
+}
+
+<script>
+  // Plays only while on screen and never under reduced motion, so it can't compete with the text for LCP.
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-video-toggle]');
+  if (video && toggle) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let userPaused = reduce;
+    const sync = () => {
+      const playing = !video.paused;
+      toggle.setAttribute('aria-label', (playing ? toggle.dataset.labelPause : toggle.dataset.labelPlay) ?? '');
+      toggle.querySelector('[data-icon-pause]')?.toggleAttribute('hidden', !playing);
+      toggle.querySelector('[data-icon-play]')?.toggleAttribute('hidden', playing);
+    };
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    toggle.addEventListener('click', () => {
+      if (video.paused) {
+        userPaused = false;
+        video.play().catch(() => {});
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !userPaused) video.play().catch(() => {});
+      else if (!entry.isIntersecting) video.pause();
+    }).observe(video);
+  }
+</script>
+
+<style>
+  .hero-media-frame {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-media);
+    box-shadow: var(--shadow-media);
+  }
+  .hero-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--color-bone);
+  }
+  .video-toggle {
+    position: absolute;
+    bottom: 16px;
+    inset-inline-end: 16px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-white);
+    color: var(--color-carbon);
+    cursor: pointer;
+  }
+</style>

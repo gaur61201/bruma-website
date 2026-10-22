@@ -1,0 +1,68 @@
+---
+// The demo section: a full-width carbon band, edge to edge, that runs straight into the (carbon) footer.
+// Heading and subline on one side, the form on the other, at the normal content width; a 1px bone
+// hairline at content width separates the band from the footer. The band scales the form up on desktop
+// through the custom properties DemoFormFields reads.
+import DemoFormFields from './DemoFormFields.astro';
+import { useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** Sent as `page` with the form, so leads show which page they came from. */
+  pageName?: string;
+}
+const { lang, pageName = 'home' } = Astro.props;
+const d = useTranslations(lang).demo;
+---
+
+<section id="demo" class="on-carbon demo-band" aria-labelledby="demo-title">
+  <div class="wrap demo-grid">
+    <div class="demo-intro">
+      <h2 id="demo-title" data-motion>{d.h2}</h2>
+      <p data-motion>{d.subline}</p>
+    </div>
+
+    <DemoFormFields lang={lang} pageName={pageName} />
+  </div>
+  <div class="wrap footer-join" aria-hidden="true"></div>
+</section>
+
+<style>
+  /* Fluid sizes (clamp, ~375px -> ~1280px): mobile stays about as before, desktop fills the band. */
+  .demo-band {
+    --form-label: clamp(1rem, 0.948rem + 0.221vw, 1.125rem); /* 16 -> 18 */
+    --form-hint: 1rem;
+    --form-notes: 1rem;
+    --field-h: clamp(52px, 48.69px + 0.884vw, 60px); /* 52 -> 60 */
+    --field-text: clamp(1rem, 0.948rem + 0.221vw, 1.125rem); /* 16 -> 18 */
+    --field-pad: clamp(16px, 14.34px + 0.442vw, 20px); /* 16 -> 20 */
+    --form-btn-h: 56px;
+    --form-secondary-w: 100%;
+    padding-block-start: clamp(72px, 48.8px + 6.19vw, 128px); /* 72 -> 128 */
+  }
+  .demo-grid {
+    display: grid;
+    gap: 40px;
+    padding-block-end: clamp(64px, 46.6px + 4.64vw, 106px);
+  }
+  @media (min-width: 1024px) {
+    .demo-grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: clamp(64px, 12.5vw - 64px, 96px);
+      align-items: start;
+    }
+  }
+  .demo-intro p {
+    margin-block-start: 16px;
+    max-width: 26rem;
+    font-size: calc(clamp(1rem, 0.845rem + 0.663vw, 1.375rem) * var(--script-scale)); /* 16 -> 22 */
+  }
+  .demo-band :global(.demo-form) {
+    max-width: none;
+  }
+  /* The seam with the footer: one bone hairline at content width. */
+  .footer-join {
+    height: 0;
+    border-top: 1px solid rgb(243 239 232 / 0.12);
+  }
+</style>

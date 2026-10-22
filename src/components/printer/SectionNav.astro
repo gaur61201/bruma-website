@@ -1,0 +1,144 @@
+---
+// The printer page's in-page nav, placed straight under the hero. Desktop: a bar that sticks under the
+// (compact) header and marks the section you're reading (aria-current="location"). Mobile: a row of chips
+// that scrolls sideways, not sticky. Links jump to the section ids; the page's smooth scroll already
+// turns off under reduced motion. The Specs link drops out when the Specs section has nothing to show.
+import { boxContents, visiblePrinterSpecs } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const n = useTranslations(Astro.props.lang).printer.sectionNav;
+const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
+const items = [
+  { id: 'overview', label: n.overview },
+  { id: 'how-it-works', label: n.how },
+  ...(hasSpecs ? [{ id: 'specs', label: n.specs }] : []),
+  { id: 'support', label: n.support },
+  { id: 'faq', label: n.faq },
+];
+---
+
+<nav class="section-nav" aria-label={n.label} data-section-nav>
+  <ul class="wrap section-nav-list">
+    {
+      items.map((item) => (
+        <li>
+          <a href={`#${item.id}`} class="section-nav-link slide-underline" data-section-link={item.id}>
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  // Mark the section currently in the middle of the viewport.
+  const nav = document.querySelector<HTMLElement>('[data-section-nav]');
+  if (nav && 'IntersectionObserver' in window) {
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('[data-section-link]'));
+    const sections = links.map((a) => document.getElementById(a.dataset.sectionLink ?? '')).filter((s): s is HTMLElement => !!s);
+    const visible = new Set<string>();
+    const mark = () => {
+      const current = sections.find((s) => visible.has(s.id))?.id;
+      links.forEach((a) => {
+        if (a.dataset.sectionLink === current) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      });
+      // Keep the active chip in view in the sideways-scrolling mobile row (scrolls the row only, never the page).
+      const active = links.find((a) => a.dataset.sectionLink === current);
+      const list = nav.querySelector<HTMLElement>('.section-nav-list');
+      if (!active && list) list.scrollLeft = 0; // back at the top: the row starts from its first chip
+      if (active && list && list.scrollWidth > list.clientWidth) {
+        const a = active.getBoundingClientRect();
+        const l = list.getBoundingClientRect();
+        if (a.left < l.left || a.right > l.right) list.scrollBy({ left: a.left < l.left ? a.left - l.left - 16 : a.right - l.right + 16 });
+      }
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id)));
+        mark();
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+</script>
+
+<style>
+  .section-nav-list {
+    list-style: none;
+    margin-block: 0;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Mobile: a sideways-scrolling row of chips. */
+  @media (max-width: 1023px) {
+    .section-nav {
+      padding-block: 8px 24px;
+    }
+    .section-nav-list {
+      overflow-x: auto;
+      scrollbar-width: none;
+      /* Let the chip row run to the screen edges while the first chip lines up with the content. */
+      width: 100%;
+      padding-inline: max(var(--gutter), env(safe-area-inset-left), env(safe-area-inset-right));
+    }
+    .section-nav-list::-webkit-scrollbar {
+      display: none;
+    }
+    .section-nav-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding-inline: 16px;
+      border: 1.5px solid var(--color-carbon);
+      border-radius: var(--radius-button);
+      font-weight: 500;
+      font-size: calc(var(--fs-small) * var(--script-scale));
+      white-space: nowrap;
+      text-decoration: none;
+      transition:
+        background-color 160ms var(--ease-out),
+        color 160ms var(--ease-out);
+    }
+    .section-nav-link[aria-current] {
+      background: var(--color-carbon);
+      color: var(--color-bone);
+    }
+    .section-nav-link::after {
+      display: none;
+    }
+  }
+
+  /* Desktop: a bar that sticks under the compact header (60px), the active section underlined. */
+  @media (min-width: 1024px) {
+    .section-nav {
+      position: sticky;
+      top: 60px;
+      z-index: 41;
+      background: var(--color-bone) var(--grain);
+      border-bottom: 1px solid var(--color-line);
+    }
+    .section-nav-list {
+      gap: 32px;
+    }
+    .section-nav-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 56px;
+      font-weight: 500;
+      font-size: calc(var(--fs-small) * var(--script-scale));
+      text-decoration: none;
+    }
+    .section-nav-link:lang(en) {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  }
+</style>

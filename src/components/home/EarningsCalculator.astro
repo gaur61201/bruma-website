@@ -1,0 +1,459 @@
+---
+import { calculatorRanges, config } from '../../config';
+import { useTranslations, type Lang } from '../../i18n';
+import { ar as arForms, arCount } from '../../i18n/plural';
+import { estimate } from '../../scripts/calculator-math';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const c = config.calculator;
+const r = calculatorRanges;
+
+// Server-render the default estimate so the first paint is already correct.
+const initial = estimate({
+  price: c.pricePerSet,
+  sets: c.setsPerDay,
+  days: c.workDays,
+  monthly: true,
+  plan: config.planMonthlyKwd,
+  cartridge: c.cartridgeCostPerSet,
+});
+const showSaving = config.flags.showUpfrontSaving;
+const fmt = (n: number) => `${n < 0 ? '−' : ''}${Math.abs(Math.round(n)).toLocaleString('en-US')}`;
+const breakEvenText = (n: number) => {
+  if (n === 1) return t.calc.breakEvenOne;
+  return t.calc.breakEven.replace('{n}', lang === 'ar' ? arCount(n, arForms.sets) : String(n));
+};
+
+const inputs = [
+  { id: 'price', label: t.calc.priceLabel, value: c.pricePerSet, ...r.price, decimal: true },
+  { id: 'sets', label: t.calc.setsLabel, value: c.setsPerDay, ...r.sets, decimal: false },
+  { id: 'days', label: t.calc.daysLabel, value: c.workDays, ...r.days, decimal: false },
+];
+const outputs = [
+  { key: 'revenue', label: t.calc.revenue, value: initial.revenue },
+  { key: 'running', label: t.calc.running, value: initial.running },
+  { key: 'left', label: t.calc.left, value: initial.left },
+];
+
+const settings = {
+  lang,
+  plan: config.planMonthlyKwd,
+  cartridge: c.cartridgeCostPerSet,
+  breakEven: t.calc.breakEven,
+  breakEvenOne: t.calc.breakEvenOne,
+  underCost: t.calc.underCost,
+  labels: { revenue: t.calc.revenue, running: t.calc.running, ink: t.calc.ink, left: t.calc.left },
+  currencyPrefix: t.calc.currencyPrefix,
+  currencySuffix: t.calc.currencySuffix,
+};
+---
+
+<!-- A full-width carbon band, edge to edge; the content sits at the normal content width. -->
+<section id="earnings" class="on-carbon section-y calc-band" aria-labelledby="earnings-title">
+  <div class="wrap">
+    <div class="calc-head">
+      <h2 id="earnings-title" data-motion>{t.calc.h2}</h2>
+      <p class="calc-intro calc-js-only" data-motion>{t.calc.intro}</p>
+    </div>
+
+    <p class="calc-static">{t.calc.staticExample}</p>
+
+    <form class="calc calc-js-only" data-calc data-settings={JSON.stringify(settings)} novalidate>
+      <div class="calc-inputs">
+        <fieldset class="mode" data-motion>
+          <legend class="calc-label">{t.calc.modeLegend}</legend>
+          {
+            showSaving && (
+              <div class="mode-badges" aria-hidden="true">
+                <span />
+                <span class="save-pill" id="calc-save-badge">
+                  {t.upfrontSaving.badge}
+                </span>
+              </div>
+            )
+          }
+          <div class="mode-options">
+            <span class="mode-thumb" aria-hidden="true"></span>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="monthly" checked />
+              <span>{t.calc.monthly}</span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="upfront" aria-describedby={showSaving ? 'calc-save-badge' : undefined} />
+              <span>{t.calc.upfront}</span>
+            </label>
+          </div>
+        </fieldset>
+
+        {
+          inputs.map((input) => (
+            <div class="calc-field" data-motion>
+              <label class="calc-label" for={`calc-${input.id}`} id={`calc-${input.id}-label`}>
+                {input.label}
+              </label>
+              <div class="calc-row">
+                <input
+                  type="range"
+                  class="calc-range"
+                  min={input.min}
+                  max={input.max}
+                  step={input.step}
+                  value={input.value}
+                  aria-labelledby={`calc-${input.id}-label`}
+                  data-range={input.id}
+                />
+                <input
+                  type="number"
+                  class="calc-number"
+                  id={`calc-${input.id}`}
+                  name={input.id}
+                  min={input.min}
+                  max={input.max}
+                  step={input.step}
+                  value={input.value}
+                  inputmode={input.decimal ? 'decimal' : 'numeric'}
+                  autocomplete="off"
+                  data-number={input.id}
+                />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Visible results tween; screen readers get the summary in [data-calc-announce] instead. -->
+      <div class="calc-results" data-calc-results>
+        <p class="sr-only">{t.calc.resultsLabel}</p>
+        <dl>
+          {
+            outputs.map((o) => (
+              <div class:list={['result', { 'result-main': o.key === 'left' }]} data-motion>
+                <dt>{o.label}</dt>
+                <dd>
+                  {t.calc.currencyPrefix && <span>{t.calc.currencyPrefix} </span>}
+                  <span class="ltr" data-out={o.key}>{fmt(o.value)}</span>
+                  {t.calc.currencySuffix && <span> {t.calc.currencySuffix}</span>}
+                </dd>
+                {o.key === 'running' && (
+                  <dd class="result-sub">
+                    <span>{t.calc.ink}</span>{' '}
+                    {t.calc.currencyPrefix && <span>{t.calc.currencyPrefix} </span>}
+                    <span class="ltr" data-out="ink">{fmt(initial.ink)}</span>
+                    {t.calc.currencySuffix && <span> {t.calc.currencySuffix}</span>}
+                  </dd>
+                )}
+              </div>
+            ))
+          }
+        </dl>
+        <p class="break-even" data-out="breakEven" data-motion>
+          {initial.breakEven === null ? t.calc.underCost : breakEvenText(initial.breakEven)}
+        </p>
+      </div>
+      <p class="sr-only" aria-live="polite" data-calc-announce></p>
+    </form>
+
+    <p class="calc-note">{t.calc.note}</p>
+  </div>
+</section>
+
+<script>
+  import { initCalculator } from '../../scripts/calculator';
+  document.querySelectorAll<HTMLFormElement>('[data-calc]').forEach(initCalculator);
+</script>
+
+<style>
+  /*
+   * The band's type and controls scale up with the viewport (clamp, ~375px -> ~1280px), so mobile stays
+   * compact and desktop fills the full-width band. Arabic multiplies in --script-scale (one step larger).
+   */
+  .calc-band {
+    --calc-sub: clamp(1rem, 0.845rem + 0.663vw, 1.375rem); /* 16 -> 22 */
+    --calc-label: clamp(1rem, 0.948rem + 0.221vw, 1.125rem); /* 16 -> 18 */
+    --calc-toggle: clamp(1rem, 0.896rem + 0.442vw, 1.25rem); /* 16 -> 20 */
+    --calc-control-h: clamp(48px, 44.69px + 0.884vw, 56px); /* 48 -> 56 */
+    --calc-number: clamp(1.125rem, 0.97rem + 0.663vw, 1.5rem); /* 18 -> 24 */
+    --calc-result-label: clamp(0.875rem, 0.771rem + 0.442vw, 1.125rem); /* 14 -> 18 */
+    --calc-fig: clamp(2rem, 0.964rem + 4.42vw, 4.5rem); /* 32 -> 72 */
+    --calc-fig-main: clamp(2.5rem, 1.05rem + 6.188vw, 6rem); /* 40 -> 96 */
+    --calc-small: clamp(1rem, 0.896rem + 0.442vw, 1.25rem); /* 16 -> 20 */
+    padding-block: clamp(72px, 28.9px + 11.49vw, 176px);
+  }
+  .calc-head {
+    max-width: 720px;
+  }
+  .calc-intro {
+    margin-block-start: 16px;
+    font-size: calc(var(--calc-sub) * var(--script-scale));
+  }
+  .calc-static {
+    margin-block-start: 24px;
+    max-width: 720px;
+  }
+  :global(.js) .calc-static {
+    display: none;
+  }
+  :global(.no-js) .calc-js-only {
+    display: none;
+  }
+
+  .calc {
+    display: grid;
+    gap: 40px;
+    margin-block-start: 40px;
+  }
+  /* Desktop: results get the wider column (their figures are the largest type on the page). */
+  @media (min-width: 1024px) {
+    .calc {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: clamp(64px, 15.38vw - 93.5px, 128px);
+      align-items: start;
+      margin-block-start: 64px;
+    }
+  }
+  .calc-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(32px, 27px + 1.33vw, 44px);
+  }
+  .calc-label {
+    display: block;
+    margin-block-end: 12px;
+    font-weight: 500;
+    color: var(--color-mist);
+    font-size: calc(var(--calc-label) * var(--script-scale));
+  }
+
+  .mode {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  /*
+   * "How you pay" is a segmented control: one outlined track (1px bone at 25%, 14px radius, 4px
+   * padding) with a bone thumb that slides under the selected segment. The segments are radio inputs,
+   * so arrow keys move between them and the group reads as one choice.
+   */
+  .mode-options {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4px;
+    border: 1px solid rgb(243 239 232 / 0.25);
+    border-radius: var(--radius-button);
+  }
+  /* The saving badge sits over the "Paid upfront" segment (same two columns as the track). */
+  .mode-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-inline: 4px;
+    margin-block-end: 6px;
+  }
+  .mode-badges .save-pill {
+    justify-self: center;
+    padding: 4px 14px;
+    font-size: calc(clamp(0.875rem, 0.797rem + 0.331vw, 1.0625rem) * var(--script-scale));
+  }
+  /* The bone thumb under the selected segment. */
+  .mode-thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    inset-inline-start: 4px;
+    width: calc(50% - 4px);
+    border-radius: 10px;
+    background: var(--color-bone);
+    box-shadow:
+      0 1px 2px rgb(14 17 19 / 0.3),
+      0 2px 6px -2px rgb(14 17 19 / 0.35);
+  }
+  .mode-options:has(input[value='upfront']:checked) .mode-thumb {
+    translate: 100% 0;
+  }
+  .mode-options:has(input[value='upfront']:checked) .mode-thumb:dir(rtl) {
+    translate: -100% 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mode-thumb {
+      transition: translate 260ms var(--ease-out);
+    }
+  }
+  .mode-option {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(var(--calc-control-h) - 10px);
+    padding-inline: 16px;
+    border-radius: 10px;
+    color: rgb(243 239 232 / 0.75);
+    font-weight: 500;
+    font-size: calc(var(--calc-toggle) * var(--script-scale));
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: color 160ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .mode-option:hover {
+      color: var(--color-bone);
+    }
+  }
+  .mode-option input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .mode-option:has(input:checked),
+  .mode-option:has(input:checked):hover {
+    color: var(--color-carbon);
+  }
+  .mode-option:has(input:focus-visible) {
+    outline: 2px solid var(--color-mist);
+    outline-offset: 3px;
+  }
+
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .calc-number {
+    flex-shrink: 0;
+    width: clamp(96px, 79.4px + 4.42vw, 136px);
+    min-height: var(--calc-control-h);
+    padding-inline: 12px;
+    /* Reads as an editable field: a line edge, a soft inner shadow and a mist focus ring. */
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-input);
+    background: var(--color-white);
+    box-shadow: inset 0 1px 2px rgb(14 17 19 / 0.12);
+    color: var(--color-carbon);
+    font: inherit;
+    font-weight: 500;
+    font-size: calc(var(--calc-number) * var(--script-scale));
+    text-align: center;
+  }
+  .calc-number:focus-visible {
+    outline: 2px solid var(--color-mist);
+    outline-offset: 2px;
+  }
+
+  /* Slider: a line-coloured track with a mist thumb. */
+  .calc-range {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .calc-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-line);
+  }
+  .calc-range::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--color-line);
+  }
+  .calc-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: var(--color-mist);
+    border: 3px solid var(--color-carbon);
+  }
+  .calc-range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-mist);
+    border: 3px solid var(--color-carbon);
+  }
+  .calc-range:focus-visible {
+    outline-offset: 0;
+  }
+
+  /* A size container, so the big figures can be capped to their column's width (cqi) and never overflow. */
+  .calc-results {
+    container-type: inline-size;
+  }
+  .calc-results dl {
+    margin: 0;
+    display: grid;
+    gap: clamp(24px, 19px + 1.33vw, 36px);
+  }
+  /* Dividers on carbon: bone at low strength, quieter than the line colour. */
+  .result {
+    padding-block-end: clamp(24px, 19px + 1.33vw, 36px);
+    border-bottom: 1px solid rgb(243 239 232 / 0.16);
+  }
+  .result dt {
+    font-size: calc(var(--calc-result-label) * var(--script-scale));
+    font-weight: 500;
+  }
+  /* Revenue and running cost in white; what's left for the salon in profit green. */
+  /* Amounts never break between the currency and the number; figures are tabular where the face has them. */
+  .result dd {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    margin: 8px 0 0;
+    color: var(--color-white);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: min(calc(var(--calc-fig) * var(--script-scale)), 14cqi);
+    line-height: 1.1;
+  }
+  .result dd:lang(ar) {
+    font-family: var(--font-body);
+  }
+  .result dd span:not(.ltr) {
+    font-size: 0.5em;
+  }
+  .result-main dt {
+    font-size: calc(var(--calc-small) * var(--script-scale));
+  }
+  /* The ink part of the running cost, as its own smaller line. */
+  /* Same muted style as the other labels on carbon: Readex Pro, 14px, mist. */
+  .result .result-sub {
+    margin-block-start: 8px;
+    color: var(--color-mist);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: calc(var(--calc-small) * var(--script-scale));
+    line-height: var(--body-leading);
+  }
+  .result .result-sub span,
+  .result .result-sub span:not(.ltr) {
+    font-size: inherit;
+  }
+  /* What's left for the salon: the largest figure. */
+  .result-main dd {
+    color: var(--color-profit);
+    font-size: min(calc(var(--calc-fig-main) * var(--script-scale)), 16.5cqi);
+  }
+  .break-even {
+    margin-block-start: clamp(24px, 19px + 1.33vw, 36px);
+    font-weight: 500;
+    font-size: calc(var(--calc-small) * var(--script-scale));
+  }
+  .calc-note {
+    margin-block-start: clamp(48px, 37.6px + 2.76vw, 72px);
+    max-width: 720px;
+    font-size: calc(var(--calc-small) * var(--script-scale));
+  }
+</style>

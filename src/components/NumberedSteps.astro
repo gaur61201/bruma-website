@@ -1,0 +1,103 @@
+---
+// Numbered steps as an ordered list: white cards in a row on desktop (stacked on mobile), or a
+// vertical timeline with a line joining the numbers. The visible numbers are decorative (the <ol>
+// already numbers the steps for screen readers). Steps slide in from the inline-start side.
+interface Props {
+  items: { text: string; detail?: string }[];
+  variant?: 'cards' | 'timeline';
+  /** Scroll-reveal the steps (motion.ts). Off when the list is above the fold and revealed with CSS on load. */
+  reveal?: boolean;
+}
+const { items, variant = 'cards', reveal = true } = Astro.props;
+---
+
+<ol class:list={['steps', `steps-${variant}`]}>
+  {
+    items.map((item, i) => (
+      <li class:list={['step', { card: variant === 'cards' }]} data-motion={reveal ? '' : undefined} data-reveal={reveal ? 'item' : undefined}>
+        <span class="step-num ltr" aria-hidden="true">
+          {i + 1}
+        </span>
+        <div class="step-body">
+          <p class="step-text">{item.text}</p>
+          {item.detail && <p class="step-detail">{item.detail}</p>}
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  .step-num {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-carbon);
+    color: var(--color-bone);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .step-text {
+    font-weight: 500;
+  }
+  .step-detail {
+    margin-block-start: 8px;
+    color: var(--color-stone);
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+
+  /* Cards: one column on mobile, two on tablets, four in a row on desktop. */
+  .steps-cards {
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .steps-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .steps-cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+    }
+  }
+  .steps-cards .step {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  /* Timeline: numbers down the inline-start side, joined by a 1px line. */
+  .steps-timeline .step {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    padding-block-end: 32px;
+  }
+  .steps-timeline .step:last-child {
+    padding-block-end: 0;
+  }
+  .steps-timeline .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 48px;
+    bottom: 8px;
+    inset-inline-start: 19.5px;
+    width: 1px;
+    background: var(--color-line);
+  }
+  .steps-timeline .step-body {
+    padding-block-start: 7px;
+  }
+</style>

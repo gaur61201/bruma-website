@@ -1,0 +1,58 @@
+---
+// Wear-test results: the day 1 / 7 / 14 strip when flags.showWearTestResults is on; until then, an
+// invitation to see the photos at the demo. Used on the printer and gallery pages.
+import Icon from './Icon.astro';
+import PhotoPlaceholder from './PhotoPlaceholder.astro';
+import { config } from '../config';
+import { fill, useTranslations, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const w = useTranslations(Astro.props.lang).wearTest;
+---
+
+{
+  config.flags.showWearTestResults ? (
+    <ul class="wear-strip">
+      {w.days.map((day) => (
+        <li>
+          <PhotoPlaceholder caption={fill(w.photo, { day })} ratio="1 / 1" />
+          <span class="wear-day">{day}</span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="wear-ask card" data-motion data-reveal="fade">
+      <span class="icon-chip" aria-hidden="true"><Icon name="camera" size={24} /></span>
+      <span>{w.ask}</span>
+    </p>
+  )
+}
+
+<style>
+  /* Until results are confirmed: a small card inviting the salon to see the photos at the demo. */
+  .wear-ask {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 16px;
+    padding-inline: 16px 24px;
+    font-weight: 500;
+  }
+  .wear-strip {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+  }
+  .wear-day {
+    display: block;
+    margin-block-start: 8px;
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+</style>

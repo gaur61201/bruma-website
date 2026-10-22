@@ -1,0 +1,233 @@
+---
+import Icon from '../Icon.astro';
+import NailIllustration, { type NailDesign, type NailStage } from '../NailIllustration.astro';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+// One nail going through the steps: each card shows the cherries design at its step's stage.
+const stages: NailStage[] = ['base', 'choose', 'printed', 'sealed'];
+const swatches: NailDesign[] = ['french', 'cherries', 'flowers'];
+const last = t.how.steps.length - 1;
+---
+
+<section id="how-it-works" class="section-y how" aria-labelledby="how-title">
+  <div class="wrap">
+    <h2 id="how-title" data-motion>{t.how.h2}</h2>
+    <!--
+      Each step has a numbered marker; a thin carbon line (always drawn) links each marker to the
+      next: a horizontal track on desktop, a vertical timeline below 1024px. Each card shows the same
+      illustrated nail at its step (base coat, design chosen, printed, sealed). motion.ts slides the
+      cards in, then plays each card's step once with its number highlighted: chained on desktop, card by
+      card as they scroll into view below 1024px. Without JS or with reduced motion, the final stages show.
+    -->
+    <ol class="steps" data-steps>
+      {
+        t.how.steps.map((step, i) => (
+          <li class="step" data-step>
+            <div class="step-marker" aria-hidden="true">
+              <span class="step-num ltr">
+                {i + 1}
+                <span class="step-num-fill">{i + 1}</span>
+              </span>
+              {i < last && <span class="step-link" />}
+            </div>
+            <div class="step-card card" data-motion tabindex="0">
+              <div class="step-visual" aria-hidden="true">
+                <NailIllustration lang={lang} design="cherries" stage={stages[i]} label={false} class="step-nail" />
+                {i === 1 && (
+                  <ul class="step-swatches" data-swatches>
+                    {swatches.map((design) => (
+                      <li class:list={['step-swatch', { 'is-picked': design === 'cherries' }]}>
+                        <NailIllustration lang={lang} design={design} stage="printed" label={false} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="how-illustration">{t.nail.label}</p>
+    <p class="set-time" data-motion>{t.how.setTime}</p>
+    <a href={localizedPath('/printer/', lang)} class="text-link arrow-link printer-link">
+      <span>{t.how.printerLink}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .steps {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  /* Below desktop: a vertical timeline, markers in a column at the inline-start side. */
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+  }
+  .step-marker {
+    position: relative;
+  }
+  .step-num {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* A 1.5px carbon ring: Chrome rounds 1.5px borders down to 1px, so the ring is a carbon disc
+       with a bone disc inset 1.5px on top (two flat fills, no border or shadow). */
+    background: var(--color-carbon);
+    color: var(--color-carbon);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .step-num::before {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    z-index: -1;
+    border-radius: 50%;
+    background: var(--color-bone);
+  }
+  /*
+   * The highlight: carbon fill with a bone number. Shown on all four by default (no JS, reduced
+   * motion); with motion the numbers rest as outlined circles and motion.ts fades this in per step.
+   */
+  .step-num-fill {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-carbon);
+    color: var(--color-bone);
+  }
+  /* With motion on, start at rest even before motion.ts arrives, so the circles never flash filled. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .step-num-fill {
+      opacity: 0;
+    }
+  }
+  .step-link {
+    position: absolute;
+    top: 20px;
+    inset-inline-start: 19px;
+    width: 2px;
+    height: calc(100% + 16px);
+    background: var(--color-carbon);
+    transform-origin: center top;
+  }
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+  }
+  /* Cards are focusable only so the keyboard can replay a card's step; keep the card's own corners. */
+  .step-card:focus-visible {
+    border-radius: var(--radius-card);
+  }
+
+  /* The nail, about 140px tall, centred at the top of the card. */
+  .step-visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    margin-block-end: 12px;
+  }
+  .step-visual :global(.step-nail) {
+    width: calc(140px * 120 / 172);
+  }
+  /* Choose: three design swatches 12px beside the nail (inline-end side, the nail stays centred); the
+     picked one is ringed. */
+  .step-swatches {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(50% + 140px * 120 / 172 / 2 + 12px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+  }
+  .step-swatch {
+    width: 30px;
+    padding: 4px 4px 3px;
+    border-radius: 9px;
+    background: var(--color-bone);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color 160ms var(--ease-out);
+  }
+  .step-swatch.is-picked {
+    outline-color: var(--color-carbon);
+  }
+  /* While motion.ts plays the step, the ring waits for the pick. */
+  .step-swatches[data-picking] .step-swatch.is-picked {
+    outline-color: transparent;
+  }
+  @media (min-width: 1024px) {
+    .step-card {
+      padding: 28px;
+    }
+  }
+
+  /* Desktop: four columns, markers in a row above the cards, joined by a horizontal line. */
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-block-start: 48px;
+    }
+    .step {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 24px;
+    }
+    .step-link {
+      top: 19px;
+      inset-inline-start: 20px;
+      width: calc(100% + 24px);
+      height: 2px;
+      transform-origin: left center;
+    }
+    .step-link:dir(rtl) {
+      transform-origin: right center;
+    }
+  }
+
+  /* One label for the four drawings. */
+  .how-illustration {
+    margin-block-start: 12px;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-weight: 500;
+    color: var(--color-stone);
+  }
+  .how-illustration:lang(en) {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .set-time {
+    margin-block-start: 24px;
+    font-weight: 500;
+  }
+  .printer-link {
+    margin-block-start: 8px;
+  }
+</style>

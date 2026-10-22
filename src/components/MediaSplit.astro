@@ -1,0 +1,44 @@
+---
+// A section with copy on one side and a photo (placeholder until real photos exist) on the other;
+// stacked on mobile, side by side on desktop (mirrored in Arabic). The copy goes in the slot.
+import PhotoPlaceholder from './PhotoPlaceholder.astro';
+
+interface Props {
+  /** id for the h2 (the section is labelled by it). */
+  id: string;
+  title: string;
+  photo: string;
+  ratio?: string;
+}
+const { id, title, photo, ratio = '1 / 1' } = Astro.props;
+---
+
+<section class="section-y media-split" aria-labelledby={id} data-reveal-section>
+  <div class="wrap media-split-grid">
+    <div class="media-split-copy">
+      <h2 id={id} data-motion data-reveal="heading">{title}</h2>
+      <slot />
+    </div>
+    <PhotoPlaceholder caption={photo} ratio={ratio} />
+  </div>
+</section>
+
+<style>
+  .media-split-grid {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .media-split-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+  }
+  .media-split-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 34rem;
+  }
+</style>
