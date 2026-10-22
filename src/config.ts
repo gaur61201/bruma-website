@@ -6,8 +6,8 @@ import { ar as arForms, arCount, enCount } from './i18n/plural';
 export const config = {
   siteUrl: 'https://brumakw.com',
 
-  whatsappNumber: '965XXXXXXXX', // TODO confirm
-  phoneDisplay: '+965 XXXX XXXX', // TODO confirm
+  whatsappNumber: '96597644083',
+  phoneDisplay: '+965 9764 4083',
   email: 'hello@brumakw.com', // TODO confirm
   formEndpoint: '', // n8n webhook URL. Empty means use the WhatsApp fallback.
   formTimeoutMs: 10000, // after this, the form falls back to WhatsApp
