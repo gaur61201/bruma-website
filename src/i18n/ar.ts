@@ -32,7 +32,6 @@ export const ar: Dict = {
       title: 'الصفحة غير موجودة | BRUMA',
       description: 'هذه الصفحة غير موجودة.',
     },
-    ogImageAlt: 'شعار BRUMA على خلفية بلون العاج',
     ogLocale: 'ar_AR',
   },
 

@@ -30,7 +30,6 @@ export const en = {
       title: 'Page not found | BRUMA',
       description: "This page doesn’t exist.",
     },
-    ogImageAlt: 'The BRUMA wordmark on a bone background',
     ogLocale: 'en_US',
   },
 

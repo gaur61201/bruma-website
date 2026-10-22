@@ -7,6 +7,7 @@ import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import DataToggle from '../dev/DataToggle.astro';
 import { config } from '../config';
 import { dirOf, localizedPath, useTranslations, type Lang } from '../i18n';
+import { ogHeadline, ogPageOf, ogPages } from '../og';
 
 interface Props {
   lang: Lang;
@@ -32,7 +33,10 @@ const abs = (p: string) => new URL(p, site).href;
 const canonical = abs(path);
 const enUrl = abs(localizedPath(path, 'en'));
 const arUrl = abs(localizedPath(path, 'ar'));
-const ogImage = abs('/og-image.png');
+// This page's own Open Graph image (built by src/pages/og/[image].png.ts); its headline doubles as the alt text.
+const ogPage = ogPageOf(path);
+const ogImage = abs(`/og/${lang}-${ogPage}.png`);
+const ogImageAlt = ogHeadline(ogPages[ogPage](t));
 
 const phoneConfirmed = !/X/i.test(config.phoneDisplay);
 const organization = {
@@ -83,8 +87,13 @@ const jsonLd = noindex ? schema : [organization, ...schema];
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:type" content="image/png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
