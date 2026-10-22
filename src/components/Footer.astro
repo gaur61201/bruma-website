@@ -1,11 +1,13 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Icon from './Icon.astro';
 import LangSwitch from './LangSwitch.astro';
 import { config, phoneHref, whatsappLink } from '../config';
 import { localizedPath, useTranslations, type Lang } from '../i18n';
 // Bone letters: the wordmark for carbon backgrounds.
 import wordmarkOnDark from '../assets/brand/bruma-air-wordmark-dark.png';
+// The background wordmark only uses the logo's shape (as a CSS mask), so any wordmark file works.
+import wordmarkShape from '../assets/brand/bruma-air-wordmark-light.png';
 
 interface Props {
   lang: Lang;
@@ -14,6 +16,7 @@ interface Props {
 const { lang, altHref } = Astro.props;
 const t = useTranslations(lang);
 const page = (path: string, label: string) => ({ href: localizedPath(path, lang), label });
+const markMask = await getImage({ src: wordmarkShape, format: 'webp', quality: 80 });
 
 const links = [
   page('/printer/', t.nav.printer),
@@ -27,6 +30,10 @@ const links = [
 ---
 
 <footer class="on-carbon site-footer">
+  <!-- The giant background wordmark: the logo's shape as a mask over bone, at 6%. Decorative only. -->
+  <div class="footer-mark-clip" aria-hidden="true">
+    <div class="footer-mark" style={`--mark: url(${markMask.src})`} data-motion></div>
+  </div>
   <div class="wrap footer-grid">
     <div class="footer-brand">
       <Image src={wordmarkOnDark} alt="BRUMA" height={40} densities={[1, 2]} format="webp" quality={90} class="footer-logo" />
@@ -81,7 +88,38 @@ const links = [
   /* The top padding matches the space above the hairline in the demo and CTA bands, so the seam sits
      in the middle of one continuous dark block. */
   .site-footer {
+    position: relative;
+    isolation: isolate;
     padding-block: clamp(64px, 46.6px + 4.64vw, 106px) 96px;
+  }
+
+  /*
+   * The background wordmark. The logo file has 120px of transparent margin around the letters (2552×640,
+   * letters 2292×400), so the masked box is 2552/2292 of the footer's width and starts 120/2292 to the
+   * left: the letters themselves run edge to edge. It sits on the bottom edge, shifted down so the
+   * bottom 15% of the letters is cropped by the clip. Physical left, so it never mirrors in Arabic.
+   * The 6% lives on the clip, so the motion system's 2s failsafe (opacity 1) can never make it brighter.
+   */
+  .footer-mark-clip {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0.06;
+    pointer-events: none;
+    user-select: none;
+  }
+  .footer-mark {
+    position: absolute;
+    bottom: 0;
+    left: calc(-100% * 120 / 2292);
+    width: calc(100% * 2552 / 2292);
+    aspect-ratio: 2552 / 640;
+    /* Down by the 120px bottom margin plus 15% of the 400px letters: 180/640 of the box. */
+    translate: 0 calc(100% * 180 / 640);
+    background: var(--color-bone);
+    -webkit-mask: var(--mark) center / 100% 100% no-repeat;
+    mask: var(--mark) center / 100% 100% no-repeat;
   }
   .footer-grid {
     display: grid;

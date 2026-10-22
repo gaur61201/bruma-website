@@ -293,6 +293,14 @@ export function initMotion() {
     slide(play);
   };
 
+  /** The footer's background wordmark rises 24px and fades in once, as the footer comes into view. */
+  const footerMark = () => {
+    const footer = $('.site-footer');
+    const mark = footer && $('.footer-mark', footer);
+    if (!footer || !mark || !claim([mark], footer)) return;
+    gsap.from(mark, { y: 24, opacity: 0, duration: 0.9, ease: EASE, clearProps: 'transform', scrollTrigger: once(footer) });
+  };
+
   const calculator = () => {
     fadeUp($('.calc-intro'));
     const inputs = $('.calc-inputs');
@@ -524,6 +532,7 @@ export function initMotion() {
       [$('#demo'), () => rise($('#demo-title')), demo],
       [$('.stories'), () => rise($('#stories-title')), stories],
       ...$$('[data-reveal-section]').map((section): [Element, Setup, Setup] => [section, () => genericHeadings(section), () => genericBody(section)]),
+      [$('.site-footer'), footerMark],
     ]);
     return () => {
       document.removeEventListener('focusin', revealOnFocus);
