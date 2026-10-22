@@ -19,6 +19,14 @@ const identity =
 
 export const ar: Dict = {
   identity,
+  schema: {
+    home: 'الرئيسية',
+    governorate: (name: string): string => `محافظة ${name}`,
+    serviceName: 'توفير طابعة الأظافر وتركيبها والتدريب عليها ودعمها',
+    serviceDescription: `طابعة الأظافر من BRUMA لصالونات الكويت، توصيل وتركيب في صالونك، مع تدريب في الموقع وضمان لمدة ${warranty} ودعم محلي.`,
+    productName: 'طابعة الأظافر BRUMA',
+    productDescription: `طابعة أظافر للصالونات تطبع التصميم المختار مباشرةً على الظفر المُجهَّز خلال ${seconds} تقريباً، ثم يُثبَّت التصميم تحت الطبقة العلوية ويُجفَّف.`,
+  },
   meta: {
     home: {
       title: 'طابعة أظافر للصالونات في الكويت | BRUMA',

@@ -17,6 +17,16 @@ const identity =
 
 export const en = {
   identity,
+  /** Structured data (JSON-LD) wording that isn't shown elsewhere on the page. */
+  schema: {
+    home: 'Home',
+    governorate: (name: string): string => `${name} Governorate`,
+    serviceName: 'Nail art printer supply, installation, training and support',
+    serviceDescription: `The BRUMA nail printer for salons in Kuwait, delivered and installed in your salon, with on-site training, a ${c.warrantyMonths}-month warranty and local support.`,
+    productName: 'BRUMA nail printer',
+    // Also the printer page's short definition (AEO): what a nail art printer is, in one quotable sentence.
+    productDescription: `A nail art printer for salons that prints a chosen design directly onto a prepared nail in about ${seconds}; the design is then sealed under top coat and cured.`,
+  },
   meta: {
     home: {
       title: 'Nail printer for salons in Kuwait | BRUMA',

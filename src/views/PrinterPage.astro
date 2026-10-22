@@ -12,6 +12,7 @@ import RunningCosts from '../components/RunningCosts.astro';
 import Faq from '../components/Faq.astro';
 import DemoForm from '../components/DemoForm.astro';
 import { faqSchema, printerFaqItems } from '../components/home/faq-items';
+import { productSchema } from '../schema';
 import { config } from '../config';
 import { useTranslations, type Lang } from '../i18n';
 
@@ -23,7 +24,7 @@ const t = useTranslations(lang);
 const faq = printerFaqItems(lang);
 ---
 
-<Base lang={lang} title={t.printer.meta.title} description={t.printer.meta.description} schema={[faqSchema(lang, faq)]}>
+<Base lang={lang} title={t.printer.meta.title} description={t.printer.meta.description} schema={[productSchema(t, lang), faqSchema(lang, faq)]}>
   <PrinterHero lang={lang} />
   <SectionNav lang={lang} />
   <WhySalons lang={lang} />
