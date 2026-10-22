@@ -15,8 +15,12 @@ const PRINT_SECONDS = 1.4;
 
 type Gsap = typeof import('gsap').gsap;
 let gsapPromise: Promise<Gsap | null> | null = null;
+let loaded: Gsap | null = null; // once loaded, so setStage can stop a run that's still playing
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const loadGsap = () => (gsapPromise ??= import('gsap').then((m) => m.gsap).catch(() => null));
+const loadGsap = () =>
+  (gsapPromise ??= import('gsap')
+    .then((m) => (loaded = m.gsap))
+    .catch(() => null));
 
 const parts = (svg: SVGSVGElement) => ({
   coat: svg.querySelector<SVGRectElement>('.nail-coat-reveal')!,
@@ -36,6 +40,7 @@ export function setDesign(svg: SVGSVGElement, design: NailDesign) {
 /** Jump straight to a stage, with every reveal complete and nothing moving. */
 export function setStage(svg: SVGSVGElement, stage: NailStage) {
   const p = parts(svg);
+  loaded?.killTweensOf([p.coat, p.print, p.head, p.sweep]);
   p.coat.setAttribute('y', '0');
   p.coat.setAttribute('height', String(H));
   p.print.setAttribute('height', String(H));

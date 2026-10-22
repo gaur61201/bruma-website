@@ -17,11 +17,12 @@ const t = useTranslations(lang);
 const sp = t.printer.specs;
 const rows = visiblePrinterSpecs();
 
-// The drawing: an isometric box, w × d × h cm, scaled so the box is about 300 units tall.
+// The drawing: an isometric box, w × d × h cm, scaled so the box is at most about 300 units tall and
+// 220 wide (so the labels keep a readable size whatever the box's proportions).
 type P = [number, number];
 const { width: w, depth: d, height: h } = config.printerSizeCm;
-const s = 300 / (h + (w + d) / 2);
 const c30 = Math.cos(Math.PI / 6);
+const s = Math.min(300 / (h + (w + d) / 2), 220 / ((w + d) * c30));
 const add = (...ps: P[]): P => ps.reduce<P>((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
 const mul = (p: P, k: number): P => [p[0] * k, p[1] * k];
 const W: P = [w * s * c30, (-w * s) / 2];
@@ -70,6 +71,8 @@ const maxX = Math.max(...pts.map((p) => p[0]), ...dims.map((x) => x.label.x + (x
 const minY = Math.min(...pts.map((p) => p[1])) - 8;
 const maxY = Math.max(...pts.map((p) => p[1]), ...dims.map((x) => x.label.y + 12)) + 8;
 const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).join(' ');
+// Drawn at 1.1px per unit at most, so the labels are the same size for any box.
+const drawingWidth = `min(100%, ${Math.round((maxX - minX) * 1.1)}px)`;
 ---
 
 {(rows.length > 0 || boxContents.length > 0) && (
@@ -80,7 +83,7 @@ const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).
       <p class="eyebrow" data-motion data-reveal="fade">{sp.h2}</p>
       <h2 id="specs-title" data-motion data-reveal="heading">{sp.fitTitle}</h2>
       <figure class="fit">
-        <svg class="fit-svg" viewBox={viewBox} role="img" aria-label={sp.drawingAlt} data-fit>
+        <svg class="fit-svg" viewBox={viewBox} style={`width: ${drawingWidth}`} role="img" aria-label={sp.drawingAlt} data-fit>
           <path class="fit-desk" d={desk} pathLength="1" style="--d: 0ms" />
           {edges.map((e, i) => <path class="fit-edge" d={e} pathLength="1" style={`--d: ${i * 70}ms`} />)}
           {
@@ -183,6 +186,7 @@ const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).
      the inline-start side, the table beside them. */
   .specs-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 40px;
   }
   @media (min-width: 1024px) {
@@ -217,7 +221,6 @@ const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).
   }
   .fit-svg {
     display: block;
-    width: min(100%, 420px);
     height: auto;
     overflow: visible;
     direction: ltr;
@@ -304,6 +307,7 @@ const viewBox = [minX, minY, maxX - minX, maxY - minY].map((n) => n.toFixed(1)).
   .specs-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* columns from the th width, so long values wrap at large text sizes */
   }
   .specs-table tr + tr {
     border-top: 1px solid rgb(243 239 232 / 0.16);

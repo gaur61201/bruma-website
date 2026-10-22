@@ -2,17 +2,19 @@
 // The printer page's in-page nav, placed straight under the hero. Desktop: a bar that sticks under the
 // (compact) header and marks the section you're reading (aria-current="location"). Mobile: a row of chips
 // that scrolls sideways, not sticky. Links jump to the section ids; the page's smooth scroll already
-// turns off under reduced motion.
+// turns off under reduced motion. The Specs link drops out when the Specs section has nothing to show.
+import { boxContents, visiblePrinterSpecs } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
 const n = useTranslations(Astro.props.lang).printer.sectionNav;
+const hasSpecs = visiblePrinterSpecs().length > 0 || boxContents.length > 0;
 const items = [
   { id: 'overview', label: n.overview },
   { id: 'how-it-works', label: n.how },
-  { id: 'specs', label: n.specs },
+  ...(hasSpecs ? [{ id: 'specs', label: n.specs }] : []),
   { id: 'support', label: n.support },
   { id: 'faq', label: n.faq },
 ];

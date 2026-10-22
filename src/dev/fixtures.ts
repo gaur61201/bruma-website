@@ -73,14 +73,6 @@ const worstEn: Deep<Dict> = {
   },
   included: {
     h2: "What's included with every printer",
-    cards: [
-      { icon: 'truck', title: 'Delivery and professional installation', text: 'We deliver it and set it up at your nail desk.' },
-      { icon: 'training', title: 'Hands-on training', text: 'On-site training for 2 technicians, with a refresher visit.' },
-      { icon: 'shield', title: '12-month warranty', text: 'Repairs handled locally by our own technicians.' },
-      { icon: 'swap', title: 'Loaner machine', text: 'If a repair takes longer than 72 hours, we lend you a printer.' },
-      { icon: 'library', title: 'Built-in design library', text: 'Hundreds of ready-made designs, sorted by style.' },
-      { icon: 'refill', title: 'Cartridge refills', text: 'Delivered to your salon. Your first cartridge comes in the box.' },
-    ],
   },
   ways: {
     h2: 'Two ways to own the BRUMA nail printer',
@@ -132,20 +124,37 @@ const worstEn: Deep<Dict> = {
         { icon: 'timer', title: 'Faster than painting by hand', text: 'Each nail prints in about 10 seconds.' },
       ],
     },
-    printedOn: { h2: 'Printed directly on the nail, not stuck on top' },
+    sectionNav: { overview: 'Why salons add it', how: 'How it works, step by step', specs: 'Specifications', support: 'Training and support', faq: 'Questions' },
+    demo: { title: 'Pick any design. Watch it print on the nail.', print: 'Print this design on the nail' },
+    printedOn: {
+      h2: 'Printed directly on the nail, not stuck on top',
+      layers: { top: 'Top coat, cured under the UV/LED lamp', print: 'Printed design (ink only, no film)', film: 'Sticker film with adhesive backing' },
+      stickerNote: 'Sticker: a separate film with an adhesive backing, laid on top of the base coat, with an edge that can lift.',
+    },
+    specs: { fitTitle: 'Will it fit on your nail desk?', drawingCaption: 'Illustration: overall size only, not the printer’s real shape or proportions.' },
     training: {
-      trainingItems: [
+      h2: 'Your first week with BRUMA, step by step',
+      steps: [
+        { title: 'Delivery to your salon', text: 'We bring the printer to your salon, anywhere in Kuwait.' },
+        { title: 'Installation and first test', text: 'We set it up at your nail desk and print a first test nail with you.' },
+        { title: 'Hands-on training', text: '2 technicians trained on site.' },
+        { title: 'Ongoing support', text: '' },
+      ],
+      topics: [
         'Using the printer and its touchscreen menus',
         'Prepping nails for the longest-lasting result',
         'Cleaning between clients, step by step',
         'Fixing simple problems without calling us',
       ],
-      supportCards: [
-        { icon: 'whatsapp', title: 'WhatsApp help, six days a week', text: 'Ask us anything on WhatsApp.' },
-        { icon: 'truck', title: 'On-site visits', text: 'We come to your salon whenever needed.' },
+      support: [
+        'WhatsApp help, six days a week',
+        'On-site visits whenever needed',
+        '12-month warranty',
+        'A loaner printer if a repair takes longer than 72 hours',
       ],
     },
   },
+  nail: { designs: { flowers: 'Small white flowers with gold centres', heart: 'Gold heart outline, hand-drawn' } },
   bookPage: {
     h1: 'Book a free nail printer demonstration in your salon',
     next: {
@@ -234,7 +243,18 @@ const worstAr: Deep<Dict> = {
   },
   printer: {
     hero: { h1: 'نقوش أظافر دقيقة تُطبع في ثوانٍ على طاولة الأظافر', specsLink: 'عرض المواصفات الفنية كاملة' },
+    sectionNav: { overview: 'لماذا تضيفها الصالونات', how: 'كيف تعمل خطوة بخطوة', specs: 'المواصفات الفنية', support: 'التدريب والدعم', faq: 'الأسئلة الشائعة' },
+    demo: { print: 'طباعة هذا التصميم على الظفر' },
+    printedOn: {
+      layers: { top: 'الطبقة العلوية بعد التجفيف بمصباح UV/LED', print: 'التصميم المطبوع (حبر فقط، من دون طبقة لاصقة)', film: 'طبقة الملصق مع الجهة اللاصقة' },
+    },
+    specs: { fitTitle: 'هل تتّسع لها طاولة الأظافر في صالونك؟' },
+    training: {
+      topics: ['استخدام الطابعة وقوائم شاشة اللمس', 'تجهيز الأظافر لأطول ثبات ممكن', 'التنظيف بين العميلات خطوة بخطوة', 'حل المشكلات البسيطة دون الاتصال بنا'],
+      support: ['المساعدة عبر واتساب ستة أيام في الأسبوع', 'زيارات في الصالون كلما احتجتم إليها', 'ضمان لمدة 12 شهراً', 'طابعة بديلة إذا استغرقت الصيانة أكثر من 72 ساعة'],
+    },
   },
+  nail: { designs: { flowers: 'زهور بيضاء صغيرة بمراكز ذهبية', heart: 'قلب ذهبي مرسوم باليد' } },
   bookPage: {
     h1: 'حجز عرض توضيحي مجاني لطابعة الأظافر داخل صالونك',
     next: {
@@ -254,7 +274,7 @@ const emptyBoth: Deep<Dict> = { bookPage: { before: { items: [] } } };
 
 // Snapshots of the real settings, restored whenever the page is opened without ?data=.
 const original = {
-  config: { phoneDisplay: config.phoneDisplay, email: config.email, serviceHours: config.serviceHours, instagramUrl: config.instagramUrl },
+  config: { phoneDisplay: config.phoneDisplay, email: config.email, serviceHours: config.serviceHours, instagramUrl: config.instagramUrl, printerSizeCm: config.printerSizeCm },
   tiles: [...galleryTiles],
   home: [...homeTiles],
   specs: printerSpecs.map((s) => ({ ...s })),
@@ -305,6 +325,13 @@ export function applyFixture(name: string | null) {
     if (size) size.value = { en: 'About 25 × 37 × 42 cm (width × depth × height), plus room for the hand rest', ar: 'نحو 25 × 37 × 42 سم (العرض × العمق × الارتفاع)، مع مساحة لمسند اليد' };
     const power = printerSpecs.find((s) => s.label === 'power');
     if (power) power.value = { en: "100–240 V, 50/60 Hz, works on Kuwait's standard supply with the plug supplied", ar: '100–240 فولت، 50/60 هرتز، تعمل على الكهرباء المعتادة في الكويت بالقابس المرفق' };
+    // A wide, low box (the drawing rescales) and a longer box list with long items.
+    config.printerSizeCm = { width: 48, depth: 52, height: 30 };
+    replace(boxContents, [
+      ...original.box,
+      { item: { en: 'A spare set of nail holders in three sizes', ar: 'مجموعة احتياطية من حوامل الأظافر بثلاثة مقاسات' }, icon: 'hand', confirmed: false },
+      { item: { en: 'Quick-start guide in English and Arabic', ar: 'دليل البدء السريع بالعربية والإنجليزية' }, icon: 'document', confirmed: false },
+    ]);
     setDictionaryOverride({ en: merge(en, worstEn), ar: merge(ar, worstAr) } satisfies Record<Lang, Dict>);
   }
 
