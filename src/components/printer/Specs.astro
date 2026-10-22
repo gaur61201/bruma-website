@@ -212,6 +212,10 @@ const drawingWidth = `min(100%, ${Math.round((maxX - minX) * 1.1)}px)`;
     display: grid;
     gap: 8px;
   }
+  /* On carbon the eyebrow is bone at 70% (the stone default is for bone backgrounds). */
+  .specs-visual .eyebrow {
+    color: rgb(243 239 232 / 0.7);
+  }
 
   /* The drawing: bone lines on carbon. */
   .fit {
