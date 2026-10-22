@@ -72,8 +72,7 @@ export const en = {
   hero: {
     eyebrow: 'For salons in Kuwait',
     h1: `Any design, on the nail in ${seconds}`,
-    subline:
-      'The BRUMA AI nail printer for salons and clinics. Delivered, installed, trained and supported in Kuwait.',
+    subline: `BRUMA supplies an AI nail printer to nail salons, beauty salons and clinics in Kuwait. It prints any design on a prepared nail in about ${seconds}, so your team can offer detailed nail art without hand-painting. We deliver it, install it, train your team on site and support you locally.`,
     price: `From ${plan} a month`,
     priceNote: 'Training, a 1-year warranty and a loaner machine during repairs included.',
     primaryCta: 'Book a free demo in your salon',
@@ -210,7 +209,8 @@ export const en = {
     hero: {
       eyebrow: 'The BRUMA nail printer',
       h1: 'Detailed nail art, printed in seconds',
-      subline: 'Prep the nail, pick a design, and the printer does the detail. Every set comes out the same, whoever is working.',
+      // Answer first, with the definition of a nail art printer (quotable by AI answers).
+      subline: `A nail art printer prints a chosen design directly onto a prepared nail. The BRUMA nail printer does it in about ${seconds}, then the design is sealed under top coat and cured. Salons in Kuwait get it delivered, installed and supported locally, with on-site training and a ${c.warrantyMonths}-month warranty.`,
       specsLink: 'See the specifications',
       mediaCaption: 'Photo: the printer, three-quarter view',
     },
@@ -319,6 +319,10 @@ export const en = {
       h2: 'Questions about the printer',
       space: { q: 'How much space does it need?', a: `${printerSpec('size').en} on a nail desk, plus a standard socket.` },
       installs: { q: 'Who installs it?', a: 'We deliver it, set it up in your salon and train your team on site.' },
+      products: {
+        q: 'Does it need special nails or products?',
+        a: 'No. Your team preps the nails as usual: clean, shape and apply base coat. The printer prints the design, then you seal it under top coat and cure it. It works with gel products, and ink cartridges are ordered from us and delivered to your salon.',
+      },
     },
   },
 
@@ -329,7 +333,7 @@ export const en = {
         'Browse sample nail printer designs in Gulf, bridal, minimal and seasonal styles, each printed on the nail in seconds. Book a free demo in your salon in Kuwait.',
     },
     h1: 'Browse the designs',
-    subline: 'Designs your clients will ask for, printed in seconds.',
+    subline: `These are sample designs that come with the BRUMA nail printer, in Gulf, bridal, minimal, seasonal and playful styles. Each one prints on the nail in about ${seconds}. Your client picks a design on the touchscreen at the nail desk and the printer does the detail. Book a free demo to see them printed in your salon.`,
     gridTitle: 'Designs',
     filterLabel: 'Filter designs by style',
     categories: { all: 'All', gulf: 'Gulf', bridal: 'Bridal', minimal: 'Minimal', seasonal: 'Seasonal', playful: 'Playful' },
@@ -360,8 +364,8 @@ export const en = {
     },
     h1: 'Two ways to own it',
     /** The "and save" version shows while flags.showUpfrontSaving is on. */
-    subline: `Pay monthly from ${plan}, or pay once and save. Training, warranty and support are included either way.`,
-    sublineNoSaving: `Pay monthly from ${plan}, or pay once upfront. Training, warranty and support are included either way.`,
+    subline: `There are two ways to own the BRUMA nail printer. Pay monthly from ${plan} a month, with BRUMA branding on the printer. Or pay once upfront and save, with your salon’s own name and logo on it; the upfront price is given at your demo. Training, warranty and support are included either way.`,
+    sublineNoSaving: `There are two ways to own the BRUMA nail printer. Pay monthly from ${plan} a month, with BRUMA branding on the printer. Or pay once upfront, with your salon’s own name and logo on it; the upfront price is given at your demo. Training, warranty and support are included either way.`,
     plansLabel: 'The two ways to own it',
     compare: {
       h2: 'Compare the plans',
@@ -398,6 +402,10 @@ export const en = {
     faq: {
       h2: 'Questions about the plans',
       items: [
+        {
+          q: 'How much does a nail printer cost in Kuwait?',
+          a: `The BRUMA nail printer is available on a monthly plan from ${plan} a month, with training, warranty and support included. If you’d rather pay once upfront, we give you the upfront price at your demo.`,
+        },
         { q: 'Can I pay off the plan early?', a: 'Yes. Pay the remaining amount at any time and the printer is yours.' },
         {
           q: 'Can I have my logo on a monthly-plan machine?',
@@ -421,7 +429,7 @@ export const en = {
         'Nail printer hygiene: how to clean the parts that touch your client between clients, use gel safely and store ink and gels. Safety data sheets on request.',
     },
     h1: 'Hygiene and safety',
-    subline: 'What touches your client, how to clean it, and how to keep ink and gels in good condition.',
+    subline: 'Only two parts of the BRUMA nail printer touch your client: the finger rest and the nail holder. This page shows how to clean them between clients, how to use gel safely, and how to store ink and gels so they stay in good condition. Safety data sheets are available on request.',
     // TODO confirm on the demo unit
     touches: {
       h2: 'What touches your client',
@@ -476,7 +484,7 @@ export const en = {
       description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, in all 6 governorates of Kuwait. No obligation: book your visit today.`,
     },
     h1: 'Book a free demo in your salon',
-    subline: `We bring the printer to you. About ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation.`,
+    subline: `Book a free demo and we bring the BRUMA nail printer to your salon, in any of Kuwait’s 6 governorates. It takes about ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation to buy. Send the form or message us on WhatsApp, and we reply within ${replyHours} to arrange a time that suits your salon.`,
     next: {
       h2: 'What happens next',
       steps: ['Send the form.', `We message you on WhatsApp within ${replyHours}.`, 'We visit with the printer.', 'You decide, with no obligation.'],
@@ -499,6 +507,10 @@ export const en = {
       items: [
         { q: 'Is the demo free?', a: 'Yes. The demo is free.' },
         { q: 'Do I have to buy?', a: 'No. You decide after the demo, with no obligation.' },
+        {
+          q: 'Do you deliver outside Kuwait City?',
+          a: 'Yes. We deliver, install and give demos in all 6 governorates of Kuwait: Capital, Hawalli, Farwaniya, Ahmadi, Jahra and Mubarak Al-Kabeer. The demo is free wherever your salon is.',
+        },
         // TODO confirm
         { q: 'Can you come outside working hours?', a: "Ask us on WhatsApp and we’ll try to find a time that suits your salon." },
       ],

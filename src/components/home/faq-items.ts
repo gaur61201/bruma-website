@@ -16,12 +16,15 @@ export const faqItems = (lang: Lang) => {
 };
 
 /**
- * The printer page's FAQ: its own space and install questions, the homepage answers on design skills
- * and repairs, and the ink-cost question only when flags.showInkCostFaq is on.
+ * The printer page's FAQ: its own space, products and install questions, the homepage answers on design
+ * skills and repairs, and the ink-cost question only when flags.showInkCostFaq is on.
  */
 export const printerFaqItems = (lang: Lang) => {
   const t = useTranslations(lang);
-  const items = [t.printer.faq.space, t.faq.items[0], t.faq.items[2], t.printer.faq.installs].map((i) => ({ q: i.q, a: i.a }));
+  const items = [t.printer.faq.space, t.printer.faq.products, t.faq.items[0], t.faq.items[2], t.printer.faq.installs].map((i) => ({
+    q: i.q,
+    a: i.a,
+  }));
   if (config.flags.showInkCostFaq) items.push({ q: t.faq.inkItem.q, a: t.faq.inkItem.a });
   return items;
 };
