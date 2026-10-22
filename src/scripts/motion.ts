@@ -264,10 +264,6 @@ export function initMotion() {
     });
   };
 
-  const hygiene = () => {
-    batchIn($$('.hygiene-list > li'), { x: -SLIDE * dir }, 0.08);
-  };
-
   /** The plan cards (homepage and /ways-to-own/): they rise in, and the monthly card's outline traces in. */
   const ways = (grid: Element) => {
     const cards = $$('.plan', grid);
@@ -454,7 +450,6 @@ export function initMotion() {
       [$('[data-steps]'), steps],
       [$('#earnings'), () => rise($('#earnings-title')), calculator],
       [$('.included'), () => rise($('#included-title')), included],
-      [$('#hygiene'), () => rise($('#hygiene-title')), hygiene],
       [$('#ways-to-own'), () => rise($('#ways-title'))],
       [$('[data-plans]'), () => ways($('[data-plans]')!)],
       [$('.faq'), () => rise($('#faq-title')), faq],

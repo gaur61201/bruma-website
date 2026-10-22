@@ -160,16 +160,6 @@ export const en = {
     ],
   },
 
-  hygiene: {
-    h2: 'Clean between every client',
-    points: [
-      { icon: 'sparkle', text: 'Simple cleaning steps between clients, included in your training.' },
-      { icon: 'document', text: 'Safety data sheets for the ink and gels, available on request.' },
-      { icon: 'hand', text: 'Patch test advice for clients with sensitive skin.' },
-    ],
-    detailLink: 'Hygiene and safety in detail',
-  },
-
   ways: {
     h2: 'Two ways to own it',
     monthly: {

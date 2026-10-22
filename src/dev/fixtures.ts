@@ -82,7 +82,6 @@ const worstEn: Deep<Dict> = {
       { icon: 'refill', title: 'Cartridge refills', text: 'Delivered to your salon. Your first cartridge comes in the box.' },
     ],
   },
-  hygiene: { h2: 'Clean between every client, every time' },
   ways: {
     h2: 'Two ways to own the BRUMA nail printer',
     monthly: {
