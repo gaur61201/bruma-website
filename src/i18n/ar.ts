@@ -183,6 +183,19 @@ export const ar: Dict = {
     h2: 'صالونات تستخدم BRUMA',
   },
 
+  nail: {
+    label: 'رسم توضيحي',
+    alt: 'رسم توضيحي لظفر: {design}',
+    designs: {
+      french: 'أطراف فرنسية',
+      cherries: 'كرز',
+      dots: 'نقاط',
+      flowers: 'زهور بيضاء صغيرة',
+      star: 'نجمة سوداء',
+      heart: 'قلب ذهبي',
+    },
+  },
+
   printer: {
     meta: {
       title: 'طابعة الأظافر من BRUMA للصالونات في الكويت',

@@ -182,6 +182,20 @@ export const en = {
     h2: 'Salons using BRUMA',
   },
 
+  /** NailIllustration: the label under every nail illustration and the design names. */
+  nail: {
+    label: 'Illustration',
+    alt: 'Illustration of a nail: {design}',
+    designs: {
+      french: 'French tip',
+      cherries: 'Cherries',
+      dots: 'Polka dots',
+      flowers: 'Small white flowers',
+      star: 'Black star',
+      heart: 'Gold heart outline',
+    },
+  },
+
   printer: {
     meta: {
       title: 'The BRUMA nail printer for salons in Kuwait',

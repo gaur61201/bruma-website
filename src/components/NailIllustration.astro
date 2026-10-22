@@ -1,0 +1,214 @@
+---
+// An almond nail, drawn in SVG, at one stage of a BRUMA print: bare, base coat, a design outline preview
+// (choose), the printed design, or sealed (with a gloss highlight). Six flat designs; the one shown is
+// set by data-design on the <svg>, the stage by data-stage, so src/scripts/nail.ts can switch both and
+// animate the print (a vapor print-head line sweeping down while the design is revealed behind it).
+// Every instance carries a small "Illustration" label: it is never presented as a real nail.
+import { useTranslations, type Lang } from '../i18n';
+
+export type NailStage = 'bare' | 'base' | 'choose' | 'printed' | 'sealed';
+export type NailDesign = 'french' | 'cherries' | 'dots' | 'flowers' | 'star' | 'heart';
+export const nailDesigns: NailDesign[] = ['french', 'cherries', 'dots', 'flowers', 'star', 'heart'];
+
+interface Props {
+  lang: Lang;
+  stage?: NailStage;
+  design?: NailDesign;
+  /** Designs to include (switchable on the client); defaults to just `design`. */
+  designs?: NailDesign[];
+  /** Show the "Illustration" label under the nail. */
+  label?: boolean;
+  class?: string;
+}
+const { lang, stage = 'printed', design = 'french', designs = [design], label = true, class: className } = Astro.props;
+const n = useTranslations(lang).nail;
+const uid = `nail-${Math.random().toString(36).slice(2, 8)}`;
+const alt = n.alt.replace('{design}', n.designs[design]);
+
+// The almond nail, tip up (viewBox 0 0 120 172).
+const NAIL = 'M53 9 C57 5 63 5 67 9 C87 28 99 62 100 106 C101 138 97 158 84 165 C70 170 50 170 36 165 C23 158 19 138 20 106 C21 62 33 28 53 9 Z';
+---
+
+<figure class:list={['nail', className]}>
+  <svg
+    class="nail-svg"
+    viewBox="0 0 120 172"
+    role="img"
+    aria-label={alt}
+    data-nail
+    data-stage={stage}
+    data-design={design}
+    data-alt-template={n.alt}
+    data-design-names={JSON.stringify(n.designs)}
+  >
+    <defs>
+      <clipPath id={`${uid}-shape`}><path d={NAIL} /></clipPath>
+      <!-- Reveals the base coat from the cuticle up, and the design from the tip down. -->
+      <clipPath id={`${uid}-coat`}><rect class="nail-coat-reveal" x="0" y="0" width="120" height="172" /></clipPath>
+      <clipPath id={`${uid}-print`}><rect class="nail-print-reveal" x="0" y="0" width="120" height="172" /></clipPath>
+      <filter id={`${uid}-soft`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" /></filter>
+    </defs>
+
+    <g clip-path={`url(#${uid}-shape)`}>
+      <rect class="nail-bare" x="0" y="0" width="120" height="172" />
+      <g clip-path={`url(#${uid}-coat)`}>
+        <rect class="nail-base" x="0" y="0" width="120" height="172" />
+      </g>
+      <g class="nail-designs" clip-path={`url(#${uid}-print)`}>
+        {
+          designs.includes('french') && (
+            <g class="nail-design" data-for="french">
+              <path d="M0 0 H120 V40 C96 64 24 64 0 40 Z" fill="#FBFAF7" />
+            </g>
+          )
+        }
+        {
+          designs.includes('cherries') && (
+            <g class="nail-design" data-for="cherries">
+              <path d="M49 98 C52 84 58 74 68 66 M71 104 C70 90 69 78 68 66" fill="none" stroke="#4F5A35" stroke-width="2" stroke-linecap="round" />
+              <path d="M68 66 C76 58 86 60 88 66 C80 71 73 70 68 66 Z" fill="#5E7A3E" />
+              <circle cx="48" cy="106" r="11" fill="#A7202F" />
+              <circle cx="72" cy="112" r="11" fill="#B3263A" />
+              <circle cx="44" cy="102" r="2.6" fill="#FFFFFF" opacity="0.7" />
+              <circle cx="68" cy="108" r="2.6" fill="#FFFFFF" opacity="0.7" />
+            </g>
+          )
+        }
+        {
+          designs.includes('dots') && (
+            <g class="nail-design" data-for="dots" fill="#0E1113">
+              {[
+                [44, 40], [76, 40], [60, 58], [36, 72], [84, 72], [52, 88], [68, 88], [40, 106], [80, 106], [60, 122], [44, 140], [76, 140],
+              ].map(([cx, cy]) => <circle cx={cx} cy={cy} r="4.2" />)}
+            </g>
+          )
+        }
+        {
+          designs.includes('flowers') && (
+            <g class="nail-design" data-for="flowers">
+              {[
+                [48, 64, 1], [74, 98, 1.15], [50, 130, 0.9],
+              ].map(([cx, cy, s]) => (
+                <g transform={`translate(${cx} ${cy}) scale(${s})`}>
+                  {[0, 72, 144, 216, 288].map((a) => (
+                    <ellipse cx="0" cy="-6.5" rx="4.2" ry="6" fill="#FFFFFF" transform={`rotate(${a})`} />
+                  ))}
+                  <circle r="2.8" fill="#D9B46A" />
+                </g>
+              ))}
+            </g>
+          )
+        }
+        {
+          designs.includes('star') && (
+            <g class="nail-design" data-for="star" fill="#0E1113">
+              <path d="M60 70 C62 86 66 90 82 92 C66 94 62 98 60 114 C58 98 54 94 38 92 C54 90 58 86 60 70 Z" />
+              <path d="M80 50 C80.8 56 82 57.2 88 58 C82 58.8 80.8 60 80 66 C79.2 60 78 58.8 72 58 C78 57.2 79.2 56 80 50 Z" />
+              <circle cx="44" cy="128" r="2.4" />
+            </g>
+          )
+        }
+        {
+          designs.includes('heart') && (
+            <g class="nail-design" data-for="heart">
+              <path
+                d="M60 122 C44 110 36 100 36 89 C36 80 42 74 50 74 C55 74 58 77 60 81 C62 77 65 74 70 74 C78 74 84 80 84 89 C84 100 76 110 60 122 Z"
+                fill="none"
+                stroke="#C9A24E"
+                stroke-width="2.6"
+                stroke-linejoin="round"
+              />
+            </g>
+          )
+        }
+      </g>
+      <!-- Sealed: a soft gloss highlight (the sweep animates it across once; the streak stays). -->
+      <g class="nail-gloss">
+        <ellipse class="nail-gloss-sweep" cx="10" cy="80" rx="14" ry="80" fill="#FFFFFF" opacity="0.55" filter={`url(#${uid}-soft)`} transform="rotate(14 60 86)" />
+        <path class="nail-gloss-streak" d="M40 40 C42 30 48 22 54 18 C50 30 46 46 45 66 C42 58 40 50 40 40 Z" fill="#FFFFFF" opacity="0.45" />
+      </g>
+    </g>
+    <path class="nail-edge" d={NAIL} fill="none" />
+    <!-- The print head: a thin vapor line that travels from tip to cuticle while printing. -->
+    <g class="nail-head" aria-hidden="true">
+      <rect x="4" y="-1" width="112" height="2" rx="1" />
+    </g>
+  </svg>
+  {label && <figcaption class="nail-label">{n.label}</figcaption>}
+</figure>
+
+<style>
+  .nail {
+    margin: 0;
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+  }
+  .nail-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  /* The nail itself: natural tone, then a nude base coat (illustration colours, not UI colours). */
+  .nail-bare {
+    fill: #efd8cd;
+  }
+  .nail-base {
+    fill: #e6c2b1;
+  }
+  .nail-edge {
+    stroke: rgb(14 17 19 / 0.16);
+    stroke-width: 1;
+  }
+  .nail-head {
+    fill: var(--color-vapor);
+    opacity: 0;
+  }
+
+  /* Stages (set on the svg by data-stage). */
+  .nail-design {
+    display: none;
+  }
+  [data-design='french'] [data-for='french'],
+  [data-design='cherries'] [data-for='cherries'],
+  [data-design='dots'] [data-for='dots'],
+  [data-design='flowers'] [data-for='flowers'],
+  [data-design='star'] [data-for='star'],
+  [data-design='heart'] [data-for='heart'] {
+    display: inline;
+  }
+  [data-stage='bare'] .nail-base,
+  [data-stage='bare'] .nail-designs,
+  [data-stage='base'] .nail-designs {
+    opacity: 0;
+  }
+  .nail-gloss {
+    opacity: 0;
+  }
+  [data-stage='sealed'] .nail-gloss {
+    opacity: 1;
+  }
+  /* The sweep only shows while it crosses the nail; at rest the streak carries the gloss. */
+  .nail-gloss-sweep {
+    opacity: 0;
+  }
+  /* Choose: the design as a dashed outline preview on the base coat. */
+  [data-stage='choose'] .nail-design :global(*) {
+    fill: none !important;
+    stroke: var(--color-deep-teal) !important;
+    stroke-width: 1.2 !important;
+    stroke-dasharray: 3 3;
+    opacity: 1 !important;
+  }
+
+  .nail-label {
+    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-weight: 500;
+    color: var(--color-stone);
+  }
+  .nail-label:lang(en) {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>
