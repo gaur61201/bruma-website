@@ -265,6 +265,10 @@ export const ar: Dict = {
     },
     specs: {
       h2: 'المواصفات',
+      fitTitle: 'هل تتّسع لها طاولتك؟',
+      drawingAlt: `رسم خطي لصندوق بعرض ${c.printerSizeCm.width} سم وعمق ${c.printerSizeCm.depth} سم وارتفاع ${c.printerSizeCm.height} سم تقريباً، على حافة طاولة.`,
+      drawingCaption: 'رسم توضيحي: المقاس الإجمالي فقط، وليس شكل الطابعة.',
+      cm: 'سم',
       caption: 'مواصفات طابعة الأظافر من BRUMA',
       note: 'تناسب طاولة أظافر عادية. يمكن التأكد من المساحة خلال العرض.',
       boxTitle: 'محتويات الصندوق',

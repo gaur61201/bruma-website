@@ -15,6 +15,7 @@ export const config = {
   analyticsScriptSrc: 'https://cloud.umami.is/script.js', // TODO confirm provider
 
   printSecondsPerNail: 10, // TODO confirm by timing the demo unit
+  printerSizeCm: { width: 25, depth: 37, height: 42 }, // TODO confirm on the demo unit. The size spec and the /printer/ drawing.
   minutesPerFullSet: 15, // TODO confirm
   demoMinutes: 30, // TODO confirm
   replyHours: 2, // TODO confirm
@@ -70,6 +71,8 @@ export interface PrinterSpec {
   confirmed: boolean;
   onlyIf?: keyof typeof config.flags;
 }
+const { width, depth, height } = config.printerSizeCm;
+const sizeCm = [width, depth, height].join('\u00a0×\u00a0');
 export const printerSpecs: PrinterSpec[] = [
   {
     label: 'printTime',
@@ -81,7 +84,7 @@ export const printerSpecs: PrinterSpec[] = [
   },
   { label: 'curing', value: { en: 'Built-in UV/LED lamp', ar: 'مصباح UV/LED مدمج' }, confirmed: false }, // TODO confirm on the demo unit
   { label: 'screen', value: { en: '15.6-inch touchscreen', ar: 'شاشة لمس مقاس 15.6 بوصة' }, confirmed: false }, // TODO confirm on the demo unit
-  { label: 'size', value: { en: 'About 25\u00a0×\u00a037\u00a0×\u00a042\u00a0cm', ar: 'نحو 25\u00a0×\u00a037\u00a0×\u00a042\u00a0سم' }, confirmed: false }, // TODO confirm on the demo unit
+  { label: 'size', value: { en: `About ${sizeCm}\u00a0cm`, ar: `نحو ${sizeCm}\u00a0سم` }, confirmed: false }, // TODO confirm on the demo unit
   { label: 'weight', value: { en: 'About 11\u00a0kg', ar: 'نحو 11\u00a0كغ' }, confirmed: false }, // TODO confirm on the demo unit
   {
     label: 'power',
@@ -105,14 +108,16 @@ export const printerSpecs: PrinterSpec[] = [
 // What's in the box, listed on the printer page after the specifications.
 export interface BoxItem {
   item: { en: string; ar: string };
+  /** The chip's icon (a name from Icon.astro). */
+  icon: 'printer' | 'refill' | 'bottle' | 'hand' | 'document';
   confirmed: boolean;
 }
 export const boxContents: BoxItem[] = [
-  { item: { en: 'The printer', ar: 'الطابعة' }, confirmed: false }, // TODO confirm
-  { item: { en: 'A starter ink cartridge', ar: 'عبوة حبر للبدء' }, confirmed: false }, // TODO confirm
-  { item: { en: 'Print gel', ar: 'جل الطباعة' }, confirmed: false }, // TODO confirm
-  { item: { en: 'Nail holders', ar: 'حوامل الأظافر' }, confirmed: false }, // TODO confirm
-  { item: { en: 'A test card', ar: 'بطاقة اختبار' }, confirmed: false }, // TODO confirm
+  { item: { en: 'The printer', ar: 'الطابعة' }, icon: 'printer', confirmed: false }, // TODO confirm
+  { item: { en: 'A starter ink cartridge', ar: 'عبوة حبر للبدء' }, icon: 'refill', confirmed: false }, // TODO confirm
+  { item: { en: 'Print gel', ar: 'جل الطباعة' }, icon: 'bottle', confirmed: false }, // TODO confirm
+  { item: { en: 'Nail holders', ar: 'حوامل الأظافر' }, icon: 'hand', confirmed: false }, // TODO confirm
+  { item: { en: 'A test card', ar: 'بطاقة اختبار' }, icon: 'document', confirmed: false }, // TODO confirm
 ];
 
 /** The spec rows to show, honouring each row's flag. */

@@ -269,6 +269,10 @@ export const en = {
     },
     specs: {
       h2: 'Specifications',
+      fitTitle: 'Will it fit?',
+      drawingAlt: `Line drawing of a box about ${c.printerSizeCm.width} cm wide, ${c.printerSizeCm.depth} cm deep and ${c.printerSizeCm.height} cm high, on a desk edge.`,
+      drawingCaption: 'Illustration: overall size only, not the printer’s shape.',
+      cm: 'cm',
       caption: 'BRUMA nail printer specifications',
       note: 'Fits on a standard nail desk. Check your space at the demo.',
       boxTitle: "What’s in the box",
