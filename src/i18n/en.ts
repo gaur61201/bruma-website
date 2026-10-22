@@ -149,7 +149,7 @@ export const en = {
     delivery: { title: 'Delivery and installation', text: 'We bring it, set it up and print your first test nail with you.' },
     technicians: { title: 'Technicians trained', text: 'Prep, printing, cleaning and simple fixes, in your salon.' },
     library: { title: 'Design library', text: 'Ready-made designs built in.', link: 'See sample designs' },
-    refills: { title: 'Ink refills', text: 'Delivered to your salon.', pill: 'First cartridge in the box' },
+    refills: { title: 'Ink refills', text: 'Delivered to your salon.', pill: 'Free cartridge with the printer' },
     cards: [
       { icon: 'truck', title: 'Delivery and installation', text: 'We set it up in your salon.' },
       { icon: 'training', title: 'Training', text: `On-site training for ${c.techniciansTrained} technicians.` },
