@@ -21,21 +21,13 @@ const c = useTranslations(lang).ctaBand;
 </section>
 
 <style>
+  /* Runs straight into the (carbon) footer: one bone hairline at content width is the seam. */
   .cta-band {
-    padding-block-start: 32px;
+    padding-block-start: clamp(48px, 40.4px + 2.03vw, 66px);
   }
-  @media (min-width: 1024px) {
-    .cta-band {
-      padding-block-start: 40px;
-    }
-    .cta-band-inner {
-      padding-block-end: 40px;
-    }
-  }
-  /* The footer (also carbon) follows: a 1px line, like the footer's own divider, keeps them apart. */
   .cta-band-inner {
-    padding-block-end: 32px;
-    border-bottom: 1px solid var(--color-line);
+    padding-block-end: clamp(48px, 40.4px + 2.03vw, 66px);
+    border-bottom: 1px solid rgb(243 239 232 / 0.12);
     display: flex;
     flex-wrap: wrap;
     align-items: center;

@@ -131,24 +131,28 @@ const errorId = (f: string) => `demo-${f}-error`;
     flex-direction: column;
     gap: 8px;
   }
+  /* Sizes come from custom properties so the full-width demo band can scale them up (DemoForm.astro);
+     the defaults are the compact sizes used on /book-a-demo/. */
   .field label {
     font-weight: 500;
+    font-size: calc(var(--form-label, var(--fs-body)) * var(--script-scale));
   }
   .field-hint {
     margin-block-start: -4px;
     color: var(--color-mist);
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--form-hint, var(--fs-small)) * var(--script-scale));
   }
   .field input,
   .field select {
     width: 100%;
-    min-height: 48px;
-    padding-inline: 16px;
+    min-height: var(--field-h, 48px);
+    padding-inline: var(--field-pad, 16px);
     border: 2px solid var(--color-white);
     border-radius: var(--radius-input);
     background: var(--color-white);
     color: var(--color-carbon);
     font: inherit;
+    font-size: calc(var(--field-text, var(--fs-body)) * var(--script-scale));
   }
   .field input[aria-invalid='true'],
   .field select[aria-invalid='true'] {
@@ -159,13 +163,13 @@ const errorId = (f: string) => `demo-${f}-error`;
   }
   .field select {
     appearance: none;
-    padding-inline-end: 48px;
+    padding-inline-end: calc(var(--field-pad, 16px) + 32px);
     cursor: pointer;
   }
   .select-wrap :global(.select-icon) {
     position: absolute;
     top: 50%;
-    inset-inline-end: 16px;
+    inset-inline-end: var(--field-pad, 16px);
     translate: 0 -50%;
     color: var(--color-carbon);
     pointer-events: none;
@@ -177,7 +181,8 @@ const errorId = (f: string) => `demo-${f}-error`;
   .phone-prefix {
     display: grid;
     place-items: center;
-    padding-inline: 16px;
+    padding-inline: var(--field-pad, 16px);
+    font-size: calc(var(--field-text, var(--fs-body)) * var(--script-scale));
     border-radius: var(--radius-input) 0 0 var(--radius-input);
     background: var(--color-bone);
     color: var(--color-carbon);
@@ -234,8 +239,15 @@ const errorId = (f: string) => `demo-${f}-error`;
     gap: 16px;
     margin-block-start: 8px;
   }
+  .demo-actions .btn {
+    --btn-h: var(--form-btn-h, 52px);
+  }
   .demo-actions .btn-primary {
     width: 100%;
+  }
+  /* In the full-width band both buttons span the form column as a matched pair. */
+  .demo-actions .btn-secondary {
+    width: var(--form-secondary-w, auto);
   }
   .form-status:empty {
     display: none;
@@ -256,6 +268,6 @@ const errorId = (f: string) => `demo-${f}-error`;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-size: calc(var(--fs-small) * var(--script-scale));
+    font-size: calc(var(--form-notes, var(--fs-small)) * var(--script-scale));
   }
 </style>

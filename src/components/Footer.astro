@@ -78,8 +78,10 @@ const links = [
 </footer>
 
 <style>
+  /* The top padding matches the space above the hairline in the demo and CTA bands, so the seam sits
+     in the middle of one continuous dark block. */
   .site-footer {
-    padding-block: 64px 96px;
+    padding-block: clamp(64px, 46.6px + 4.64vw, 106px) 96px;
   }
   .footer-grid {
     display: grid;
