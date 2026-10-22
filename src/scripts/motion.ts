@@ -10,6 +10,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { numberState, setNumberAnimator, type NumberFormat } from './number-display';
+import { chooseTimeline, coatTimeline, printTimeline, sealTimeline, setStage, type NailStage } from './nail';
 
 const FAILSAFE_MS = 2000; // keep in sync with the CSS failsafe in global.css
 const START = 'top 85%';
@@ -171,13 +172,17 @@ export function initMotion() {
 
   /**
    * How it works. The connecting line is always drawn. The cards slide in once, the first time the steps
-   * scroll into view; then the icon hop plays once: each step icon rises 10px and drops back, one at a
-   * time in step order (right to left in Arabic), and stops after step 4. No repeat, and no replay when
-   * scrolling back; it plays again only after a reload. A run takes under 5s, so it needs no pause
-   * control. In the same timeline, each step number is highlighted (carbon fill, bone number, scale
-   * 1.1) from the moment its icon starts hopping until the next icon starts; number 4 rests 0.5s after
-   * its icon lands. The fill grows from the centre of the circle (clip-path) and switches off at once,
-   * so the number never passes through a half-faded grey state.
+   * scroll into view. Then each card plays its step once on the illustrated nail, one nail going through
+   * the steps: Prep fills the base coat in; Choose brings three swatches in beside the nail, rings the
+   * picked one and fades the dashed preview in; Print runs the print head; Seal sweeps the gloss. Each
+   * card takes 1–1.3s, with its number highlighted (carbon fill, bone number, scale 1.1) while it plays.
+   * - 1024px and up: chained in step order (right to left in Arabic), started when the cards have
+   *   landed; number 4 rests 0.5s after its step, about 5s in all.
+   * - Below 1024px the cards stack, so each card plays as it scrolls into view, not chained.
+   * Once per page load: no loop, no replay when scrolling back, so no pause control. Afterwards, hovering
+   * a card with a mouse (desktop) or focusing it from the keyboard replays just that card's nail. The
+   * number fill grows from the centre of the circle (clip-path) and switches off at once, so the digit
+   * never passes through a half-faded grey state.
    */
   const steps = () => {
     const list = $('[data-steps]');
@@ -186,43 +191,106 @@ export function initMotion() {
     const nums = items.map((s) => $('.step-num', s)!);
     const fills = items.map((s) => $('.step-num-fill', s)!);
     const cards = items.map((s) => $('.step-card', s)!);
-    const icons = cards.map((c) => $<SVGElement>('svg', c)!);
+    const nails = cards.map((c) => $<SVGSVGElement>('.step-nail [data-nail]', c)!);
+    const swatchList = $('[data-swatches]', list);
+    const swatches = swatchList ? $$('.step-swatch', swatchList) : [];
+    const last = items.length - 1;
 
     // Numbers rest as outlined circles; the carbon fill shows only while highlighted.
     const EMPTY = 'circle(0% at 50% 50%)';
     const FULL = 'circle(50% at 50% 50%)';
-    gsap.set(fills, { opacity: 1, clipPath: EMPTY });
-
-    const HOP = 0.25; // seconds up, and again down
     const FILL = 0.18;
-    const hop = gsap.timeline({ paused: true });
-    icons.forEach((icon, i) => {
-      const at = i * 2 * HOP;
-      hop
-        .to(icon, { y: -10, duration: HOP, ease: 'power2.out' }, at)
-        .to(icon, { y: 0, duration: HOP, ease: 'power2.in' }, at + HOP)
-        .to(fills[i], { clipPath: FULL, duration: FILL, ease: 'power2.out' }, at)
-        .to(nums[i], { scale: 1.1, duration: FILL, ease: 'power2.out' }, at);
-      // Back to rest when the next icon starts; the last number 0.5s after its icon lands.
-      const rest = i < icons.length - 1 ? at + 2 * HOP : at + 2 * HOP + 0.5;
-      // The outgoing highlight switches off at once (a shrinking circle would slice through the digit).
-      hop.set(fills[i], { clipPath: EMPTY }, rest).to(nums[i], { scale: 1, duration: FILL, ease: 'power2.out' }, rest);
-    });
-    // A single run, started once.
-    let started = false;
-    const startHops = () => {
-      if (started) return;
-      started = true;
-      hop.play();
-    };
+    gsap.set(fills, { opacity: 1, clipPath: EMPTY });
+    const highlight = (tl: gsap.core.Timeline, i: number, from: number, to: number) =>
+      tl
+        .to(fills[i], { clipPath: FULL, duration: FILL, ease: 'power2.out' }, from)
+        .to(nums[i], { scale: 1.1, duration: FILL, ease: 'power2.out' }, from)
+        // The outgoing highlight switches off at once (a shrinking circle would slice through the digit).
+        .set(fills[i], { clipPath: EMPTY }, to)
+        .to(nums[i], { scale: 1, duration: FILL, ease: 'power2.out' }, to);
 
-    // Cards already shown (failsafe or keyboard focus): the hop still waits for the first time the
-    // steps scroll into view.
-    if (!claim(cards, list)) {
-      ScrollTrigger.create({ ...once(list), onEnter: startHops });
+    // Each card waits at the stage before its step: bare, base coat, design chosen, printed.
+    const BEFORE: NailStage[] = ['bare', 'base', 'choose', 'printed'];
+    const LENGTH = [1.1, 1.2, 1.3, 1.0]; // seconds per card, each with a short hold at the end
+    const reset = (i: number) => {
+      setStage(nails[i], BEFORE[i]);
+      if (i !== 1 || !swatchList) return;
+      gsap.killTweensOf(swatches);
+      gsap.set(swatches, { opacity: 0, x: 8 * dir });
+      swatchList.setAttribute('data-picking', '');
+    };
+    const stepTimeline = (i: number) => {
+      const nail = nails[i];
+      if (i === 0) return coatTimeline(gsap, nail, 0.9);
+      if (i === 2) return printTimeline(gsap, nail, 1.1);
+      if (i === 3) return sealTimeline(gsap, nail);
+      const tl = gsap.timeline();
+      if (swatchList)
+        tl.to(swatches, { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out', stagger: 0.06 }, 0).call(
+          () => swatchList.removeAttribute('data-picking'),
+          [],
+          0.55,
+        );
+      return tl.add(chooseTimeline(gsap, nail, 0.3), 0.75);
+    };
+    items.forEach((_, i) => reset(i));
+
+    // After a card has played, a mouse hover (desktop) or keyboard focus replays just its step.
+    const played = items.map(() => false);
+    const running: (gsap.core.Timeline | null)[] = items.map(() => null);
+    const replay = (i: number) => {
+      if (!played[i] || running[i]?.isActive() || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      reset(i);
+      running[i] = stepTimeline(i);
+    };
+    const chained = matchMedia('(min-width: 1024px)').matches;
+    const mouse = matchMedia('(hover: hover) and (pointer: fine)');
+    cards.forEach((card, i) => {
+      card.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && mouse.matches && chained && replay(i));
+      card.addEventListener('focus', () => card.matches(':focus-visible') && replay(i));
+    });
+
+    const slide = (onComplete?: () => void) =>
+      gsap.from(cards, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08, scrollTrigger: once(list), onComplete });
+
+    if (!chained) {
+      // Stacked: each card plays as it scrolls into view.
+      cards.forEach((card, i) =>
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 75%',
+          once: true,
+          onEnter: () => {
+            const tl = gsap.timeline({ onComplete: () => void (played[i] = true) });
+            highlight(tl.add(stepTimeline(i), 0), i, 0, LENGTH[i] + 0.3);
+          },
+        }),
+      );
+      if (claim(cards, list)) slide();
       return;
     }
-    gsap.from(cards, { x: -SLIDE * dir, opacity: 0, duration: 0.7, ease: EASE, stagger: 0.08, scrollTrigger: once(list), onComplete: startHops });
+
+    // Side by side: one sequence, started once.
+    let started = false;
+    const play = () => {
+      if (started) return;
+      started = true;
+      const seq = gsap.timeline();
+      let at = 0;
+      items.forEach((_, i) => {
+        const end = at + LENGTH[i];
+        seq.add(stepTimeline(i), at).call(() => void (played[i] = true), [], end);
+        highlight(seq, i, at, i < last ? end : end + 0.5);
+        at = end;
+      });
+    };
+    // Cards already shown (failsafe or keyboard focus): the sequence still waits for the first time the
+    // steps scroll into view.
+    if (!claim(cards, list)) {
+      ScrollTrigger.create({ ...once(list), onEnter: play });
+      return;
+    }
+    slide(play);
   };
 
   const calculator = () => {
