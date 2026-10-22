@@ -50,6 +50,7 @@ const items = [
       // Keep the active chip in view in the sideways-scrolling mobile row (scrolls the row only, never the page).
       const active = links.find((a) => a.dataset.sectionLink === current);
       const list = nav.querySelector<HTMLElement>('.section-nav-list');
+      if (!active && list) list.scrollLeft = 0; // back at the top: the row starts from its first chip
       if (active && list && list.scrollWidth > list.clientWidth) {
         const a = active.getBoundingClientRect();
         const l = list.getBoundingClientRect();

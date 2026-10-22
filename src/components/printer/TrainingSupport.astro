@@ -2,14 +2,16 @@
 // "Your first week with BRUMA" (#support): delivery, installation, training, ongoing support, as a
 // timeline. Horizontal on desktop, vertical on mobile; a sequence, not days. On first view the line
 // draws from step to step and each dot fills as the line reaches it (once). Without motion, or without
-// JS, the line is drawn and the dots filled from the start.
+// JS, the line is drawn and the dots filled from the start. "WhatsApp help" opens a WhatsApp chat.
 import Icon from '../Icon.astro';
+import { whatsappLink } from '../../config';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const tr = useTranslations(Astro.props.lang).printer.training;
+const t = useTranslations(Astro.props.lang);
+const tr = t.printer.training;
 const supportIcons = ['whatsapp', 'truck', 'shield', 'swap'] as const;
 ---
 
@@ -39,7 +41,20 @@ const supportIcons = ['whatsapp', 'truck', 'shield', 'swap'] as const;
                   {tr.support.map((item, n) => (
                     <li>
                       <Icon name={supportIcons[n]} size={20} />
-                      <span>{item}</span>
+                      {n === 0 ? (
+                        <a
+                          href={whatsappLink(t.whatsapp.floatMessage)}
+                          class="text-link"
+                          target="_blank"
+                          rel="noopener"
+                          data-track="whatsapp_click"
+                          data-track-location="printer_support"
+                        >
+                          {item}
+                        </a>
+                      ) : (
+                        <span>{item}</span>
+                      )}
                     </li>
                   ))}
                 </ul>

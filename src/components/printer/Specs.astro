@@ -155,13 +155,13 @@ const drawingWidth = `min(100%, ${Math.round((maxX - minX) * 1.1)}px)`;
   const root = document.querySelector<HTMLElement>('[data-specs]');
   const svg = root?.querySelector<SVGSVGElement>('[data-fit]');
   if (root && svg) {
-    // The Size row, hovered or focused, highlights the dimension lines.
+    // The Size row, hovered (with a mouse: a tap would only flash it) or focused, highlights the dimension lines.
     const row = root.querySelector<HTMLElement>('[data-size-row]');
     if (row) {
       const on = () => root.setAttribute('data-size-hl', '');
       const off = () => root.removeAttribute('data-size-hl');
-      row.addEventListener('pointerenter', on);
-      row.addEventListener('pointerleave', off);
+      row.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && on());
+      row.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && off());
       row.addEventListener('focus', on);
       row.addEventListener('blur', off);
     }
@@ -333,9 +333,13 @@ const drawingWidth = `min(100%, ${Math.round((maxX - minX) * 1.1)}px)`;
   .specs-size {
     transition: background-color 200ms var(--ease-out);
   }
-  .specs-size:hover,
   .specs-size:focus-visible {
     background: rgb(159 224 234 / 0.08);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .specs-size:hover {
+      background: rgb(159 224 234 / 0.08);
+    }
   }
   .specs-size:focus-visible {
     outline: 2px solid var(--focus);

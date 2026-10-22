@@ -42,14 +42,14 @@ const layers = [
     </div>
 
     <figure class="layers card" data-layers data-mode="printed" data-note-printed={p.printedNote} data-note-sticker={p.stickerNote}>
-      <svg class="layers-svg" viewBox="0 0 520 240" role="img" aria-labelledby="layers-note">
-        <g class="layer" data-layer="nail" style="--dy: 0">
+      <svg class="layers-svg" viewBox="0 60 520 228" role="img" aria-labelledby="layers-note">
+        <g class="layer" data-layer="nail" style="--dy: 48">
           <path class="layer-nail" d={band(190, 40)} />
         </g>
-        <g class="layer" data-layer="base" style="--dy: -32">
+        <g class="layer" data-layer="base" style="--dy: 16">
           <path class="layer-base" d={band(176, 14)} />
         </g>
-        <g class="layer" data-layer="print" style="--dy: -64">
+        <g class="layer" data-layer="print" style="--dy: -16">
           <g class="as-printed">
             <path class="ink ink-a" d={arc(172)} />
             <path class="ink ink-b" d={arc(172)} />
@@ -62,14 +62,14 @@ const layers = [
             <path class="ink ink-c" d={lifted(171)} />
           </g>
         </g>
-        <g class="layer" data-layer="top" style="--dy: -96">
+        <g class="layer" data-layer="top" style="--dy: -48">
           <g class="coat">
             <path class="layer-top" d={band(150, 18)} />
             <path class="layer-gloss" d="M112 142 Q180 126 250 124" />
           </g>
         </g>
         <!-- The lifted end of the sticker film sits over the top coat. -->
-        <g class="layer as-sticker" data-layer="print" style="--dy: -64">
+        <g class="layer as-sticker" data-layer="print" style="--dy: -16">
           <path class="film-edge" d={tail(171)} />
           <path class="film" d={tail(171)} />
         </g>
@@ -123,12 +123,12 @@ const layers = [
       }),
     );
 
-    // A layer's name, hovered or focused, highlights that layer.
+    // A layer's name, hovered (with a mouse: a tap would only flash it) or focused, highlights that layer.
     fig.querySelectorAll<HTMLElement>('[data-key]').forEach((item) => {
       const on = () => (fig.dataset.focus = item.dataset.key);
       const off = () => delete fig.dataset.focus;
-      item.addEventListener('pointerenter', on);
-      item.addEventListener('pointerleave', off);
+      item.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && on());
+      item.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && off());
       item.addEventListener('focus', on);
       item.addEventListener('blur', off);
     });
@@ -250,7 +250,7 @@ const layers = [
     translate: 0 -6px;
   }
 
-  /* Exploded: each layer lifts by its --dy (SVG units); settles back. */
+  /* Exploded: the layers spread apart from the middle by their --dy (SVG units), then settle back. */
   .layer {
     translate: 0 0;
     transition: opacity 200ms var(--ease-out);
@@ -306,9 +306,13 @@ const layers = [
     cursor: default;
     transition: background-color 160ms var(--ease-out);
   }
-  .layers-key-item:hover,
   .layers-key-item:focus-visible {
     background: var(--color-bone);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .layers-key-item:hover {
+      background: var(--color-bone);
+    }
   }
   .layers-key-item:focus-visible {
     outline: 2px solid var(--focus);
