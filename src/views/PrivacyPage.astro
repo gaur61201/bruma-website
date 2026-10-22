@@ -1,6 +1,7 @@
 ---
 // The privacy policy, shared by /privacy/ (English) and /ar/privacy/ (Arabic). Plain language.
 // TODO review: the whole page (copy in src/i18n).
+import RelatedLinks from '../components/RelatedLinks.astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import LegalUpdated from '../components/LegalUpdated.astro';
@@ -29,5 +30,6 @@ const p = useTranslations(lang).privacyPage;
   <TextSection id="contact-title" title={p.contact.h2}>
     <ContactList lang={lang} trackLocation="privacy" />
   </TextSection>
+  <RelatedLinks lang={lang} pages={['printer', 'bookDemo']} />
   <CtaBand lang={lang} />
 </Base>

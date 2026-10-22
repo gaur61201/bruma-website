@@ -19,6 +19,15 @@ const identity =
 
 export const ar: Dict = {
   identity,
+  related: {
+    title: 'صفحات ذات صلة',
+    printer: 'تفاصيل الطابعة',
+    gallery: 'عرض التصاميم النموذجية',
+    ways: 'مقارنة طرق التملّك',
+    warranty: 'قراءة شروط الضمان',
+    hygiene: 'دليل التنظيف وسلامة الجل',
+    bookDemo: 'حجز عرض مجاني في صالونك',
+  },
   schema: {
     home: 'الرئيسية',
     governorate: (name: string): string => `محافظة ${name}`,

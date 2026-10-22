@@ -1,6 +1,7 @@
 ---
 // The warranty terms, shared by /warranty/ (English) and /ar/warranty/ (Arabic). Plain language.
 // TODO lawyer review: the whole page (copy in src/i18n).
+import RelatedLinks from '../components/RelatedLinks.astro';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import PageHero from '../components/PageHero.astro';
@@ -41,5 +42,6 @@ const w = useTranslations(lang).warrantyPage;
     </a>
   </TextSection>
   <TextSection id="monthly-title" title={w.monthly.h2} paragraphs={[w.monthly.text]} />
+  <RelatedLinks lang={lang} pages={['printer', 'ways']} />
   <CtaBand lang={lang} />
 </Base>

@@ -4,7 +4,8 @@ import Icon from './Icon.astro';
 
 interface Props {
   title: string;
-  items: { q: string; a: string }[];
+  /** An answer can end with a link to the page that covers it in full. */
+  items: { q: string; a: string; link?: { href: string; label: string } }[];
   /** Optional id on the section, for in-page links. */
   anchor?: string;
 }
@@ -25,6 +26,12 @@ const { title, items, anchor } = Astro.props;
             </summary>
             <div class="faq-answer">
               <p>{item.a}</p>
+              {item.link && (
+                <a href={item.link.href} class="text-link arrow-link faq-link">
+                  <span>{item.link.label}</span>
+                  <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+                </a>
+              )}
             </div>
           </details>
         ))
@@ -52,6 +59,11 @@ const { title, items, anchor } = Astro.props;
 </script>
 
 <style>
+  /* After the answer: 12px under the text (borrowed from the answer's 24px), then the answer's 24px gap. */
+  .faq-link {
+    display: inline-flex;
+    margin-block: -12px 24px;
+  }
   .faq-grid {
     display: grid;
     gap: 32px;

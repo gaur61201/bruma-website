@@ -17,6 +17,16 @@ const identity =
 
 export const en = {
   identity,
+  /** Descriptive anchor text for in-page links to other pages (FAQ answers, "Related pages"). */
+  related: {
+    title: 'Related pages',
+    printer: 'See the printer in detail',
+    gallery: 'See the sample designs',
+    ways: 'Compare the ways to own it',
+    warranty: 'Read the warranty terms',
+    hygiene: 'Read the cleaning and gel safety guide',
+    bookDemo: 'Book a free demo in your salon',
+  },
   /** Structured data (JSON-LD) wording that isn't shown elsewhere on the page. */
   schema: {
     home: 'Home',

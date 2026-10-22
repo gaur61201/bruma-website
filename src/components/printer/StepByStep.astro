@@ -7,15 +7,17 @@
 // nail at its stage. With flags.showStepPhotos on, each step gets its photo (a labelled placeholder until
 // the real photos exist).
 import NailIllustration, { type NailDesign, type NailStage } from '../NailIllustration.astro';
+import Icon from '../Icon.astro';
 import PhotoPlaceholder from '../PhotoPlaceholder.astro';
 import { config } from '../../config';
-import { useTranslations, type Lang } from '../../i18n';
+import { localizedPath, useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const s = useTranslations(lang).printer.steps;
+const related = useTranslations(lang).related;
 const DESIGN: NailDesign = 'cherries';
 const swatches: NailDesign[] = ['french', 'cherries', 'flowers'];
 const stages: NailStage[] = ['base', 'choose', 'printed', 'sealed'];
@@ -68,6 +70,11 @@ const showPhotos = config.flags.showStepPhotos;
       </ol>
     </div>
     <p class="story-footnote" data-motion data-reveal="fade">{s.footnote}</p>
+    <!-- The Choose step mentions the design library: the samples are on the gallery page. -->
+    <a href={localizedPath('/gallery/', lang)} class="text-link arrow-link story-link">
+      <span>{related.gallery}</span>
+      <Icon name="arrow" size={20} class="flip-rtl btn-arrow" />
+    </a>
   </div>
 </section>
 
@@ -172,6 +179,9 @@ const showPhotos = config.flags.showStepPhotos;
   }
   .story-copy h3 {
     font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+  .story-link {
+    margin-block-start: 8px;
   }
   .story-footnote {
     margin-block-start: 40px;
