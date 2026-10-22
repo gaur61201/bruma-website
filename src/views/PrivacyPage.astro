@@ -8,6 +8,7 @@ import LegalUpdated from '../components/LegalUpdated.astro';
 import TextSection from '../components/TextSection.astro';
 import ContactList from '../components/ContactList.astro';
 import CtaBand from '../components/CtaBand.astro';
+import { config } from '../config';
 import { useTranslations, type Lang } from '../i18n';
 
 interface Props {
@@ -25,7 +26,7 @@ const p = useTranslations(lang).privacyPage;
   <TextSection id="why-title" title={p.why.h2} paragraphs={[p.why.text]} />
   <TextSection id="who-title" title={p.who.h2} paragraphs={[p.who.text]} />
   <TextSection id="keep-title" title={p.keep.h2} paragraphs={[p.keep.text]} />
-  <TextSection id="choices-title" title={p.choices.h2} paragraphs={[p.choices.text]} />
+  <TextSection id="choices-title" title={p.choices.h2} paragraphs={[config.email ? p.choices.text : p.choices.textNoEmail]} />
   <TextSection id="cookies-title" title={p.cookies.h2} paragraphs={[p.cookies.text]} />
   <TextSection id="contact-title" title={p.contact.h2}>
     <ContactList lang={lang} trackLocation="privacy" />

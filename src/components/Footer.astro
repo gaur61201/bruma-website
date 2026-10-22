@@ -68,12 +68,17 @@ const links = [
             <span class="sr-only">{t.footer.phone}: </span><span class="ltr phone">{config.phoneDisplay}</span>
           </a>
         </li>
-        <li>
-          <a href={`mailto:${config.email}`}>
-            <Icon name="mail" size={20} />
-            <span class="sr-only">{t.footer.email}: </span><span class="ltr">{config.email}</span>
-          </a>
-        </li>
+        {
+          config.email && (
+            <li>
+              <a href={`mailto:${config.email}`}>
+                <Icon name="mail" size={20} />
+                <span class="sr-only">{t.footer.email}: </span>
+                <span class="ltr">{config.email}</span>
+              </a>
+            </li>
+          )
+        }
       </ul>
     </div>
   </div>

@@ -605,7 +605,11 @@ export const en = {
       h2: 'How long we keep it',
       text: `We keep your details for up to ${enCount(c.dataRetentionMonths, 'month', 'months')} after your last contact with us, then delete them.`,
     },
-    choices: { h2: 'Your choices', text: 'Ask us to see or delete your details at any time, by WhatsApp or email.' },
+    choices: {
+      h2: 'Your choices',
+      text: 'Ask us to see or delete your details at any time, by WhatsApp or email.',
+      textNoEmail: 'Ask us to see or delete your details at any time, by WhatsApp or phone.',
+    },
     cookies: { h2: 'Cookies', text: 'The site sets no tracking cookies.' },
     contact: { h2: 'Contact' },
   },

@@ -21,7 +21,7 @@ export function organizationSchema(t: Dict) {
     url: `${site}/`,
     logo: { '@type': 'ImageObject', url: abs('/icon-512.png'), width: 512, height: 512 },
     description: t.identity,
-    email: config.email,
+    ...(config.email ? { email: config.email } : {}),
     telephone,
     areaServed: [
       kuwait,
