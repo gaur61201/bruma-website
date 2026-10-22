@@ -10,12 +10,17 @@ const seconds = enCount(c.printSecondsPerNail, 'second', 'seconds');
 const replyHours = enCount(c.replyHours, 'hour', 'hours');
 const loanerHours = enCount(c.loanerWithinHours, 'hour', 'hours');
 const plan = kwd(c.planMonthlyKwd, 'en');
+// Who BRUMA is, in one sentence: the same wording in the footer, the Organization schema, the homepage
+// meta description and llms.txt, so search engines and AI assistants describe BRUMA consistently.
+const identity =
+  'BRUMA supplies AI nail art printers to nail salons, beauty salons and clinics in Kuwait, with delivery, installation, training and local support.';
 
 export const en = {
+  identity,
   meta: {
     home: {
-      title: 'BRUMA nail printer for salons in Kuwait | Free demo',
-      description: `The BRUMA nail printer puts any design on a nail in about ${seconds}. Delivered, installed, trained and supported in Kuwait. Book a free demo in your salon.`,
+      title: 'Nail printer for salons in Kuwait | BRUMA',
+      description: `${identity} Free demo.`,
     },
     thankYou: {
       title: 'Thank you | BRUMA',
@@ -190,8 +195,8 @@ export const en = {
 
   printer: {
     meta: {
-      title: 'The BRUMA nail printer for salons in Kuwait',
-      description: `The BRUMA nail printer for salons: any design on the nail in about ${seconds}. See the specs, training and support in Kuwait, then book a free demo.`,
+      title: 'Nail art printer for salons: specs and support | BRUMA',
+      description: `A nail art printer for salons that prints any design on the nail in about ${seconds}. See how it works, the specs and local support, then book a free demo.`,
     },
     hero: {
       eyebrow: 'The BRUMA nail printer',
@@ -310,9 +315,9 @@ export const en = {
 
   galleryPage: {
     meta: {
-      title: 'Nail art designs for salons in Kuwait | BRUMA gallery',
+      title: 'Nail printer designs for salons in Kuwait | BRUMA',
       description:
-        'Browse nail designs the BRUMA printer puts on the nail in seconds: Gulf, bridal, minimal and seasonal styles. Book a free demo in your salon in Kuwait.',
+        'Browse sample nail printer designs in Gulf, bridal, minimal and seasonal styles, each printed on the nail in seconds. Book a free demo in your salon in Kuwait.',
     },
     h1: 'Browse the designs',
     subline: 'Designs your clients will ask for, printed in seconds.',
@@ -341,8 +346,8 @@ export const en = {
 
   waysPage: {
     meta: {
-      title: 'Monthly plan or pay upfront | BRUMA nail printer',
-      description: `Own the BRUMA nail printer on a monthly plan from ${plan} a month, or pay upfront and save. Training, warranty and support in Kuwait are included.`,
+      title: 'Nail printer price in Kuwait: monthly or upfront | BRUMA',
+      description: `Own the BRUMA nail printer on a monthly plan from ${plan} a month, or pay upfront and save. Training, warranty and local support included. Book a free demo.`,
     },
     h1: 'Two ways to own it',
     /** The "and save" version shows while flags.showUpfrontSaving is on. */
@@ -402,9 +407,9 @@ export const en = {
   // (maintenance) stay strictly separate. Never describe the automatic cleaning as hygiene.
   hygienePage: {
     meta: {
-      title: 'Hygiene and safety with the nail printer | BRUMA',
+      title: 'Nail printer hygiene and safety for salons | BRUMA',
       description:
-        'How to clean the parts that touch your client between clients, use gel safely and store ink and gels. Safety data sheets on request. Free demo in Kuwait.',
+        'Nail printer hygiene: how to clean the parts that touch your client between clients, use gel safely and store ink and gels. Safety data sheets on request.',
     },
     h1: 'Hygiene and safety',
     subline: 'What touches your client, how to clean it, and how to keep ink and gels in good condition.',
@@ -458,8 +463,8 @@ export const en = {
 
   bookPage: {
     meta: {
-      title: 'Book a free nail printer demo in Kuwait | BRUMA',
-      description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation. We visit all 6 governorates of Kuwait.`,
+      title: 'Free nail printer demo in your salon in Kuwait | BRUMA',
+      description: `We bring the BRUMA nail printer to your salon for a free demo of about ${enCount(c.demoMinutes, 'minute', 'minutes')}, in all 6 governorates of Kuwait. No obligation: book your visit today.`,
     },
     h1: 'Book a free demo in your salon',
     subline: `We bring the printer to you. About ${enCount(c.demoMinutes, 'minute', 'minutes')}, with no obligation.`,
@@ -506,7 +511,7 @@ export const en = {
   // TODO lawyer review: the whole warranty page.
   warrantyPage: {
     meta: {
-      title: 'BRUMA nail printer warranty terms',
+      title: `Nail printer warranty in Kuwait: ${enCount(c.warrantyMonths, 'month', 'months')} | BRUMA`,
       description: `What the ${c.warrantyMonths}-month warranty on the BRUMA nail printer covers, what it doesn’t, the loaner printer during repairs and how to make a claim in Kuwait.`,
     },
     h1: 'Warranty terms',
