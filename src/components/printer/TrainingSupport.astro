@@ -1,101 +1,219 @@
 ---
-// "Training and support": a training card plus support cards. The warranty and loaner cards reuse
-// the homepage "What's included" cards (same component, same copy).
+// "Your first week with BRUMA" (#support): delivery, installation, training, ongoing support, as a
+// timeline. Horizontal on desktop, vertical on mobile; a sequence, not days. On first view the line
+// draws from step to step and each dot fills as the line reaches it (once). Without motion, or without
+// JS, the line is drawn and the dots filled from the start.
 import Icon from '../Icon.astro';
-import IconCard from '../IconCard.astro';
 import { useTranslations, type Lang } from '../../i18n';
 
 interface Props {
   lang: Lang;
 }
-const t = useTranslations(Astro.props.lang);
-const tr = t.printer.training;
-const [, , warranty, loaner] = t.included.cards;
-const support = [...tr.supportCards, warranty, loaner];
+const tr = useTranslations(Astro.props.lang).printer.training;
+const supportIcons = ['whatsapp', 'truck', 'shield', 'swap'] as const;
 ---
 
-<section id="support" class="section-y training" aria-labelledby="training-title" data-reveal-section>
+<section id="support" class="section-y week" aria-labelledby="week-title" data-reveal-section>
   <div class="wrap">
-    <h2 id="training-title" data-motion data-reveal="heading">{tr.h2}</h2>
-    <div class="training-grid">
-      <div class="card training-card" data-motion data-reveal="item">
-        <h3>{tr.trainingTitle}</h3>
-        <ul class="check-list">
-          {
-            tr.trainingItems.map((item) => (
-              <li>
-                <Icon name="check" size={20} />
-                <span>{item}</span>
-              </li>
-            ))
-          }
-        </ul>
-        <p class="training-note">{tr.trainingNote}</p>
-      </div>
-      <div class="support">
-        <h3 class="support-title" data-motion data-reveal="fade">{tr.supportTitle}</h3>
-        <ul class="support-grid">
-          {support.map((card) => <IconCard icon={card.icon} title={card.title} text={card.text} level={4} reveal />)}
-        </ul>
-      </div>
-    </div>
+    <h2 id="week-title" data-motion data-reveal="heading">{tr.h2}</h2>
+    <ol class="week-steps" data-week>
+      {
+        tr.steps.map((step, i) => (
+          <li class="week-step" style={`--i: ${i}`}>
+            <span class="week-dot" aria-hidden="true" />
+            <div class="week-body">
+              <p class="week-num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3>{step.title}</h3>
+              {step.text && <p>{step.text}</p>}
+              {i === 2 && (
+                <ul class="week-topics" aria-label={tr.topicsLabel}>
+                  {tr.topics.map((topic) => (
+                    <li>{topic}</li>
+                  ))}
+                </ul>
+              )}
+              {i === 3 && (
+                <ul class="week-support" aria-label={tr.supportLabel}>
+                  {tr.support.map((item, n) => (
+                    <li>
+                      <Icon name={supportIcons[n]} size={20} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
   </div>
 </section>
 
+<script>
+  // Play the line and the dots once, on first view (skipped under reduced motion: final state).
+  const list = document.querySelector<HTMLElement>('[data-week]');
+  if (list && !matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    list.dataset.week = 'ready';
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        list.dataset.week = 'on';
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(list);
+  }
+</script>
+
 <style>
-  .training-grid {
-    display: grid;
-    gap: 32px;
-    margin-block-start: 32px;
-  }
-  @media (min-width: 1024px) {
-    .training-grid {
-      grid-template-columns: 5fr 7fr;
-      gap: 48px;
-      align-items: start;
-      margin-block-start: 48px;
-    }
-  }
-  .training-card {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 32px 24px;
-  }
-  .check-list {
+  .week-steps {
+    --dot: 20px;
+    --step-gap: 40px;
+    --leg: 450ms;
     list-style: none;
-    margin: 0;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--step-gap);
+  }
+  .week-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--dot) minmax(0, 1fr);
+    gap: 20px;
+  }
+  /* The dot: an open ring that fills carbon. */
+  .week-dot {
+    position: relative;
+    z-index: 1;
+    width: var(--dot);
+    height: var(--dot);
+    margin-block-start: 2px;
+    border: 2px solid var(--color-carbon);
+    border-radius: 50%;
+    background: var(--color-carbon);
+  }
+  /* The line to the next step: a faint track, and the carbon line drawn over it. */
+  .week-step:not(:last-child)::before,
+  .week-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: calc(var(--dot) / 2 - 1px);
+    top: calc(var(--dot) / 2 + 2px);
+    width: 2px;
+    height: calc(100% + var(--step-gap));
+  }
+  .week-step:not(:last-child)::before {
+    background: var(--color-line);
+  }
+  .week-step:not(:last-child)::after {
+    background: var(--color-carbon);
+    transform-origin: top;
+  }
+
+  .week-body {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+  .week-num {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+    color: var(--color-stone);
+  }
+  .week-body h3 {
+    font-size: calc(var(--fs-h3) * var(--script-scale));
+  }
+  .week-topics {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .week-topics li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding-inline: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-button);
+    background: var(--color-white);
+    font-weight: 500;
+    font-size: calc(var(--fs-small) * var(--script-scale));
+  }
+  .week-support {
+    list-style: none;
+    margin: 4px 0 0;
     padding: 0;
     display: grid;
     gap: 12px;
   }
-  .check-list li {
+  .week-support li {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-  }
-  .check-list :global(svg) {
-    flex-shrink: 0;
-    margin-block-start: 3px;
-  }
-  .training-note {
-    padding-block-start: 16px;
-    border-top: 1px solid var(--color-line);
     font-weight: 500;
   }
-  .support-title {
-    margin-block-end: 16px;
+  .week-support :global(svg) {
+    flex-shrink: 0;
+    margin-block-start: 3px;
+    color: var(--color-deep-teal);
   }
-  .support-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 16px;
-  }
-  @media (min-width: 768px) {
-    .support-grid {
-      grid-template-columns: 1fr 1fr;
+
+  /* Desktop: four columns; the line runs across, from each dot to the next. */
+  @media (min-width: 1024px) {
+    .week-steps {
+      --step-gap: 32px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-block-start: 56px;
     }
+    .week-step {
+      grid-template-columns: none;
+      grid-template-rows: var(--dot) auto;
+      gap: 24px;
+    }
+    .week-step:not(:last-child)::before,
+    .week-step:not(:last-child)::after {
+      top: calc(var(--dot) / 2 + 1px);
+      inset-inline-start: calc(var(--dot) / 2);
+      width: calc(100% + var(--step-gap));
+      height: 2px;
+    }
+    .week-step:not(:last-child)::after {
+      transform-origin: left;
+    }
+    .week-step:not(:last-child):dir(rtl)::after {
+      transform-origin: right;
+    }
+    .week-dot {
+      margin-block-start: 0;
+    }
+  }
+
+  /* The draw: the line runs leg by leg and each dot fills as it's reached. */
+  [data-week='ready'] .week-dot {
+    background: var(--color-bone);
+  }
+  [data-week='ready'] .week-step::after {
+    scale: 1 0;
+  }
+  @media (min-width: 1024px) {
+    [data-week='ready'] .week-step::after {
+      scale: 0 1;
+    }
+  }
+  [data-week='on'] .week-dot {
+    transition: background-color 200ms var(--ease-out) calc(var(--i) * var(--leg) + 100ms);
+  }
+  [data-week='on'] .week-step::after {
+    transition: scale var(--leg) linear calc(var(--i) * var(--leg) + 100ms);
   }
 </style>

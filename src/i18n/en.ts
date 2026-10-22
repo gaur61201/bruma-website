@@ -128,7 +128,7 @@ export const en = {
   },
 
   included: {
-    // The homepage bento section. `cards` below is still used by the printer page's support cards.
+    // The homepage bento section.
     eyebrow: "What’s included",
     h2: 'Everything handled, from day one',
     intro: 'You get the printer, the training and the backup. Our team in Kuwait handles the rest.',
@@ -150,14 +150,6 @@ export const en = {
     technicians: { title: 'Technicians trained', text: 'Prep, printing, cleaning and simple fixes, in your salon.' },
     library: { title: 'Design library', text: 'Ready-made designs built in.', link: 'See sample designs' },
     refills: { title: 'Ink refills', text: 'After that, refills are ordered separately and delivered to your salon.', pill: 'First cartridge free at installation' },
-    cards: [
-      { icon: 'truck', title: 'Delivery and installation', text: 'We set it up in your salon.' },
-      { icon: 'training', title: 'Training', text: `On-site training for ${c.techniciansTrained} technicians.` },
-      { icon: 'shield', title: `${c.warrantyMonths}-month warranty`, text: 'Repairs handled locally.' },
-      { icon: 'swap', title: 'Loaner machine', text: `If a repair takes longer than ${loanerHours}, we lend you a printer.` },
-      { icon: 'library', title: 'Design library', text: 'Ready-made designs built in.' },
-      { icon: 'refill', title: 'Cartridge refills', text: 'Delivered to your salon. Your first cartridge comes in the box.' },
-    ],
   },
 
   ways: {
@@ -288,16 +280,19 @@ export const en = {
         maintenance: 'Maintenance',
       },
     },
+    /** "Your first week with BRUMA": a sequence, not days (no dates or durations). */
     training: {
-      h2: 'Training and support',
-      trainingTitle: 'Training',
-      trainingItems: ['Using the printer', 'Prepping nails for the best result', 'Cleaning between clients', 'Fixing simple problems'],
-      trainingNote: `On site, for ${c.techniciansTrained} technicians.`,
-      supportTitle: 'Support',
-      supportCards: [
-        { icon: 'whatsapp', title: 'WhatsApp help', text: 'Ask us anything on WhatsApp.' },
-        { icon: 'truck', title: 'On-site visits', text: 'We come to your salon when needed.' },
+      h2: 'Your first week with BRUMA',
+      steps: [
+        { title: 'Delivery', text: 'We bring the printer to your salon.' },
+        { title: 'Installation', text: 'We set it up and print a first test nail with you.' },
+        { title: 'Training', text: `${enCount(c.techniciansTrained, 'technician', 'technicians')} trained on site.` },
+        { title: 'Ongoing support', text: '' },
       ],
+      topicsLabel: 'What the training covers',
+      topics: ['Using the printer', 'Prepping nails', 'Cleaning between clients', 'Simple fixes'],
+      supportLabel: 'What support includes',
+      support: ['WhatsApp help', 'On-site visits when needed', `${c.warrantyMonths}-month warranty`, `A loaner printer if a repair takes longer than ${loanerHours}`],
     },
     running: {
       h2: 'Running costs',
