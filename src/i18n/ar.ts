@@ -208,6 +208,7 @@ export const ar: Dict = {
       specsLink: 'عرض المواصفات',
       mediaCaption: 'صورة: الطابعة من زاوية جانبية أمامية',
     },
+    sectionNav: { label: 'في هذه الصفحة', overview: 'نظرة عامة', how: 'كيف تعمل', specs: 'المواصفات', support: 'الدعم', faq: 'الأسئلة' },
     demo: {
       eyebrow: 'جرّبها',
       title: 'اختر تصميماً وشاهد طباعته',

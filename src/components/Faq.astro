@@ -5,12 +5,14 @@ import Icon from './Icon.astro';
 interface Props {
   title: string;
   items: { q: string; a: string }[];
+  /** Optional id on the section, for in-page links. */
+  anchor?: string;
 }
-const { title, items } = Astro.props;
+const { title, items, anchor } = Astro.props;
 ---
 <!-- Each question has an id (#faq-1, #faq-2, …): opening one puts it in the URL, and a link to it opens it. -->
 
-<section class="section-y faq" aria-labelledby="faq-title">
+<section id={anchor} class="section-y faq" aria-labelledby="faq-title">
   <div class="wrap faq-grid">
     <h2 id="faq-title" data-motion>{title}</h2>
     <div class="faq-list">

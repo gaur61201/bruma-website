@@ -208,6 +208,8 @@ export const en = {
       specsLink: 'See the specifications',
       mediaCaption: 'Photo: the printer, three-quarter view',
     },
+    /** The in-page nav under the hero. */
+    sectionNav: { label: 'On this page', overview: 'Overview', how: 'How it works', specs: 'Specs', support: 'Support', faq: 'FAQ' },
     /** The hero's "Try it" demo (an illustration; the status line gives the real print time). */
     demo: {
       eyebrow: 'Try it',

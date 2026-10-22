@@ -118,6 +118,13 @@
     text-size-adjust: 100%;
     scroll-behavior: smooth;
     scroll-padding-top: 76px;
+  }
+  @media (min-width: 1024px) {
+    html:has([data-section-nav]) {
+      scroll-padding-top: 117px;
+    }
+  }
+  html {
     background: var(--color-bone);
   }
 
@@ -658,7 +665,7 @@
 .slide-underline:dir(rtl)::after {
   transform-origin: right center;
 }
-.slide-underline[aria-current='page']::after,
+.slide-underline[aria-current]::after,
 .slide-underline:focus-visible::after {
   transform: scaleX(1);
 }
